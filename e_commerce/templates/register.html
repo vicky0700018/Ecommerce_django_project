@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}Register - ShopSphere{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h3 class="mb-0"><i class="fas fa-user-plus"></i> Create Account</h3>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Full Name Field -->
+                        <div class="mb-3">
+                            <label for="full_name" class="form-label fw-500">
+                                <i class="fas fa-user"></i> Full Name
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-control form-control-lg" 
+                                id="full_name" 
+                                name="full_name" 
+                                placeholder="Enter your full name"
+                                required
+                            >
+                            <small class="text-muted">Please enter your first and last name</small>
+                        </div>
+
+                        <!-- Email Field -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label fw-500">
+                                <i class="fas fa-envelope"></i> Email Address
+                            </label>
+                            <input 
+                                type="email" 
+                                class="form-control form-control-lg" 
+                                id="email" 
+                                name="email" 
+                                placeholder="Enter your email"
+                                required
+                            >
+                            <small class="text-muted">We'll never share your email</small>
+                        </div>
+
+                        <!-- Password Field -->
+                        <div class="mb-3">
+                            <label for="password" class="form-label fw-500">
+                                <i class="fas fa-lock"></i> Password
+                            </label>
+                            <input 
+                                type="password" 
+                                class="form-control form-control-lg" 
+                                id="password" 
+                                name="password" 
+                                placeholder="Create a strong password"
+                                required
+                            >
+                            <small class="text-muted">At least 8 characters recommended</small>
+                        </div>
+
+                        <!-- Confirm Password Field -->
+                        <div class="mb-4">
+                            <label for="confirm_password" class="form-label fw-500">
+                                <i class="fas fa-lock"></i> Confirm Password
+                            </label>
+                            <input 
+                                type="password" 
+                                class="form-control form-control-lg" 
+                                id="confirm_password" 
+                                name="confirm_password" 
+                                placeholder="Confirm your password"
+                                required
+                            >
+                        </div>
+
+                        <!-- Terms Checkbox -->
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input 
+                                    class="form-check-input" 
+                                    type="checkbox" 
+                                    id="terms" 
+                                    required
+                                >
+                                <label class="form-check-label" for="terms">
+                                    I agree to the <a href="#" class="text-primary">Terms of Service</a> and <a href="#" class="text-primary">Privacy Policy</a>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary btn-lg w-100 fw-600">
+                            <i class="fas fa-user-check"></i> Register Now
+                        </button>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <!-- Login Link -->
+                    <p class="text-center text-muted">
+                        Already have an account? 
+                        <a href="#" class="text-primary fw-600 text-decoration-none">Login here</a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Additional Info -->
+            <div class="mt-4 text-center text-muted small">
+                <p><i class="fas fa-shield-alt"></i> Your data is safe and secure with us</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom Styles for Register Page -->
+<style>
+    .card {
+        border-radius: 12px;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+
+    .form-label {
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
+    }
+</style>
+{% endblock %}

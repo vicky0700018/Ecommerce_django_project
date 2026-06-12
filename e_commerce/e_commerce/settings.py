@@ -79,6 +79,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'e_commerce.wsgi.application'##Check Changes Project Name
 
+AUTH_USER_MODEL = 'shopsphere.CustomUser'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
@@ -144,4 +145,11 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # EMAIL_HOST_USER = 'supportshopsphere@gmail.com'
 # EMAIL_HOST_PASSWORD = 'vefw tdis lewq lpso'
 # EMAIL_USE_TLS = True
-# DEFAULT_FROM_EMAIL = ''
+# DEFAULT_FROM_EMAIL = 'vs2734514@gmail.com'
+
+# Allow DD/MM/YYYY format for dates
+DATE_INPUT_FORMATS = [
+    '%d/%m/%Y',  # '29/09/2003'
+    '%d-%m-%Y',  # '29-09-2003'
+    '%Y-%m-%d',  # '2003-09-29'
+]

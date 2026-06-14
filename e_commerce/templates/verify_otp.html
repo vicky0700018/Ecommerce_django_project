@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block title %}Verify Email - ShopSphere{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-primary text-white py-4 text-center">
+                    <h2 class="mb-0">
+                        <i class="fas fa-envelope-open-text"></i> Verify Your Email
+                    </h2>
+                    <p class="mb-0 mt-2 small">Enter the OTP sent to your email</p>
+                </div>
+
+                <div class="card-body p-5">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                <i class="fas fa-info-circle"></i> {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="POST" action="{% url 'verify_otp' %}" class="needs-validation">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label for="otp_code" class="form-label fw-bold">
+                                <i class="fas fa-lock"></i> Enter OTP Code
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-control form-control-lg text-center font-monospace" 
+                                id="otp_code" 
+                                name="otp_code" 
+                                placeholder="000000"
+                                maxlength="6"
+                                inputmode="numeric"
+                                pattern="[0-9]{6}"
+                                required
+                                autocomplete="off"
+                                autofocus
+                            >
+                            <small class="form-text text-muted d-block mt-2">
+                                <i class="fas fa-clock"></i> Your OTP is valid for 10 minutes
+                            </small>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold">
+                            <i class="fas fa-check-circle"></i> Verify Email
+                        </button>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="text-center">
+                        <p class="mb-3 text-muted">Didn't receive the OTP?</p>
+                        <form method="POST" action="{% url 'resend_otp' %}" class="d-inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="email" value="{{ email }}">
+                            <button type="submit" class="btn btn-outline-primary btn-sm fw-bold">
+                                <i class="fas fa-redo"></i> Resend OTP
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-light py-3 text-center">
+                    <p class="mb-0 text-muted small">
+                        <i class="fas fa-envelope"></i> OTP sent to: <strong>{{ email }}</strong>
+                    </p>
+                </div>
+            </div>
+
+            <div class="alert alert-info mt-4" role="alert">
+                <h5 class="alert-heading">
+                    <i class="fas fa-lightbulb"></i> Tips for OTP Entry:
+                </h5>
+                <ul class="mb-0">
+                    <li>Check your email (including spam/junk folder) for the OTP</li>
+                    <li>Enter only the 6-digit code</li>
+                    <li>OTP expires after 10 minutes</li>
+                    <li>If you didn't receive the OTP, click "Resend OTP"</li>
+                </ul>
+            </div>
+
+            <div class="text-center mt-4">
+                <p class="text-muted small">
+                    <a href="{% url 'register' %}" class="text-decoration-none">Back to Registration</a> | 
+                    <a href="{% url 'login' %}" class="text-decoration-none">Go to Login</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control-lg {
+        border: 2px solid #dee2e6;
+        transition: all 0.3s ease;
+    }
+
+    .form-control-lg:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .btn-primary {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #0b5ed7;
+        border-color: #0a58ca;
+    }
+
+    .font-monospace {
+        letter-spacing: 0.5rem;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .alert-info {
+        background-color: #f0f7ff;
+        border-color: #b6d4ff;
+        color: #084298;
+    }
+
+    .bg-primary {
+        background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%) !important;
+    }
+</style>
+
+<script>
+    // Auto-format OTP input to only accept numbers
+    document.getElementById('otp_code').addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    // Auto-submit if 6 digits entered
+    document.getElementById('otp_code').addEventListener('input', function(e) {
+        if (this.value.length === 6) {
+            // Optional: you can auto-submit here
+            // this.form.submit();
+        }
+    });
+</script>
+{% endblock %}

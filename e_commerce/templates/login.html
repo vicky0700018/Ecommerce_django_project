@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Register - ShopSphere{% endblock %}
+{% block title %}Login - ShopSphere{% endblock %}
 
 {% block content %}
 <div class="container py-5">
@@ -8,27 +8,21 @@
         <div class="col-md-6 col-lg-5">
             <div class="card shadow-lg border-0">
                 <div class="card-header bg-primary text-white text-center py-4">
-                    <h3 class="mb-0"><i class="fas fa-user-plus"></i> Create Account</h3>
+                    <h3 class="mb-0"><i class="fas fa-sign-in-alt"></i> Login to ShopSphere</h3>
                 </div>
                 <div class="card-body p-4">
+                    <!-- Display Messages -->
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+
                     <form method="POST" novalidate>
                         {% csrf_token %}
-
-                        <!-- Full Name Field -->
-                        <div class="mb-3">
-                            <label for="full_name" class="form-label fw-500">
-                                <i class="fas fa-user"></i> Full Name
-                            </label>
-                            <input 
-                                type="text" 
-                                class="form-control form-control-lg" 
-                                id="full_name" 
-                                name="full_name" 
-                                placeholder="Enter your full name"
-                                required
-                            >
-                            <small class="text-muted">Please enter your first and last name</small>
-                        </div>
 
                         <!-- Email Field -->
                         <div class="mb-3">
@@ -42,12 +36,13 @@
                                 name="email" 
                                 placeholder="Enter your email"
                                 required
+                                autofocus
                             >
-                            <small class="text-muted">We'll never share your email</small>
+                            <small class="text-muted">Enter the email you registered with</small>
                         </div>
 
                         <!-- Password Field -->
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <label for="password" class="form-label fw-500">
                                 <i class="fas fa-lock"></i> Password
                             </label>
@@ -56,67 +51,69 @@
                                 class="form-control form-control-lg" 
                                 id="password" 
                                 name="password" 
-                                placeholder="Create a strong password"
-                                required
-                            >
-                            <small class="text-muted">At least 8 characters recommended</small>
-                        </div>
-
-                        <!-- Confirm Password Field -->
-                        <div class="mb-4">
-                            <label for="confirm_password" class="form-label fw-500">
-                                <i class="fas fa-lock"></i> Confirm Password
-                            </label>
-                            <input 
-                                type="password" 
-                                class="form-control form-control-lg" 
-                                id="confirm_password" 
-                                name="confirm_password" 
-                                placeholder="Confirm your password"
+                                placeholder="Enter your password"
                                 required
                             >
                         </div>
 
-                        <!-- Terms Checkbox -->
+                        <!-- Remember Me Checkbox -->
                         <div class="mb-4">
                             <div class="form-check">
                                 <input 
                                     class="form-check-input" 
                                     type="checkbox" 
-                                    id="terms" 
-                                    required
+                                    id="remember_me"
+                                    name="remember_me"
                                 >
-                                <label class="form-check-label" for="terms">
-                                    I agree to the <a href="#" class="text-primary">Terms of Service</a> and <a href="#" class="text-primary">Privacy Policy</a>
+                                <label class="form-check-label" for="remember_me">
+                                    Remember me on this device
                                 </label>
                             </div>
                         </div>
 
                         <!-- Submit Button -->
                         <button type="submit" class="btn btn-primary btn-lg w-100 fw-600">
-                            <i class="fas fa-user-check"></i> Register Now
+                            <i class="fas fa-arrow-right"></i> Sign In
                         </button>
                     </form>
 
                     <hr class="my-4">
 
-                    <!-- Login Link -->
-                    <p class="text-center text-muted">
-                        Already have an account? 
-                        <a href="{% url 'login' %}" class="text-primary fw-600 text-decoration-none">Login here</a>
-                    </p>
+                    <!-- Links -->
+                    <div class="text-center">
+                        <p class="text-muted mb-2">
+                            <a href="#" class="text-primary fw-600 text-decoration-none">
+                                <i class="fas fa-key"></i> Forgot Password?
+                            </a>
+                        </p>
+                        <p class="text-muted">
+                            Don't have an account? 
+                            <a href="{% url 'register' %}" class="text-primary fw-600 text-decoration-none">Register here</a>
+                        </p>
+                    </div>
+
+                    <!-- Social Login (Optional) -->
+                    <hr class="my-4">
+                    <div class="text-center">
+                        <p class="text-muted small mb-3">Or login with</p>
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-outline-secondary btn-sm">
+                                <i class="fab fa-google"></i> Google
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- Additional Info -->
             <div class="mt-4 text-center text-muted small">
-                <p><i class="fas fa-shield-alt"></i> Your data is safe and secure with us</p>
+                <p><i class="fas fa-shield-alt"></i> Secure login with encrypted connection</p>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Custom Styles for Register Page -->
+<!-- Custom Styles for Login Page -->
 <style>
     .card {
         border-radius: 12px;
@@ -151,6 +148,16 @@
 
     .card-header {
         background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
+    }
+
+    .btn-outline-secondary:hover {
+        background-color: #f8f9fa;
+        border-color: #6c757d;
+    }
+
+    .form-check-input:checked {
+        background-color: #007bff;
+        border-color: #007bff;
     }
 </style>
 {% endblock %}

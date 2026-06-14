@@ -138,14 +138,14 @@ MEDIA_URL = '/media/'
 
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# # Email settings
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Gmail SMTP backend enabled
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-# EMAIL_HOST_USER = 'supportshopsphere@gmail.com'
-# EMAIL_HOST_PASSWORD = 'vefw tdis lewq lpso'
-# EMAIL_USE_TLS = True
-# DEFAULT_FROM_EMAIL = 'vs2734514@gmail.com'
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Gmail SMTP backend enabled
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'supportshopsphere@gmail.com'
+EMAIL_HOST_PASSWORD = 'vefw tdis lewq lpso'
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'vs2734514@gmail.com'
 
 # Allow DD/MM/YYYY format for dates
 DATE_INPUT_FORMATS = [
@@ -153,3 +153,11 @@ DATE_INPUT_FORMATS = [
     '%d-%m-%Y',  # '29-09-2003'
     '%Y-%m-%d',  # '2003-09-29'
 ]
+
+# CSRF Settings for development
+CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_HTTPONLY = False
+SESSION_COOKIE_SECURE = False
+
+# Custom User Model
+AUTH_USER_MODEL = 'shopsphere.CustomUser'

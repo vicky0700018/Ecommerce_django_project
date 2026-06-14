@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from .models import CustomUser
 import uuid
 
@@ -52,3 +53,50 @@ def register(request):
             return redirect('register')
 
     return render(request, 'register.html')
+
+def login(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+    
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        remember_me = request.POST.get('remember_me')
+
+        # Validation
+        if not email or not password:
+            messages.error(request, 'Email and password are required!')
+            return redirect('login')
+
+        try:
+            # Find user by email
+            user = CustomUser.objects.filter(email=email).first()
+            
+            if user and user.check_password(password):
+                # Set backend attribute for proper authentication
+                user.backend = 'django.contrib.auth.backends.ModelBackend'
+                # Authenticate and login
+                auth_login(request, user)
+                
+                # Handle remember me
+                if remember_me:
+                    request.session.set_expiry(1209600)  # 2 weeks
+                else:
+                    request.session.set_expiry(0)  # Browser session
+                
+                messages.success(request, f'Welcome back, {user.full_name}!')
+                return redirect('home')
+            else:
+                messages.error(request, 'Invalid email or password!')
+                return redirect('login')
+        
+        except Exception as e:
+            messages.error(request, f'An error occurred during login: {str(e)}')
+            return redirect('login')
+
+    return render(request, 'login.html')
+
+def logout(request):
+    auth_logout(request)
+    messages.success(request, 'You have been logged out successfully!')
+    return redirect('home')

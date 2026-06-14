@@ -75,18 +75,18 @@
                     {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="#">
-                            <i class="fas fa-user"></i> {{ user.username }}
+                            <i class="fas fa-user"></i> {{ user.full_name }}
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Logout</a>
+                        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
                     </li>
                     {% else %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'register' %}">Register</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Login</a>
+                        <a class="nav-link" href="{% url 'login' %}">Login</a>
                     </li>
                     {% endif %}
                     <li class="nav-item">
@@ -149,7 +149,7 @@
             </div>
             <hr class="my-4">
             <div class="text-center text-muted">
-                <p>&copy; 2024 ShopSphere. All rights reserved.</p>
+                <p>&copy; 2026 ShopSphere. All rights reserved.</p>
             </div>
         </div>
     </footer>

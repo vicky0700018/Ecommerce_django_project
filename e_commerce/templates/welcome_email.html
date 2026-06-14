@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #28a745;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #28a745;
+            margin: 0;
+            font-size: 28px;
+        }
+        .success-badge {
+            display: inline-block;
+            background-color: #28a745;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .content {
+            color: #333333;
+            line-height: 1.6;
+        }
+        .content h2 {
+            color: #28a745;
+            font-size: 24px;
+            margin-top: 0;
+        }
+        .welcome-box {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .welcome-box h3 {
+            margin-top: 0;
+            font-size: 20px;
+        }
+        .features {
+            background-color: #f0fdf4;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .features h4 {
+            color: #28a745;
+            margin-top: 0;
+        }
+        .features ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .features li {
+            margin: 10px 0;
+            color: #555;
+        }
+        .button {
+            display: inline-block;
+            background-color: #28a745;
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eeeeee;
+            color: #666666;
+            font-size: 12px;
+        }
+        .social-links {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .social-links a {
+            color: #28a745;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ShopSphere</h1>
+            <div class="success-badge">✓ VERIFIED</div>
+        </div>
+
+        <div class="content">
+            <h2>Welcome to ShopSphere, {{ full_name }}!</h2>
+            
+            <div class="welcome-box">
+                <h3>🎉 Your account is now active!</h3>
+                <p>Thank you for verifying your email. You're all set to start shopping with us.</p>
+            </div>
+            
+            <p>Your email verification has been completed successfully. You can now:</p>
+            
+            <div class="features">
+                <h4>What you can do now:</h4>
+                <ul>
+                    <li>✓ Browse and shop from our exclusive collection</li>
+                    <li>✓ Add items to your wishlist</li>
+                    <li>✓ Track your orders in real-time</li>
+                    <li>✓ Save your favorite items for later</li>
+                    <li>✓ Access exclusive deals and offers</li>
+                    <li>✓ Manage your profile and preferences</li>
+                </ul>
+            </div>
+            
+            <div style="text-align: center;">
+                <a href="{{ login_url }}" class="button">Start Shopping Now</a>
+            </div>
+            
+            <p><strong>Account Details:</strong></p>
+            <ul style="font-size: 14px; color: #666;">
+                <li><strong>Email:</strong> {{ email }}</li>
+                <li><strong>Status:</strong> <span style="color: #28a745; font-weight: bold;">✓ Email Verified</span></li>
+            </ul>
+            
+            <p style="color: #666; font-size: 14px;">
+                If you have any questions or need assistance, our customer support team is here to help. Feel free to reach out to us anytime.
+            </p>
+            
+            <div class="social-links">
+                <p style="margin: 0; color: #999; font-size: 12px;">Follow us on social media</p>
+                <a href="#">Facebook</a> | 
+                <a href="#">Twitter</a> | 
+                <a href="#">Instagram</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2026 ShopSphere. All rights reserved.</p>
+            <p>This is an automated email. Please do not reply to this message.</p>
+            <p>We're committed to keeping your account secure and your information private.</p>
+        </div>
+    </div>
+</body>
+</html>

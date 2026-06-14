@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #007bff;
+            margin: 0;
+            font-size: 28px;
+        }
+        .content {
+            color: #333333;
+            line-height: 1.6;
+        }
+        .content h2 {
+            color: #007bff;
+            font-size: 20px;
+            margin-top: 0;
+        }
+        .otp-box {
+            background-color: #f0f7ff;
+            border-left: 4px solid #007bff;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .otp-code {
+            font-size: 32px;
+            font-weight: bold;
+            color: #007bff;
+            letter-spacing: 5px;
+            font-family: 'Courier New', monospace;
+        }
+        .note {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 14px;
+            color: #856404;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eeeeee;
+            color: #666666;
+            font-size: 12px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ShopSphere</h1>
+            <p style="color: #666; margin: 10px 0 0 0;">Email Verification</p>
+        </div>
+
+        <div class="content">
+            <h2>Hello {{ full_name }},</h2>
+            
+            <p>Welcome to ShopSphere! We're excited to have you join our community.</p>
+            
+            <p>To complete your registration and verify your email address, please use the following One-Time Password (OTP):</p>
+            
+            <div class="otp-box">
+                <p style="margin: 0 0 10px 0; color: #666;">Your OTP Code:</p>
+                <div class="otp-code">{{ otp_code }}</div>
+            </div>
+            
+            <div class="note">
+                <strong>⏱️ Important:</strong> This OTP is valid for only 10 minutes. If you don't use it within this time, you'll need to request a new one.
+            </div>
+            
+            <p><strong>How to verify your email:</strong></p>
+            <ol>
+                <li>Go to our verification page</li>
+                <li>Enter the OTP code above</li>
+                <li>Click "Verify" to complete your registration</li>
+            </ol>
+            
+            <p style="color: #666; font-size: 14px;">
+                <strong>Didn't request this?</strong> If you didn't create this account, please ignore this email. Your email won't be verified unless you use the OTP code above.
+            </p>
+        </div>
+
+        <div class="footer">
+            <p>© 2026 ShopSphere. All rights reserved.</p>
+            <p>This is an automated email. Please do not reply to this message.</p>
+            <p>If you have any issues, please contact our support team.</p>
+        </div>
+    </div>
+</body>
+</html>

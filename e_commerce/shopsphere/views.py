@@ -2,7 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
-from .models import CustomUser
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.conf import settings
+from .models import CustomUser, OTP
 import uuid
 
 def home(request):
@@ -33,8 +37,6 @@ def register(request):
             return redirect('register')
 
         # Create user
-        # Since username is required by AbstractUser but we want to use email, 
-        # we can generate a random username or use part of the email.
         base_username = email.split('@')[0]
         unique_username = f"{base_username}_{uuid.uuid4().hex[:6]}"
 
@@ -43,16 +45,139 @@ def register(request):
                 username=unique_username,
                 full_name=full_name,
                 email=email,
-                password=make_password(password)
+                password=make_password(password),
+                is_email_verified=False
             )
             user.save()
-            messages.success(request, 'Registration successful! You can now log in.')
-            return redirect('register')
+            
+            # Generate and send OTP
+            otp = OTP.generate_otp(user)
+            send_otp_email(user, otp.code)
+            
+            messages.success(request, 'Registration successful! Check your email for OTP verification.')
+            request.session['email_for_verification'] = email
+            return redirect('verify_otp')
         except Exception as e:
-            messages.error(request, 'An error occurred during registration. Please try again.')
+            messages.error(request, f'An error occurred during registration: {str(e)}')
             return redirect('register')
 
     return render(request, 'register.html')
+
+
+def send_otp_email(user, otp_code):
+    """Send OTP email to user"""
+    subject = 'Email Verification OTP - ShopSphere'
+    html_message = render_to_string('otp_email.html', {
+        'full_name': user.full_name,
+        'otp_code': otp_code
+    })
+    plain_message = strip_tags(html_message)
+    
+    send_mail(
+        subject,
+        plain_message,
+        settings.EMAIL_HOST_USER,
+        [user.email],
+        html_message=html_message,
+        fail_silently=False,
+    )
+
+
+def send_welcome_email(user):
+    """Send welcome email to user after verification"""
+    subject = 'Welcome to ShopSphere!'
+    html_message = render_to_string('welcome_email.html', {
+        'full_name': user.full_name
+    })
+    plain_message = strip_tags(html_message)
+    
+    send_mail(
+        subject,
+        plain_message,
+        settings.EMAIL_HOST_USER,
+        [user.email],
+        html_message=html_message,
+        fail_silently=False,
+    )
+
+
+def verify_otp(request):
+    """Verify OTP and mark email as verified"""
+    email = request.session.get('email_for_verification')
+    
+    if not email:
+        messages.error(request, 'Invalid verification request.')
+        return redirect('register')
+    
+    try:
+        user = CustomUser.objects.get(email=email)
+    except CustomUser.DoesNotExist:
+        messages.error(request, 'User not found.')
+        return redirect('register')
+    
+    if user.is_email_verified:
+        messages.info(request, 'Email already verified. You can log in now.')
+        return redirect('login')
+    
+    if request.method == 'POST':
+        otp_code = request.POST.get('otp_code', '').strip()
+        
+        if not otp_code:
+            messages.error(request, 'Please enter the OTP.')
+            return render(request, 'verify_otp.html', {'email': email})
+        
+        try:
+            otp = OTP.objects.get(user=user)
+            
+            if otp.is_expired():
+                messages.error(request, 'OTP has expired. Please request a new one.')
+                return render(request, 'verify_otp.html', {'email': email})
+            
+            if otp.verify(otp_code):
+                # Mark user as email verified
+                user.is_email_verified = True
+                user.save()
+                
+                # Send welcome email
+                send_welcome_email(user)
+                
+                # Clear session
+                del request.session['email_for_verification']
+                
+                messages.success(request, 'Email verified successfully! Welcome to ShopSphere. You can now log in.')
+                return redirect('login')
+            else:
+                messages.error(request, 'Invalid OTP. Please try again.')
+                return render(request, 'verify_otp.html', {'email': email})
+        
+        except OTP.DoesNotExist:
+            messages.error(request, 'OTP not found. Please register again.')
+            return redirect('register')
+    
+    return render(request, 'verify_otp.html', {'email': email})
+
+
+def resend_otp(request):
+    """Resend OTP to user email"""
+    if request.method == 'POST':
+        email = request.POST.get('email', '').strip()
+        
+        if not email:
+            messages.error(request, 'Please enter your email.')
+            return redirect('verify_otp')
+        
+        try:
+            user = CustomUser.objects.get(email=email, is_email_verified=False)
+            otp = OTP.generate_otp(user)
+            send_otp_email(user, otp.code)
+            messages.success(request, 'OTP resent successfully. Check your email.')
+            request.session['email_for_verification'] = email
+            return redirect('verify_otp')
+        except CustomUser.DoesNotExist:
+            messages.error(request, 'Email not found or already verified.')
+            return redirect('register')
+    
+    return redirect('verify_otp')
 
 def login(request):
     if request.user.is_authenticated:
@@ -72,7 +197,16 @@ def login(request):
             # Find user by email
             user = CustomUser.objects.filter(email=email).first()
             
-            if user and user.check_password(password):
+            if not user:
+                messages.error(request, 'Invalid email or password!')
+                return redirect('login')
+            
+            if not user.is_email_verified:
+                messages.warning(request, 'Please verify your email first before logging in.')
+                request.session['email_for_verification'] = email
+                return redirect('verify_otp')
+            
+            if user.check_password(password):
                 # Set backend attribute for proper authentication
                 user.backend = 'django.contrib.auth.backends.ModelBackend'
                 # Authenticate and login

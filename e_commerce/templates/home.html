@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - ShopSphere{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <!-- Hero Section -->
+    <section class="hero-section mb-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold text-primary mb-3">Welcome to ShopSphere</h1>
+                <p class="lead text-muted mb-4">Discover a world of premium products and exceptional shopping experience.</p>
+                <div class="d-flex gap-3">
+                    <a href="{% url 'product' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-shopping-bag me-2"></i>Shop Now
+                    </a>
+                    <a href="{% url 'about_us' %}" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-info-circle me-2"></i>Learn More
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <div class="hero-image p-5">
+                    <i class="fas fa-shopping-bags" style="font-size: 8rem; color: #007bff; opacity: 0.2;"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section mb-5">
+        <h2 class="text-center mb-5">Why Choose ShopSphere?</h2>
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="feature-card text-center p-4">
+                    <i class="fas fa-truck text-primary mb-3" style="font-size: 2.5rem;"></i>
+                    <h5>Fast Delivery</h5>
+                    <p class="text-muted">Get your orders delivered quickly to your doorstep.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature-card text-center p-4">
+                    <i class="fas fa-shield-alt text-primary mb-3" style="font-size: 2.5rem;"></i>
+                    <h5>Secure Payment</h5>
+                    <p class="text-muted">Your payment information is safe and secure with us.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature-card text-center p-4">
+                    <i class="fas fa-undo text-primary mb-3" style="font-size: 2.5rem;"></i>
+                    <h5>Easy Returns</h5>
+                    <p class="text-muted">Hassle-free returns within 30 days of purchase.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature-card text-center p-4">
+                    <i class="fas fa-headset text-primary mb-3" style="font-size: 2.5rem;"></i>
+                    <h5>24/7 Support</h5>
+                    <p class="text-muted">Our customer support team is always here to help.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action Section -->
+    <section class="cta-section bg-light p-5 rounded mb-5">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h3 class="mb-3">Ready to Start Shopping?</h3>
+                <p class="text-muted">Browse our wide collection of products and find everything you need.</p>
+            </div>
+            <div class="col-lg-4 text-end">
+                <a href="{% url 'product' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-arrow-right me-2"></i>Explore Products
+                </a>
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+    .feature-card {
+        background: #f8f9fa;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        border: 1px solid #e9ecef;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        background: white;
+    }
+
+    .hero-section {
+        padding: 40px 0;
+        min-height: 400px;
+    }
+
+    .cta-section {
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        color: white;
+    }
+
+    .cta-section h3,
+    .cta-section p {
+        color: white;
+    }
+
+    .cta-section .btn-primary {
+        background: white;
+        color: #007bff;
+        border: none;
+    }
+
+    .cta-section .btn-primary:hover {
+        background: #f8f9fa;
+    }
+</style>
+{% endblock %}

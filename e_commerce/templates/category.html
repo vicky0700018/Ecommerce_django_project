@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+
+{% block title %}Categories - ShopSphere{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Page Header -->
+    <div class="row mb-5">
+        <div class="col-lg-12">
+            <h1 class="display-5 fw-bold">Shop by Category</h1>
+            <p class="lead text-muted">Browse our collection organized by category</p>
+        </div>
+    </div>
+
+    <!-- Categories Grid -->
+    <div class="row g-4">
+        <!-- Category Card 1 -->
+        <div class="col-md-6 col-lg-4">
+            <div class="category-card card h-100 text-center">
+                <div class="category-icon bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                    <i class="fas fa-laptop" style="font-size: 4rem; color: #007bff;"></i>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Electronics</h5>
+                    <p class="text-muted">Smartphones, Laptops, Tablets & More</p>
+                    <p class="text-muted small">250+ Products</p>
+                    <a href="{% url 'product' %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-arrow-right me-2"></i>Explore
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Card 2 -->
+        <div class="col-md-6 col-lg-4">
+            <div class="category-card card h-100 text-center">
+                <div class="category-icon bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                    <i class="fas fa-tshirt" style="font-size: 4rem; color: #28a745;"></i>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Fashion</h5>
+                    <p class="text-muted">Clothing, Shoes, Accessories & More</p>
+                    <p class="text-muted small">500+ Products</p>
+                    <a href="{% url 'product' %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-arrow-right me-2"></i>Explore
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Card 3 -->
+        <div class="col-md-6 col-lg-4">
+            <div class="category-card card h-100 text-center">
+                <div class="category-icon bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                    <i class="fas fa-home" style="font-size: 4rem; color: #fd7e14;"></i>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Home & Living</h5>
+                    <p class="text-muted">Furniture, Decor, Kitchen & More</p>
+                    <p class="text-muted small">320+ Products</p>
+                    <a href="{% url 'product' %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-arrow-right me-2"></i>Explore
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Card 4 -->
+        <div class="col-md-6 col-lg-4">
+            <div class="category-card card h-100 text-center">
+                <div class="category-icon bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                    <i class="fas fa-dumbbell" style="font-size: 4rem; color: #dc3545;"></i>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Sports & Fitness</h5>
+                    <p class="text-muted">Equipment, Apparel, Accessories & More</p>
+                    <p class="text-muted small">180+ Products</p>
+                    <a href="{% url 'product' %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-arrow-right me-2"></i>Explore
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Card 5 -->
+        <div class="col-md-6 col-lg-4">
+            <div class="category-card card h-100 text-center">
+                <div class="category-icon bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                    <i class="fas fa-book" style="font-size: 4rem; color: #6f42c1;"></i>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Books</h5>
+                    <p class="text-muted">Fiction, Non-Fiction, Educational & More</p>
+                    <p class="text-muted small">1000+ Products</p>
+                    <a href="{% url 'product' %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-arrow-right me-2"></i>Explore
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Card 6 -->
+        <div class="col-md-6 col-lg-4">
+            <div class="category-card card h-100 text-center">
+                <div class="category-icon bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                    <i class="fas fa-gamepad" style="font-size: 4rem; color: #17a2b8;"></i>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Gaming</h5>
+                    <p class="text-muted">Consoles, Games, Accessories & More</p>
+                    <p class="text-muted small">150+ Products</p>
+                    <a href="{% url 'product' %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-arrow-right me-2"></i>Explore
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Featured Categories Section -->
+    <div class="mt-5 pt-5 border-top">
+        <h3 class="mb-4">Featured Deals</h3>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="featured-deal card border-primary">
+                    <div class="card-body">
+                        <h6 class="card-title text-primary">
+                            <i class="fas fa-bolt me-2"></i>Flash Sale
+                        </h6>
+                        <p class="card-text">Electronics up to 40% off</p>
+                        <a href="{% url 'product' %}" class="text-primary">Shop Now →</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="featured-deal card border-success">
+                    <div class="card-body">
+                        <h6 class="card-title text-success">
+                            <i class="fas fa-tag me-2"></i>Trending
+                        </h6>
+                        <p class="card-text">Latest Fashion Collection</p>
+                        <a href="{% url 'product' %}" class="text-success">Shop Now →</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="featured-deal card border-warning">
+                    <div class="card-body">
+                        <h6 class="card-title text-warning">
+                            <i class="fas fa-gift me-2"></i>Special Offers
+                        </h6>
+                        <p class="card-text">Home Decor & Furniture</p>
+                        <a href="{% url 'product' %}" class="text-warning">Shop Now →</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="featured-deal card border-danger">
+                    <div class="card-body">
+                        <h6 class="card-title text-danger">
+                            <i class="fas fa-star me-2"></i>Best Sellers
+                        </h6>
+                        <p class="card-text">Most Popular Products</p>
+                        <a href="{% url 'product' %}" class="text-danger">Shop Now →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .category-card {
+        border: 1px solid #e9ecef;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .category-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .category-card:hover .category-icon {
+        background-color: #f8f9fa !important;
+    }
+
+    .featured-deal {
+        border-width: 2px;
+        transition: all 0.3s ease;
+    }
+
+    .featured-deal:hover {
+        transform: scale(1.05);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+</style>
+{% endblock %}

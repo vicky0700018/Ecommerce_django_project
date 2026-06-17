@@ -10,7 +10,22 @@ from .models import CustomUser, OTP
 import uuid
 
 def home(request):
-   return render(request, 'base.html')
+   return render(request, 'home.html')
+
+def product(request):
+   return render(request, 'product.html')
+
+def category(request):
+   return render(request, 'category.html')
+
+def gallery(request):
+   return render(request, 'gallery.html')
+
+def about_us(request):
+   return render(request, 'about_us.html')
+
+def contact(request):
+   return render(request, 'contact.html')
 
 def register(request):
     if request.method == 'POST':
@@ -233,4 +248,13 @@ def login(request):
 def logout(request):
     auth_logout(request)
     messages.success(request, 'You have been logged out successfully!')
+    return redirect('home')
+
+def wishlist(request):
+    """Display wishlist page"""
+    return render(request, 'wishlist.html')
+
+def cart(request):
+    """Display shopping cart page"""
+    return render(request, 'cart.html')
     return redirect('home')

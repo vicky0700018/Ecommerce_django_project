@@ -1,0 +1,265 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Us - ShopSphere{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Page Header -->
+    <div class="row mb-5">
+        <div class="col-lg-12 text-center">
+            <h1 class="display-5 fw-bold">Contact Us</h1>
+            <p class="lead text-muted">We'd love to hear from you. Get in touch with our team today.</p>
+        </div>
+    </div>
+
+    <!-- Contact Info & Form Section -->
+    <div class="row g-5 mb-5">
+        <!-- Contact Information -->
+        <div class="col-lg-4">
+            <!-- Email -->
+            <div class="contact-info-card mb-4 p-4 bg-light rounded">
+                <div class="mb-3">
+                    <i class="fas fa-envelope text-primary" style="font-size: 2rem;"></i>
+                </div>
+                <h6 class="mb-2">Email</h6>
+                <p class="text-muted">
+                    <a href="mailto:info@shopsphere.com" class="text-decoration-none">info@shopsphere.com</a>
+                </p>
+                <p class="text-muted">
+                    <a href="mailto:support@shopsphere.com" class="text-decoration-none">support@shopsphere.com</a>
+                </p>
+            </div>
+
+            <!-- Phone -->
+            <div class="contact-info-card mb-4 p-4 bg-light rounded">
+                <div class="mb-3">
+                    <i class="fas fa-phone text-success" style="font-size: 2rem;"></i>
+                </div>
+                <h6 class="mb-2">Phone</h6>
+                <p class="text-muted">
+                    <a href="tel:+1234567890" class="text-decoration-none">+1 (234) 567-8900</a>
+                </p>
+                <p class="text-muted">
+                    <a href="tel:+0987654321" class="text-decoration-none">+0 (987) 654-3210</a>
+                </p>
+                <p class="text-muted small">Monday - Friday: 9AM - 6PM<br>Saturday: 10AM - 4PM</p>
+            </div>
+
+            <!-- Address -->
+            <div class="contact-info-card mb-4 p-4 bg-light rounded">
+                <div class="mb-3">
+                    <i class="fas fa-map-marker-alt text-danger" style="font-size: 2rem;"></i>
+                </div>
+                <h6 class="mb-2">Address</h6>
+                <p class="text-muted">
+                    ShopSphere Headquarters<br>
+                    123 Commerce Street<br>
+                    New York, NY 10001<br>
+                    United States
+                </p>
+            </div>
+
+            <!-- Business Hours -->
+            <div class="contact-info-card p-4 bg-light rounded">
+                <div class="mb-3">
+                    <i class="fas fa-clock text-info" style="font-size: 2rem;"></i>
+                </div>
+                <h6 class="mb-2">Business Hours</h6>
+                <ul class="list-unstyled text-muted small">
+                    <li class="mb-2">Monday - Friday: <strong>9:00 AM - 6:00 PM</strong></li>
+                    <li class="mb-2">Saturday: <strong>10:00 AM - 4:00 PM</strong></li>
+                    <li>Sunday: <strong>Closed</strong></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-5">
+                    <h5 class="card-title mb-4">Send us a Message</h5>
+                    <form>
+                        <!-- Name Row -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="firstName" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="firstName" placeholder="John" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="lastName" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="lastName" placeholder="Doe" required>
+                            </div>
+                        </div>
+
+                        <!-- Email Row -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" placeholder="john@example.com" required>
+                        </div>
+
+                        <!-- Phone Row -->
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" placeholder="+1 (234) 567-8900">
+                        </div>
+
+                        <!-- Subject Row -->
+                        <div class="mb-3">
+                            <label for="subject" class="form-label">Subject</label>
+                            <select class="form-select" id="subject" required>
+                                <option value="">Select a subject...</option>
+                                <option value="general">General Inquiry</option>
+                                <option value="order">Order Related</option>
+                                <option value="product">Product Question</option>
+                                <option value="complaint">Complaint</option>
+                                <option value="feedback">Feedback</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <!-- Message Row -->
+                        <div class="mb-4">
+                            <label for="message" class="form-label">Message</label>
+                            <textarea class="form-control" id="message" rows="5" placeholder="Type your message here..." required></textarea>
+                        </div>
+
+                        <!-- Checkbox -->
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="agree" required>
+                                <label class="form-check-label" for="agree">
+                                    I agree to the terms and conditions
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-paper-plane me-2"></i>Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="row mb-5 py-5 border-top">
+        <div class="col-lg-12">
+            <h3 class="mb-5 text-center">Frequently Asked Questions</h3>
+            <div class="accordion" id="faqAccordion">
+                <!-- FAQ Item 1 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                            What is your return policy?
+                        </button>
+                    </h2>
+                    <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            We offer a 30-day return policy for most items. If you're not satisfied with your purchase, 
+                            you can return it within 30 days of delivery for a full refund or exchange.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ Item 2 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                            How long does shipping take?
+                        </button>
+                    </h2>
+                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Standard shipping usually takes 5-7 business days. Expedited shipping options are available 
+                            at checkout for faster delivery (2-3 business days).
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ Item 3 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                            Do you ship internationally?
+                        </button>
+                    </h2>
+                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Yes, we ship to most countries worldwide. International shipping costs and delivery times 
+                            will be calculated at checkout based on your location.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ Item 4 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                            Are your payments secure?
+                        </button>
+                    </h2>
+                    <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Absolutely! We use SSL encryption and PCI compliance to ensure your payment information is 
+                            secure and protected at all times.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ Item 5 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                            How can I track my order?
+                        </button>
+                    </h2>
+                    <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Once your order is shipped, you'll receive a tracking number via email. You can use this number 
+                            to track your package in real-time.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Google Map Section (Optional) -->
+    <div class="row mb-5">
+        <div class="col-lg-12">
+            <h3 class="mb-4 text-center">Find Us on the Map</h3>
+            <div class="map-container rounded overflow-hidden" style="height: 400px; background: #e9ecef;">
+                <div class="d-flex align-items-center justify-content-center h-100">
+                    <div class="text-center">
+                        <i class="fas fa-map-marked-alt" style="font-size: 3rem; color: #ccc;"></i>
+                        <p class="text-muted mt-3">Google Map would be embedded here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .contact-info-card {
+        transition: all 0.3s ease;
+    }
+
+    .contact-info-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .accordion-button:not(.collapsed) {
+        background-color: #f8f9fa;
+        color: #007bff;
+    }
+
+    .accordion-button:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+    }
+</style>
+{% endblock %}

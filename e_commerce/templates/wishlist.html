@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+
+{% block title %}My Wishlist - ShopSphere{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Page Header -->
+    <div class="row mb-5">
+        <div class="col-lg-12">
+            <h1 class="display-5 fw-bold">
+                <i class="fas fa-heart text-danger me-3"></i>My Wishlist
+            </h1>
+            <p class="lead text-muted">Items you've saved for later</p>
+        </div>
+    </div>
+
+    <!-- Wishlist Items -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div id="wishlist-items-container">
+                <!-- Items will be added here via JavaScript -->
+                <div class="alert alert-info text-center py-5">
+                    <i class="fas fa-heart fa-3x text-muted mb-3"></i>
+                    <p class="lead">Your wishlist is empty</p>
+                    <p class="text-muted">Start adding products to your wishlist by clicking the heart icon!</p>
+                    <a href="{% url 'product' %}" class="btn btn-primary mt-3">
+                        <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
+                    </a>
+                </div>
+            </div>
+
+            <!-- Wishlist Table -->
+            <div id="wishlist-table" style="display:none;">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="wishlist-body">
+                            <!-- Items will be added here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="row mt-5">
+                    <div class="col-md-6">
+                        <a href="{% url 'product' %}" class="btn btn-outline-primary btn-lg w-100">
+                            <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-primary btn-lg w-100" id="add-all-to-cart">
+                            <i class="fas fa-shopping-cart me-2"></i>Add All to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .wishlist-item {
+        padding: 15px;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        background-color: #fff;
+        transition: all 0.3s ease;
+    }
+
+    .wishlist-item:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .wishlist-price {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    .remove-item {
+        cursor: pointer;
+        color: #dc3545;
+    }
+
+    .remove-item:hover {
+        color: #c82333;
+    }
+</style>
+
+<script>
+    // Products data
+    const wishlistProducts = [
+        { name: 'Premium Product 1', price: '₹4,199' },
+        { name: 'Premium Product 2', price: '₹6,699' },
+        { name: 'Premium Product 3', price: '₹3,399' },
+        { name: 'Premium Product 4', price: '₹7,499' },
+        { name: 'Premium Product 5', price: '₹4,999' },
+        { name: 'Premium Product 6', price: '₹5,899' }
+    ];
+
+    // Load wishlist from localStorage
+    function loadWishlist() {
+        const savedWishlist = localStorage.getItem('shopsphere_wishlist');
+        return savedWishlist ? JSON.parse(savedWishlist) : [];
+    }
+
+    // Display wishlist items
+    function displayWishlist() {
+        const wishlist = loadWishlist();
+        const container = document.getElementById('wishlist-items-container');
+        const table = document.getElementById('wishlist-table');
+        const tbody = document.getElementById('wishlist-body');
+
+        if (wishlist.length === 0) {
+            container.style.display = 'block';
+            table.style.display = 'none';
+        } else {
+            container.style.display = 'none';
+            table.style.display = 'block';
+
+            // Clear existing rows
+            tbody.innerHTML = '';
+
+            // Add items to table
+            wishlist.forEach((product, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div>
+                                <h6 class="mb-0">${product.name}</h6>
+                                <small class="text-muted">In stock</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="wishlist-price">${product.price}</span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-primary me-2 add-to-cart-btn" data-product="${product.name}" data-price="${product.price}">
+                            <i class="fas fa-shopping-cart me-1"></i>Add to Cart
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger remove-btn" data-index="${index}">
+                            <i class="fas fa-trash me-1"></i>Remove
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            // Add event listeners to remove buttons
+            document.querySelectorAll('.remove-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = this.getAttribute('data-index');
+                    removeFromWishlist(index);
+                });
+            });
+
+            // Add event listeners to add to cart buttons
+            document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const productName = this.getAttribute('data-product');
+                    const price = this.getAttribute('data-price');
+                    alert(productName + ' (' + price + ') added to cart!');
+                });
+            });
+        }
+    }
+
+    // Remove item from wishlist
+    function removeFromWishlist(index) {
+        const wishlist = loadWishlist();
+        const removed = wishlist.splice(index, 1);
+        localStorage.setItem('shopsphere_wishlist', JSON.stringify(wishlist));
+        alert(removed[0].name + ' removed from wishlist!');
+        displayWishlist();
+    }
+
+    // Add all to cart
+    document.addEventListener('DOMContentLoaded', function() {
+        const addAllBtn = document.getElementById('add-all-to-cart');
+        if (addAllBtn) {
+            addAllBtn.addEventListener('click', function() {
+                const wishlist = loadWishlist();
+                if (wishlist.length > 0) {
+                    alert(wishlist.length + ' items added to cart!');
+                } else {
+                    alert('Your wishlist is empty!');
+                }
+            });
+        }
+
+        // Display wishlist on page load
+        displayWishlist();
+    });
+</script>
+{% endblock %}

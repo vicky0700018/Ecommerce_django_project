@@ -1,0 +1,281 @@
+{% extends 'base.html' %}
+
+{% block title %}Gallery - ShopSphere{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Page Header -->
+    <div class="row mb-5">
+        <div class="col-lg-12 text-center">
+            <h1 class="display-5 fw-bold">Our Gallery</h1>
+            <p class="lead text-muted">See our products in action and get inspired</p>
+        </div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="row mb-5">
+        <div class="col-lg-12">
+            <div class="d-flex justify-content-center gap-2 flex-wrap">
+                <button class="btn btn-primary active" data-filter="all">
+                    <i class="fas fa-th me-2"></i>All
+                </button>
+                <button class="btn btn-outline-primary" data-filter="products">
+                    <i class="fas fa-box me-2"></i>Products
+                </button>
+                <button class="btn btn-outline-primary" data-filter="lifestyle">
+                    <i class="fas fa-heart me-2"></i>Lifestyle
+                </button>
+                <button class="btn btn-outline-primary" data-filter="customer">
+                    <i class="fas fa-users me-2"></i>Customer Reviews
+                </button>
+                <button class="btn btn-outline-primary" data-filter="events">
+                    <i class="fas fa-calendar me-2"></i>Events
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gallery Grid -->
+    <div class="row g-4">
+        <!-- Gallery Item 1 -->
+        <div class="col-md-6 col-lg-4 gallery-item" data-filter="products">
+            <div class="gallery-card">
+                <div class="gallery-image bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                    <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
+                </div>
+                <div class="overlay">
+                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#galleryModal1">
+                        <i class="fas fa-search-plus"></i> View
+                    </button>
+                </div>
+                <div class="gallery-info p-3">
+                    <h6 class="mb-1">Product Photography</h6>
+                    <small class="text-muted">Professional product shots</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gallery Item 2 -->
+        <div class="col-md-6 col-lg-4 gallery-item" data-filter="lifestyle">
+            <div class="gallery-card">
+                <div class="gallery-image bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                    <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
+                </div>
+                <div class="overlay">
+                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#galleryModal2">
+                        <i class="fas fa-search-plus"></i> View
+                    </button>
+                </div>
+                <div class="gallery-info p-3">
+                    <h6 class="mb-1">Lifestyle Moments</h6>
+                    <small class="text-muted">Daily lifestyle inspiration</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gallery Item 3 -->
+        <div class="col-md-6 col-lg-4 gallery-item" data-filter="customer">
+            <div class="gallery-card">
+                <div class="gallery-image bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                    <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
+                </div>
+                <div class="overlay">
+                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#galleryModal3">
+                        <i class="fas fa-search-plus"></i> View
+                    </button>
+                </div>
+                <div class="gallery-info p-3">
+                    <h6 class="mb-1">Customer Reviews</h6>
+                    <small class="text-muted">Happy customers sharing their experience</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gallery Item 4 -->
+        <div class="col-md-6 col-lg-4 gallery-item" data-filter="products">
+            <div class="gallery-card">
+                <div class="gallery-image bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                    <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
+                </div>
+                <div class="overlay">
+                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#galleryModal4">
+                        <i class="fas fa-search-plus"></i> View
+                    </button>
+                </div>
+                <div class="gallery-info p-3">
+                    <h6 class="mb-1">New Collections</h6>
+                    <small class="text-muted">Latest product arrivals</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gallery Item 5 -->
+        <div class="col-md-6 col-lg-4 gallery-item" data-filter="events">
+            <div class="gallery-card">
+                <div class="gallery-image bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                    <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
+                </div>
+                <div class="overlay">
+                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#galleryModal5">
+                        <i class="fas fa-search-plus"></i> View
+                    </button>
+                </div>
+                <div class="gallery-info p-3">
+                    <h6 class="mb-1">Store Events</h6>
+                    <small class="text-muted">Special events and promotions</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gallery Item 6 -->
+        <div class="col-md-6 col-lg-4 gallery-item" data-filter="lifestyle">
+            <div class="gallery-card">
+                <div class="gallery-image bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                    <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
+                </div>
+                <div class="overlay">
+                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#galleryModal6">
+                        <i class="fas fa-search-plus"></i> View
+                    </button>
+                </div>
+                <div class="gallery-info p-3">
+                    <h6 class="mb-1">Fashion & Style</h6>
+                    <small class="text-muted">Trending fashion styles</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gallery Item 7 -->
+        <div class="col-md-6 col-lg-4 gallery-item" data-filter="customer">
+            <div class="gallery-card">
+                <div class="gallery-image bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                    <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
+                </div>
+                <div class="overlay">
+                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#galleryModal7">
+                        <i class="fas fa-search-plus"></i> View
+                    </button>
+                </div>
+                <div class="gallery-info p-3">
+                    <h6 class="mb-1">Unboxing Videos</h6>
+                    <small class="text-muted">Product unboxing experiences</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gallery Item 8 -->
+        <div class="col-md-6 col-lg-4 gallery-item" data-filter="products">
+            <div class="gallery-card">
+                <div class="gallery-image bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                    <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
+                </div>
+                <div class="overlay">
+                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#galleryModal8">
+                        <i class="fas fa-search-plus"></i> View
+                    </button>
+                </div>
+                <div class="gallery-info p-3">
+                    <h6 class="mb-1">Studio Collection</h6>
+                    <small class="text-muted">Professional studio shots</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gallery Item 9 -->
+        <div class="col-md-6 col-lg-4 gallery-item" data-filter="events">
+            <div class="gallery-card">
+                <div class="gallery-image bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                    <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
+                </div>
+                <div class="overlay">
+                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#galleryModal9">
+                        <i class="fas fa-search-plus"></i> View
+                    </button>
+                </div>
+                <div class="gallery-info p-3">
+                    <h6 class="mb-1">Launch Events</h6>
+                    <small class="text-muted">Product launch celebrations</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .gallery-item {
+        transition: all 0.3s ease;
+    }
+
+    .gallery-card {
+        position: relative;
+        overflow: hidden;
+        border-radius: 8px;
+        background: white;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .gallery-card:hover {
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .gallery-image {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .gallery-card:hover .gallery-image {
+        background-color: #f1f1f1 !important;
+    }
+
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 10;
+    }
+
+    .gallery-card:hover .overlay {
+        opacity: 1;
+    }
+
+    .gallery-info {
+        background: white;
+        border-top: 1px solid #e9ecef;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterButtons = document.querySelectorAll('[data-filter]');
+        const galleryItems = document.querySelectorAll('.gallery-item');
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const filter = this.getAttribute('data-filter');
+
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+
+                galleryItems.forEach(item => {
+                    if (filter === 'all' || item.getAttribute('data-filter') === filter) {
+                        item.style.display = 'block';
+                        setTimeout(() => item.style.opacity = '1', 0);
+                    } else {
+                        item.style.opacity = '0';
+                        setTimeout(() => item.style.display = 'none', 300);
+                    }
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

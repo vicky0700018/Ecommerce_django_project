@@ -222,27 +222,27 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{% url 'product' %}">
                                 <i class="fas fa-box"></i> Product
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{% url 'category' %}">
                                 <i class="fas fa-list"></i> Category
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{% url 'gallery' %}">
                                 <i class="fas fa-images"></i> Gallery
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{% url 'about_us' %}">
                                 <i class="fas fa-info-circle"></i> About Us
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{% url 'contact' %}">
                                 <i class="fas fa-envelope"></i> Contact
                             </a>
                         </li>
@@ -252,16 +252,16 @@
                 <!-- Right Side Icons -->
                 <div class="navbar-icons ms-auto">
                     <!-- Wishlist Icon -->
-                    <button class="icon-btn" title="Wishlist">
+                    <a href="{% url 'wishlist' %}" class="icon-btn" title="Wishlist">
                         <i class="fas fa-heart"></i>
-                        <span class="badge-count" style="display: none;">0</span>
-                    </button>
+                        <span class="badge-count" id="wishlist-count" style="display: none;">0</span>
+                    </a>
 
                     <!-- Cart Icon -->
-                    <button class="icon-btn" title="Shopping Cart">
+                    <a href="{% url 'cart' %}" class="icon-btn" title="Shopping Cart">
                         <i class="fas fa-shopping-cart"></i>
-                        <span class="badge-count" style="display: none;">0</span>
-                    </button>
+                        <span class="badge-count" id="cart-count" style="display: none;">0</span>
+                    </a>
 
                     <!-- Profile Icon with Dropdown -->
                     {% if user.is_authenticated %}
@@ -356,6 +356,41 @@
 
     <!-- Bootstrap 5.3 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    
+    <script>
+        // Update cart and wishlist counts in navbar
+        function updateCounts() {
+            // Update cart count
+            const cartJSON = localStorage.getItem('cart');
+            const cart = cartJSON ? JSON.parse(cartJSON) : [];
+            const cartCount = document.getElementById('cart-count');
+            
+            if (cart.length > 0) {
+                cartCount.textContent = cart.length;
+                cartCount.style.display = 'flex';
+            } else {
+                cartCount.style.display = 'none';
+            }
+
+            // Update wishlist count
+            const wishlistJSON = localStorage.getItem('shopsphere_wishlist');
+            const wishlist = wishlistJSON ? JSON.parse(wishlistJSON) : [];
+            const wishlistCount = document.getElementById('wishlist-count');
+            
+            if (wishlist.length > 0) {
+                wishlistCount.textContent = wishlist.length;
+                wishlistCount.style.display = 'flex';
+            } else {
+                wishlistCount.style.display = 'none';
+            }
+        }
+
+        // Update counts on page load
+        document.addEventListener('DOMContentLoaded', updateCounts);
+        
+        // Listen for storage changes (when updated in other tabs)
+        window.addEventListener('storage', updateCounts);
+    </script>
     
     {% block extra_js %}{% endblock %}
 </body>

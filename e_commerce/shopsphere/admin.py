@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.safestring import mark_safe
 from django.utils import timezone
-from .models import CustomUser, OTP
+from .models import CustomUser, OTP, Category
 
 class CustomUserAdmin(UserAdmin):
     # Completely redefine fieldsets to move 'email'
@@ -80,3 +80,12 @@ class OTPAdmin(admin.ModelAdmin):
 
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(OTP, OTPAdmin)
+
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'slug', 'icon_class', 'created_at')
+    prepopulated_fields = {'slug': ('name',)}
+    search_fields = ('name', 'description')
+    list_filter = ('created_at',)
+

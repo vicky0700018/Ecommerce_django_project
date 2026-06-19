@@ -65,3 +65,22 @@ class OTP(models.Model):
             self.save()
             return True
         return False
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=150, unique=True, help_text="Unique slug for the category URL")
+    description = models.TextField(blank=True)
+    icon_class = models.CharField(max_length=50, blank=True, help_text="FontAwesome icon class (e.g., 'fas fa-laptop')")
+    image = models.ImageField(upload_to='categories/', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Category'
+        verbose_name_plural = 'Categories'
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+

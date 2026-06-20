@@ -1,9 +1,13 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}ShopSphere - Your Online Store{% endblock %}</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
     
     <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -38,6 +42,31 @@
             font-weight: 700;
             font-size: 1.5rem;
             color: var(--primary-color) !important;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand:hover {
+            transform: scale(1.05);
+        }
+
+        .navbar-brand img {
+            height: 60px;
+            width: auto;
+        
+        }
+
+        .navbar-brand:hover img {
+            transform: scale(1.1);
+        }
+
+        .brand-text {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #007bff;
+            letter-spacing: -0.5px;
         }
         
         /* Navigation Links Styling */
@@ -167,11 +196,76 @@
             color: #666;
         }
         
+        /* Page Header Banner */
+        .page-header-banner {
+            width: 100%;
+            height: 300px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            margin-top: 0;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .page-header-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        /* Page Header Section */
+        .page-header-section {
+            background: linear-gradient(135deg, #1a7a6e 0%, #2a9a8e 100%);
+            padding: 60px 0;
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .page-header-subtitle {
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        .page-header-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: white;
+            letter-spacing: -1px;
+        }
+        
+        .page-header-description {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
         footer {
             background-color: #f8f9fa;
             border-top: 1px solid #dee2e6;
             margin-top: 3rem;
             padding: 2rem 0;
+        }
+
+        .footer-logo {
+            height: 50px;
+            width: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .footer-logo:hover {
+            transform: scale(1.05);
         }
 
         /* Responsive Design */
@@ -204,7 +298,8 @@
             <div class="d-flex w-100 align-items-center">
                 <!-- Brand (Left) -->
                 <a class="navbar-brand me-auto" href="{% url 'home' %}">
-                    <i class="fas fa-shopping-bag"></i> ShopSphere
+                    <img src="{% static 'images/logo.png' %}" alt="ShopSphere Logo">
+                   
                 </a>
 
                 <!-- Toggler Button for Mobile -->
@@ -299,6 +394,11 @@
         </div>
     </nav>
 
+    <!-- Page Header Banner (for non-home pages) -->
+    {% block page_header_banner %}
+    <!-- Banner placeholder - override in child templates if needed -->
+    {% endblock %}
+
     <!-- Messages Display -->
     {% if messages %}
     <div class="container mt-3">
@@ -325,7 +425,11 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-4 mb-3 mb-md-0">
-                    <h5 class="mb-3">About ShopSphere</h5>
+                    <div class="mb-3">
+                        <a href="{% url 'home' %}" class="d-inline-block">
+                            <img src="{% static 'images/logo.png' %}" alt="ShopSphere Logo" class="footer-logo">
+                        </a>
+                    </div>
                     <p class="text-muted">Your trusted online marketplace for quality products at great prices.</p>
                 </div>
                 <div class="col-md-4 mb-3 mb-md-0">

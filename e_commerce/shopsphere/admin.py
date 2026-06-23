@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.safestring import mark_safe
 from django.utils import timezone
-from .models import CustomUser, OTP, Category
+from .models import CustomUser, OTP, Category, Product, Announcement
 
 class CustomUserAdmin(UserAdmin):
     # Completely redefine fieldsets to move 'email'
@@ -88,4 +88,23 @@ class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     search_fields = ('name', 'description')
     list_filter = ('created_at',)
+
+
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('name', 'category', 'price', 'discount_price', 'stock', 'is_available', 'created_at')
+    list_filter = ('is_available', 'category', 'created_at')
+    search_fields = ('name', 'description')
+    prepopulated_fields = {'slug': ('name',)}
+    list_editable = ('price', 'discount_price', 'stock', 'is_available')
+
+
+@admin.register(Announcement)
+class AnnouncementAdmin(admin.ModelAdmin):
+    list_display = ('text', 'is_active', 'created_at')
+    list_filter = ('is_active', 'created_at')
+    search_fields = ('text',)
+    list_editable = ('is_active',)
+
+
 

@@ -84,3 +84,44 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+
+class Product(models.Model):
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=200, unique=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
+    description = models.TextField(blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    discount_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    stock = models.IntegerField(default=0)
+    is_available = models.BooleanField(default=True)
+    image = models.ImageField(upload_to='products/', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ('-created_at',)
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def final_price(self):
+        if self.discount_price:
+            return self.discount_price
+        return self.price
+
+
+class Announcement(models.Model):
+    text = models.CharField(max_length=255, help_text="Announcement text (e.g. Free Shipping All Over India)")
+    link = models.URLField(blank=True, null=True, help_text="Optional link when the bar is clicked")
+    is_active = models.BooleanField(default=True, help_text="Designate if this announcement is displayed")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('-created_at',)
+
+    def __str__(self):
+        return self.text
+
+
+

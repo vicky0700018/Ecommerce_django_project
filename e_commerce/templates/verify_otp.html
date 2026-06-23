@@ -16,34 +16,24 @@
 
                 <div class="card-body p-5">
                     {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                                <i class="fas fa-info-circle"></i> {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        {% endfor %}
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        <i class="fas fa-info-circle"></i> {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endfor %}
                     {% endif %}
 
                     <form method="POST" action="{% url 'verify_otp' %}" class="needs-validation">
                         {% csrf_token %}
-                        
+
                         <div class="mb-4">
                             <label for="otp_code" class="form-label fw-bold">
                                 <i class="fas fa-lock"></i> Enter OTP Code
                             </label>
-                            <input 
-                                type="text" 
-                                class="form-control form-control-lg text-center font-monospace" 
-                                id="otp_code" 
-                                name="otp_code" 
-                                placeholder="000000"
-                                maxlength="6"
-                                inputmode="numeric"
-                                pattern="[0-9]{6}"
-                                required
-                                autocomplete="off"
-                                autofocus
-                            >
+                            <input type="text" class="form-control form-control-lg text-center font-monospace"
+                                id="otp_code" name="otp_code" placeholder="000000" maxlength="6" inputmode="numeric"
+                                pattern="[0-9]{6}" required autocomplete="off" autofocus>
                             <small class="form-text text-muted d-block mt-2">
                                 <i class="fas fa-clock"></i> Your OTP is valid for 10 minutes
                             </small>
@@ -89,7 +79,7 @@
 
             <div class="text-center mt-4">
                 <p class="text-muted small">
-                    <a href="{% url 'register' %}" class="text-decoration-none">Back to Registration</a> | 
+                    <a href="{% url 'register' %}" class="text-decoration-none">Back to Registration</a> |
                     <a href="{% url 'login' %}" class="text-decoration-none">Go to Login</a>
                 </p>
             </div>
@@ -147,12 +137,12 @@
 
 <script>
     // Auto-format OTP input to only accept numbers
-    document.getElementById('otp_code').addEventListener('input', function(e) {
+    document.getElementById('otp_code').addEventListener('input', function (e) {
         this.value = this.value.replace(/[^0-9]/g, '');
     });
 
     // Auto-submit if 6 digits entered
-    document.getElementById('otp_code').addEventListener('input', function(e) {
+    document.getElementById('otp_code').addEventListener('input', function (e) {
         if (this.value.length === 6) {
             // Optional: you can auto-submit here
             // this.form.submit();

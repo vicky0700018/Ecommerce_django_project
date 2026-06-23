@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Our Mission - ShopSphere{% endblock %}
+
+{% block page_header_banner %}
+<div class="container-fluid page-header-section">
+    <div class="container">
+        <p class="page-header-subtitle">SHOPSPHERE - ABOUT</p>
+        <h1 class="page-header-title">Our Mission</h1>
+        <p class="page-header-description">Empowering customers with quality products and standard services.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="card border-0 shadow-sm p-4 p-md-5">
+                <h2 class="mb-4">Empowering Online Retail</h2>
+                <p class="text-muted mb-4 lead">
+                    Our mission is to empower customers with easy access to high-quality products at competitive prices, while maintaining the highest standards of customer support and satisfaction.
+                </p>
+                <p class="text-muted mb-4">
+                    At ShopSphere, we strive to build a seamless e-commerce platform that connects consumers directly with the best craftsmanship and items from around the world. We commit to continuous innovation, fast delivery timelines, and secure online payment solutions to make your shopping experience convenient and delightful.
+                </p>
+                <div class="mt-4">
+                    <a href="{% url 'product' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-shopping-bag me-2"></i>Explore Products
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

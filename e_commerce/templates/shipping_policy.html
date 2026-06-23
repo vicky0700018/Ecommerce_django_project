@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Shipping Policy - ShopSphere{% endblock %}
+
+{% block page_header_banner %}
+<div class="container-fluid page-header-section">
+    <div class="container">
+        <p class="page-header-subtitle">SHOPSPHERE - CUSTOMER CARE</p>
+        <h1 class="page-header-title">Shipping Policy</h1>
+        <p class="page-header-description">Fast, secure, and reliable shipping. Learn about our delivery times and shipping rates.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="card border-0 shadow-sm p-4 p-md-5">
+                <h2 class="mb-4">1. Order Processing</h2>
+                <p class="text-muted mb-4">
+                    All orders are processed within **1-2 business days**. Orders are not shipped or delivered on weekends or holidays. If we are experiencing a high volume of orders, shipments may be delayed by a few days. Please allow additional days in transit for delivery.
+                </p>
+
+                <h2 class="mb-4">2. Shipping Rates and Delivery Estimates</h2>
+                <p class="text-muted mb-4">
+                    Shipping charges for your order will be calculated and displayed at checkout. Standard shipping takes **3-5 business days** depending on the destination region. Express shipping options are also available for expedited shipping in 1-2 business days.
+                </p>
+
+                <h2 class="mb-4">3. Shipment Confirmation and Order Tracking</h2>
+                <p class="text-muted mb-4">
+                    You will receive a shipment confirmation email once your order has shipped containing your tracking number(s). The tracking number will be active within 24 hours.
+                </p>
+
+                <h2 class="mb-4">4. Customs, Duties, and Taxes</h2>
+                <p class="text-muted mb-4">
+                    ShopSphere is not responsible for any customs and taxes applied to your order. All fees imposed during or after shipping are the responsibility of the customer (tariffs, taxes, etc.).
+                </p>
+
+                <h2 class="mb-4">5. Damages</h2>
+                <p class="text-muted mb-0">
+                    ShopSphere is not liable for any products damaged or lost during shipping. If you received your order damaged, please contact the shipment carrier or our support team to file a claim. Please save all packaging material and damaged goods before filing a claim.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

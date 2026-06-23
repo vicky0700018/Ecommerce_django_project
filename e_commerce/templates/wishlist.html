@@ -1,6 +1,17 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}My Wishlist - ShopSphere{% endblock %}
+
+{% block page_header_banner %}
+<div class="container-fluid page-header-section">
+    <div class="container">
+        <p class="page-header-subtitle">SHOPSPHERE - WISHLIST</p>
+        <h1 class="page-header-title">My Wishlist</h1>
+        <p class="page-header-description">Your favorite items saved for later. Add them to cart when you're ready to purchase.</p>
+    </div>
+</div>
+{% endblock %}
 
 {% block content %}
 <div class="container py-5">
@@ -162,12 +173,30 @@
                 });
             });
 
+            // Add helper functions for cart
+            function loadCart() {
+                const savedCart = localStorage.getItem('cart');
+                return savedCart ? JSON.parse(savedCart) : [];
+            }
+
+            function saveCart(cart) {
+                localStorage.setItem('cart', JSON.stringify(cart));
+                if (typeof updateCounts === 'function') {
+                    updateCounts();
+                }
+            }
+
             // Add event listeners to add to cart buttons
             document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const productName = this.getAttribute('data-product');
                     const price = this.getAttribute('data-price');
-                    alert(productName + ' (' + price + ') added to cart!');
+                    
+                    const cart = loadCart();
+                    cart.push({ name: productName, price: price });
+                    saveCart(cart);
+                    
+                    alert(productName + ' added to cart!');
                 });
             });
         }
@@ -189,7 +218,17 @@
             addAllBtn.addEventListener('click', function() {
                 const wishlist = loadWishlist();
                 if (wishlist.length > 0) {
+                    const cart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : [];
+                    wishlist.forEach(item => {
+                        cart.push({ name: item.name, price: item.price });
+                    });
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    localStorage.setItem('shopsphere_wishlist', JSON.stringify([]));
+                    if (typeof updateCounts === 'function') {
+                        updateCounts();
+                    }
                     alert(wishlist.length + ' items added to cart!');
+                    displayWishlist();
                 } else {
                     alert('Your wishlist is empty!');
                 }

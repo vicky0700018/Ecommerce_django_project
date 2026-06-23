@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Orders - ShopSphere{% endblock %}
+
+{% block page_header_banner %}
+<div class="container-fluid page-header-section">
+    <div class="container">
+        <p class="page-header-subtitle">SHOPSPHERE - ACCOUNT</p>
+        <h1 class="page-header-title">My Orders</h1>
+        <p class="page-header-description">Track your purchases and view past order history.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Sidebar Navigation -->
+        <div class="col-lg-3 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        {% if user.profile_image %}
+                            <img src="{{ user.profile_image.url }}" alt="{{ user.full_name }}" class="rounded-circle border border-primary p-1" style="width: 120px; height: 120px; object-fit: cover;">
+                        {% else %}
+                            <i class="fas fa-user-circle text-muted" style="font-size: 100px;"></i>
+                        {% endif %}
+                    </div>
+                    <h5 class="fw-bold mb-1">{{ user.full_name }}</h5>
+                    <p class="text-muted small mb-4">{{ user.email }}</p>
+                    
+                    <div class="list-group list-group-flush text-start">
+                        <a href="{% url 'profile' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-user me-2"></i>My Profile
+                        </a>
+                        <a href="{% url 'orders' %}" class="list-group-item list-group-item-action active">
+                            <i class="fas fa-box-open me-2"></i>My Orders
+                        </a>
+                        <a href="{% url 'cart' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-shopping-cart me-2"></i>My Cart
+                        </a>
+                        <a href="{% url 'logout' %}" class="list-group-item list-group-item-action text-danger">
+                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders List Content -->
+        <div class="col-lg-9">
+            <!-- Order Success Alert Box -->
+            <div id="order-alert-container" class="animate-fade-in mb-3"></div>
+
+            <div class="card border-0 shadow-sm p-4 p-md-5">
+                <h3 class="mb-4 fw-bold">Order History</h3>
+                
+                <div class="table-responsive">
+                    <table class="table align-middle table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Date</th>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-tbody">
+                            <!-- Injected by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .animate-fade-in {
+        animation: fadeIn 0.4s ease-out;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. Check for success alert from checkout redirect
+        const successAlert = sessionStorage.getItem('order_success_alert');
+        if (successAlert) {
+            const alertBox = document.getElementById('order-alert-container');
+            alertBox.innerHTML = `
+                <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm rounded-3 py-3" role="alert">
+                    <i class="fas fa-check-circle me-2 fs-5"></i>${successAlert}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+            // Clear from sessionStorage
+            sessionStorage.removeItem('order_success_alert');
+        }
+
+        // 2. Initialize orders from localStorage or default mock database
+        const defaultMockOrders = [
+            { id: '#ORD-8273', date: 'June 18, 2026', product: 'Wireless Controller', price: '₹3,999.00', status: 'Delivered' },
+            { id: '#ORD-6752', date: 'June 15, 2026', product: 'Shreelekha KT87 Saree', price: '₹1,100.00', status: 'Delivered' },
+            { id: '#ORD-5491', date: 'June 10, 2026', product: 'Mechanical Keyboard', price: '₹5,999.00', status: 'Delivered' }
+        ];
+
+        let savedOrders = localStorage.getItem('shopsphere_orders');
+        if (!savedOrders) {
+            savedOrders = JSON.stringify(defaultMockOrders);
+            localStorage.setItem('shopsphere_orders', savedOrders);
+        }
+
+        const orders = JSON.parse(savedOrders);
+        const tbody = document.getElementById('orders-tbody');
+        tbody.innerHTML = '';
+
+        if (orders.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-muted">No orders found.</td></tr>`;
+            return;
+        }
+
+        orders.forEach(order => {
+            let statusBadge = '';
+            if (order.status === 'Delivered') {
+                statusBadge = `<span class="badge bg-success py-2 px-3 rounded-pill"><i class="fas fa-check-circle me-1"></i>Delivered</span>`;
+            } else if (order.status === 'Processing') {
+                statusBadge = `<span class="badge bg-primary py-2 px-3 rounded-pill"><i class="fas fa-spinner fa-spin me-1"></i>Processing</span>`;
+            } else {
+                statusBadge = `<span class="badge bg-warning py-2 px-3 rounded-pill">${order.status}</span>`;
+            }
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="fw-bold text-primary font-monospace">${order.id}</td>
+                <td class="text-secondary">${order.date}</td>
+                <td>
+                    <div class="fw-semibold text-dark">${order.product}</div>
+                </td>
+                <td class="font-monospace fw-bold text-dark">${order.price}</td>
+                <td>${statusBadge}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    });
+</script>
+{% endblock %}

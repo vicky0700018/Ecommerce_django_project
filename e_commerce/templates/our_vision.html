@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Our Vision - ShopSphere{% endblock %}
+
+{% block page_header_banner %}
+<div class="container-fluid page-header-section">
+    <div class="container">
+        <p class="page-header-subtitle">SHOPSPHERE - ABOUT</p>
+        <h1 class="page-header-title">Our Vision</h1>
+        <p class="page-header-description">Setting standards in customer-centric online shopping.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="card border-0 shadow-sm p-4 p-md-5">
+                <h2 class="mb-4">Our Vision for the Future</h2>
+                <p class="text-muted mb-4 lead">
+                    Our vision is to become the world's most trusted, sustainable, and customer-friendly online shopping platform, recognized for our commitment to quality, innovation, and environmental responsibility.
+                </p>
+                <p class="text-muted mb-4">
+                    We envision a future where e-commerce is entirely clean, efficient, and accessible to anyone, anywhere. By leveraging next-generation logistics, green packing practices, and modern design standards, we intend to revolutionize how people discover and purchase products.
+                </p>
+                <div class="mt-4">
+                    <a href="{% url 'about_us' %}" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-info-circle me-2"></i>Learn About Our Story
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

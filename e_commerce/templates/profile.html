@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile - ShopSphere{% endblock %}
+
+{% block page_header_banner %}
+<div class="container-fluid page-header-section">
+    <div class="container">
+        <p class="page-header-subtitle">SHOPSPHERE - ACCOUNT</p>
+        <h1 class="page-header-title">My Profile</h1>
+        <p class="page-header-description">View and update your personal details and account settings.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Sidebar Navigation -->
+        <div class="col-lg-3 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        {% if user.profile_image %}
+                            <img src="{{ user.profile_image.url }}" alt="{{ user.full_name }}" class="rounded-circle border border-primary p-1" style="width: 120px; height: 120px; object-fit: cover;">
+                        {% else %}
+                            <i class="fas fa-user-circle text-muted" style="font-size: 100px;"></i>
+                        {% endif %}
+                    </div>
+                    <h5 class="fw-bold mb-1">{{ user.full_name }}</h5>
+                    <p class="text-muted small mb-4">{{ user.email }}</p>
+                    
+                    <div class="list-group list-group-flush text-start">
+                        <a href="{% url 'profile' %}" class="list-group-item list-group-item-action active">
+                            <i class="fas fa-user me-2"></i>My Profile
+                        </a>
+                        <a href="{% url 'orders' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-box-open me-2"></i>My Orders
+                        </a>
+                        <a href="{% url 'cart' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-shopping-cart me-2"></i>My Cart
+                        </a>
+                        <a href="{% url 'logout' %}" class="list-group-item list-group-item-action text-danger">
+                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Form Content -->
+        <div class="col-lg-9">
+            <div class="card border-0 shadow-sm p-4 p-md-5">
+                <h3 class="mb-4 fw-bold">Personal Information</h3>
+                
+                <form method="POST" action="{% url 'profile' %}" enctype="multipart/form-data" class="needs-validation">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="full_name" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="full_name" name="full_name" value="{{ user.full_name }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" readonly disabled>
+                            <small class="text-muted">Email cannot be changed.</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="mobile_no" class="form-label">Mobile Number</label>
+                            <input type="text" class="form-control" id="mobile_no" name="mobile_no" value="{{ user.mobile_no }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="alternate_mobile_no" class="form-label">Alternate Mobile Number</label>
+                            <input type="text" class="form-control" id="alternate_mobile_no" name="alternate_mobile_no" value="{{ user.alternate_mobile_no|default:'' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="gender" class="form-label">Gender</label>
+                            <select class="form-select" id="gender" name="gender">
+                                <option value="" {% if not user.gender %}selected{% endif %}>Select Gender</option>
+                                <option value="Male" {% if user.gender == 'Male' %}selected{% endif %}>Male</option>
+                                <option value="Female" {% if user.gender == 'Female' %}selected{% endif %}>Female</option>
+                                <option value="Other" {% if user.gender == 'Other' %}selected{% endif %}>Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="dob" class="form-label">Date of Birth</label>
+                            <input type="date" class="form-control" id="dob" name="dob" value="{{ user.dob|date:'Y-m-d' }}">
+                        </div>
+                        <div class="col-12">
+                            <label for="address" class="form-label">Shipping Address</label>
+                            <textarea class="form-control" id="address" name="address" rows="3">{{ user.address }}</textarea>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="profile_image" class="form-label">Profile Image</label>
+                            <input type="file" class="form-control" id="profile_image" name="profile_image">
+                        </div>
+                        <div class="col-12 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,6 +1,17 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Products - ShopSphere{% endblock %}
+
+{% block page_header_banner %}
+<div class="container-fluid page-header-section">
+    <div class="container">
+        <p class="page-header-subtitle">SHOPSPHERE - PRODUCTS</p>
+        <h1 class="page-header-title">Our Collection</h1>
+        <p class="page-header-description">Discover our exquisite collection of traditional and contemporary products crafted with love and precision.</p>
+    </div>
+</div>
+{% endblock %}
 
 {% block content %}
 <div class="container py-5">
@@ -11,12 +22,15 @@
             <p class="lead text-muted">Explore our wide range of premium products</p>
         </div>
         <div class="col-lg-4">
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search products...">
-                <button class="btn btn-primary" type="button">
+            <form action="{% url 'product' %}" method="get" class="input-group">
+                {% if selected_category %}
+                    <input type="hidden" name="category" value="{{ selected_category }}">
+                {% endif %}
+                <input type="text" name="q" class="form-control" placeholder="Search products..." value="{{ search_query|default:'' }}">
+                <button class="btn btn-primary" type="submit">
                     <i class="fas fa-search"></i>
                 </button>
-            </div>
+            </form>
         </div>
     </div>
 
@@ -27,11 +41,15 @@
                 <div class="card-body">
                     <h6 class="card-title">Filter by Category</h6>
                     <div class="list-group list-group-flush">
-                        <a href="#" class="list-group-item list-group-item-action">Electronics</a>
-                        <a href="#" class="list-group-item list-group-item-action">Fashion</a>
-                        <a href="#" class="list-group-item list-group-item-action">Home & Living</a>
-                        <a href="#" class="list-group-item list-group-item-action">Sports</a>
-                        <a href="#" class="list-group-item list-group-item-action">Books</a>
+                        <a href="{% url 'product' %}{% if search_query %}?q={{ search_query }}{% endif %}" class="list-group-item list-group-item-action {% if not selected_category %}active{% endif %}">
+                            All Categories
+                        </a>
+                        {% for cat in categories %}
+                            <a href="{% url 'product' %}?category={{ cat.slug }}{% if search_query %}&q={{ search_query }}{% endif %}" 
+                               class="list-group-item list-group-item-action {% if selected_category == cat.slug %}active{% endif %}">
+                                {{ cat.name }}
+                            </a>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -51,14 +69,19 @@
         <div class="col-md-9">
             <!-- Products Grid -->
             <div class="row g-4">
-                <!-- Product Card 1 -->
+                {% for product in products %}
+                <!-- Product Card -->
                 <div class="col-md-6 col-lg-4">
                     <div class="product-card card h-100">
                         <div class="product-image bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
-                            <i class="fas fa-box-open" style="font-size: 3rem; color: #ccc;"></i>
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                            {% else %}
+                                <i class="fas fa-box-open" style="font-size: 3rem; color: #ccc;"></i>
+                            {% endif %}
                         </div>
                         <div class="card-body">
-                            <h6 class="card-title">Premium Product 1</h6>
+                            <h6 class="card-title">{{ product.name }}</h6>
                             <div class="mb-2">
                                 <span class="text-warning">
                                     <i class="fas fa-star"></i>
@@ -69,14 +92,21 @@
                                 </span>
                                 <small class="text-muted ms-2">(125 reviews)</small>
                             </div>
-                            <p class="text-muted small">High-quality product with excellent features</p>
+                            <p class="text-muted small">{{ product.description|truncatewords:15 }}</p>
                             <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0 text-primary">₹4,199</h5>
+                                <h5 class="mb-0 text-primary">
+                                    {% if product.discount_price %}
+                                        <span class="text-decoration-line-through text-muted small me-1">₹{{ product.price }}</span>
+                                        ₹{{ product.discount_price }}
+                                    {% else %}
+                                        ₹{{ product.price }}
+                                    {% endif %}
+                                </h5>
                                 <div class="d-flex gap-2">
-                                    <button class="btn btn-sm btn-outline-danger wishlist-btn" type="button" data-product="Premium Product 1">
+                                    <button class="btn btn-sm btn-outline-danger wishlist-btn" type="button" data-product="{{ product.name }}" data-price="₹{{ product.final_price }}" data-image="{% if product.image %}{{ product.image.url }}{% endif %}">
                                         <i class="far fa-heart"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-primary add-to-cart-btn" type="button" data-product="Premium Product 1" data-price="₹4,199">
+                                    <button class="btn btn-sm btn-primary add-to-cart-btn" type="button" data-product="{{ product.name }}" data-price="₹{{ product.final_price }}" data-image="{% if product.image %}{{ product.image.url }}{% endif %}">
                                         <i class="fas fa-shopping-cart"></i> Add
                                     </button>
                                 </div>
@@ -84,176 +114,14 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Product Card 2 -->
-                <div class="col-md-6 col-lg-4">
-                    <div class="product-card card h-100">
-                        <div class="product-image bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
-                            <i class="fas fa-box-open" style="font-size: 3rem; color: #ccc;"></i>
-                        </div>
-                        <div class="card-body">
-                            <h6 class="card-title">Premium Product 2</h6>
-                            <div class="mb-2">
-                                <span class="text-warning">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                </span>
-                                <small class="text-muted ms-2">(250 reviews)</small>
-                            </div>
-                            <p class="text-muted small">Superior quality and performance guaranteed</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0 text-primary">₹6,699</h5>
-                                <div class="d-flex gap-2">
-                                    <button class="btn btn-sm btn-outline-danger wishlist-btn" type="button" data-product="Premium Product 2">
-                                        <i class="far fa-heart"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-primary add-to-cart-btn" type="button" data-product="Premium Product 2" data-price="₹6,699">
-                                        <i class="fas fa-shopping-cart"></i> Add
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                {% empty %}
+                <div class="col-12 text-center py-5">
+                    <i class="fas fa-search-minus fa-3x text-muted mb-3"></i>
+                    <h3>No products found</h3>
+                    <p class="text-muted">We couldn't find any products matching your criteria.</p>
+                    <a href="{% url 'product' %}" class="btn btn-primary">Clear Filters</a>
                 </div>
-
-                <!-- Product Card 3 -->
-                <div class="col-md-6 col-lg-4">
-                    <div class="product-card card h-100">
-                        <div class="product-image bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
-                            <i class="fas fa-box-open" style="font-size: 3rem; color: #ccc;"></i>
-                        </div>
-                        <div class="card-body">
-                            <h6 class="card-title">Premium Product 3</h6>
-                            <div class="mb-2">
-                                <span class="text-warning">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star-half-alt"></i>
-                                </span>
-                                <small class="text-muted ms-2">(180 reviews)</small>
-                            </div>
-                            <p class="text-muted small">Best value for your money</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0 text-primary">₹3,399</h5>
-                                <div class="d-flex gap-2">
-                                    <button class="btn btn-sm btn-outline-danger wishlist-btn" type="button" data-product="Premium Product 3">
-                                        <i class="far fa-heart"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-primary add-to-cart-btn" type="button" data-product="Premium Product 3" data-price="₹3,399">
-                                        <i class="fas fa-shopping-cart"></i> Add
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Product Card 4 -->
-                <div class="col-md-6 col-lg-4">
-                    <div class="product-card card h-100">
-                        <div class="product-image bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
-                            <i class="fas fa-box-open" style="font-size: 3rem; color: #ccc;"></i>
-                        </div>
-                        <div class="card-body">
-                            <h6 class="card-title">Premium Product 4</h6>
-                            <div class="mb-2">
-                                <span class="text-warning">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                </span>
-                                <small class="text-muted ms-2">(320 reviews)</small>
-                            </div>
-                            <p class="text-muted small">Highly recommended by customers</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0 text-primary">₹7,499</h5>
-                                <div class="d-flex gap-2">
-                                    <button class="btn btn-sm btn-outline-danger wishlist-btn" type="button" data-product="Premium Product 4">
-                                        <i class="far fa-heart"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-primary add-to-cart-btn" type="button" data-product="Premium Product 4" data-price="₹7,499">
-                                        <i class="fas fa-shopping-cart"></i> Add
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Product Card 5 -->
-                <div class="col-md-6 col-lg-4">
-                    <div class="product-card card h-100">
-                        <div class="product-image bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
-                            <i class="fas fa-box-open" style="font-size: 3rem; color: #ccc;"></i>
-                        </div>
-                        <div class="card-body">
-                            <h6 class="card-title">Premium Product 5</h6>
-                            <div class="mb-2">
-                                <span class="text-warning">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star-half-alt"></i>
-                                </span>
-                                <small class="text-muted ms-2">(95 reviews)</small>
-                            </div>
-                            <p class="text-muted small">Latest model with advanced features</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0 text-primary">₹4,999</h5>
-                                <div class="d-flex gap-2">
-                                    <button class="btn btn-sm btn-outline-danger wishlist-btn" type="button" data-product="Premium Product 5">
-                                        <i class="far fa-heart"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-primary add-to-cart-btn" type="button" data-product="Premium Product 5" data-price="₹4,999">
-                                        <i class="fas fa-shopping-cart"></i> Add
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Product Card 6 -->
-                <div class="col-md-6 col-lg-4">
-                    <div class="product-card card h-100">
-                        <div class="product-image bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
-                            <i class="fas fa-box-open" style="font-size: 3rem; color: #ccc;"></i>
-                        </div>
-                        <div class="card-body">
-                            <h6 class="card-title">Premium Product 6</h6>
-                            <div class="mb-2">
-                                <span class="text-warning">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                </span>
-                                <small class="text-muted ms-2">(410 reviews)</small>
-                            </div>
-                            <p class="text-muted small">Bestseller in our store</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0 text-primary">₹5,899</h5>
-                                <div class="d-flex gap-2">
-                                    <button class="btn btn-sm btn-outline-danger wishlist-btn" type="button" data-product="Premium Product 6">
-                                        <i class="far fa-heart"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-primary add-to-cart-btn" type="button" data-product="Premium Product 6" data-price="₹5,899">
-                                        <i class="fas fa-shopping-cart"></i> Add
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
 
             <!-- Pagination -->
@@ -351,6 +219,7 @@
             this.classList.toggle('active');
             const productName = this.getAttribute('data-product');
             const price = this.getAttribute('data-price');
+            const image = this.getAttribute('data-image') || '';
             const wishlist = loadWishlist();
             
             if (this.classList.contains('active')) {
@@ -358,7 +227,7 @@
                 
                 // Check if product already exists in wishlist
                 if (!isInWishlist(productName)) {
-                    wishlist.push({ name: productName, price: price });
+                    wishlist.push({ name: productName, price: price, image: image });
                     saveWishlist(wishlist);
                 }
                 
@@ -375,13 +244,33 @@
         });
     });
 
+    // Load cart from localStorage
+    function loadCart() {
+        const savedCart = localStorage.getItem('cart');
+        return savedCart ? JSON.parse(savedCart) : [];
+    }
+
+    // Save cart to localStorage
+    function saveCart(cart) {
+        localStorage.setItem('cart', JSON.stringify(cart));
+        if (typeof updateCounts === 'function') {
+            updateCounts();
+        }
+    }
+
     // Add to cart functionality
     document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
         btn.addEventListener('click', function(e) {
             e.preventDefault();
             const productName = this.getAttribute('data-product');
             const price = this.getAttribute('data-price');
-            alert(productName + ' (' + price + ') added to cart!');
+            const image = this.getAttribute('data-image') || '';
+            
+            const cart = loadCart();
+            cart.push({ name: productName, price: price, image: image });
+            saveCart(cart);
+            
+            alert(productName + ' added to cart!');
         });
     });
 </script>

@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
@@ -6,17 +7,38 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
-from .models import CustomUser, OTP
+from .models import CustomUser, OTP, Category, Product
 import uuid
 
 def home(request):
    return render(request, 'home.html')
 
 def product(request):
-   return render(request, 'product.html')
+    category_slug = request.GET.get('category')
+    search_query = request.GET.get('q')
+
+    products = Product.objects.filter(is_available=True)
+    categories = Category.objects.all()
+
+    if category_slug:
+        products = products.filter(category__slug=category_slug)
+    if search_query:
+        products = products.filter(Q(name__icontains=search_query) | Q(description__icontains=search_query))
+
+    context = {
+        'products': products,
+        'categories': categories,
+        'selected_category': category_slug,
+        'search_query': search_query,
+    }
+    return render(request, 'product.html', context)
 
 def category(request):
-   return render(request, 'category.html')
+    categories = Category.objects.all()
+    context = {
+        'categories': categories,
+    }
+    return render(request, 'category.html', context)
 
 def gallery(request):
    return render(request, 'gallery.html')
@@ -257,4 +279,65 @@ def wishlist(request):
 def cart(request):
     """Display shopping cart page"""
     return render(request, 'cart.html')
-    return redirect('home')
+
+def privacy_policy(request):
+    """Display privacy policy page"""
+    return render(request, 'privacy_policy.html')
+
+def refund_policy(request):
+    """Display refund policy page"""
+    return render(request, 'refund_policy.html')
+
+def shipping_policy(request):
+    """Display shipping policy page"""
+    return render(request, 'shipping_policy.html')
+
+def terms_conditions(request):
+    """Display terms & conditions page"""
+    return render(request, 'terms_conditions.html')
+
+def our_mission(request):
+    """Display our mission page"""
+    return render(request, 'our_mission.html')
+
+def our_vision(request):
+    """Display our vision page"""
+    return render(request, 'our_vision.html')
+
+def profile(request):
+    """Display user profile page and handle profile updates"""
+    if not request.user.is_authenticated:
+        messages.warning(request, 'Please log in to access your profile.')
+        return redirect('login')
+        
+    if request.method == 'POST':
+        user = request.user
+        user.full_name = request.POST.get('full_name', '').strip()
+        user.mobile_no = request.POST.get('mobile_no', '').strip()
+        user.alternate_mobile_no = request.POST.get('alternate_mobile_no', '').strip()
+        user.gender = request.POST.get('gender', '').strip()
+        user.address = request.POST.get('address', '').strip()
+        
+        dob_val = request.POST.get('dob')
+        if dob_val:
+            user.dob = dob_val
+            
+        profile_image = request.FILES.get('profile_image')
+        if profile_image:
+            user.profile_image = profile_image
+            
+        user.save()
+        messages.success(request, 'Your profile has been updated successfully!')
+        return redirect('profile')
+        
+    return render(request, 'profile.html')
+
+def orders(request):
+    """Display user order history page"""
+    if not request.user.is_authenticated:
+        messages.warning(request, 'Please log in to access your orders.')
+        return redirect('login')
+    return render(request, 'orders.html')
+
+
+

@@ -1,11 +1,22 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Shopping Cart - ShopSphere{% endblock %}
+
+{% block page_header_banner %}
+<div class="container-fluid page-header-section">
+    <div class="container">
+        <p class="page-header-subtitle">SHOPSPHERE - SHOPPING CART</p>
+        <h1 class="page-header-title">Shopping Cart</h1>
+        <p class="page-header-description">Your selected items are ready for checkout. Review and proceed to complete your order.</p>
+    </div>
+</div>
+{% endblock %}
 
 {% block content %}
 <div class="container py-5">
     <!-- Page Header -->
-    <div class="row mb-5">
+    <div class="row mb-5 animate-fade-in">
         <div class="col-lg-12">
             <h1 class="display-5 fw-bold">
                 <i class="fas fa-shopping-cart text-primary me-3"></i>Shopping Cart
@@ -14,18 +25,369 @@
         </div>
     </div>
 
-    <!-- Cart Items -->
-    <div class="row">
+    <!-- Alert placeholder for simulated success message -->
+    <div id="cart-alert-container"></div>
+
+    <!-- Cart Layout -->
+    <div class="row g-4" id="cart-content-row" style="display: none;">
+        <!-- Cart Items Column -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm p-4">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col" style="min-width: 250px;">Product</th>
+                                <th scope="col">Price</th>
+                                <th scope="col" class="text-center" style="width: 150px;">Quantity</th>
+                                <th scope="col">Total</th>
+                                <th scope="col" class="text-end"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="cart-items-tbody">
+                            <!-- Dynamic items injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-4">
+                    <a href="{% url 'product' %}" class="btn btn-outline-primary px-4">
+                        <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+                    </a>
+                    <button class="btn btn-outline-danger px-4" id="clear-cart-btn">
+                        <i class="fas fa-trash-alt me-2"></i>Clear Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Cart Summary Column -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm p-4 sticky-top" style="top: 100px; z-index: 10;">
+                <h4 class="fw-bold mb-4">Order Summary</h4>
+                
+                <div class="d-flex justify-content-between mb-3 pb-2 border-bottom border-light">
+                    <span class="text-muted">Subtotal</span>
+                    <span class="fw-semibold text-dark" id="cart-subtotal">₹0.00</span>
+                </div>
+                
+                <div class="d-flex justify-content-between mb-3 pb-2 border-bottom border-light">
+                    <span class="text-muted">GST (18%)</span>
+                    <span class="fw-semibold text-dark" id="cart-tax">₹0.00</span>
+                </div>
+                
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-muted">Shipping</span>
+                    <span class="text-success fw-semibold"><i class="fas fa-shipping-fast me-1"></i>Free</span>
+                </div>
+                
+                <hr class="my-4">
+                
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <span class="fs-5 fw-bold">Grand Total</span>
+                    <span class="fs-4 fw-bold text-primary" id="cart-total">₹0.00</span>
+                </div>
+                
+                {% if user.is_authenticated %}
+                <button class="btn btn-primary btn-lg w-100 py-3 fw-bold shadow-sm" id="checkout-btn" style="transition: all 0.3s ease;">
+                    <i class="fas fa-credit-card me-2"></i>Proceed to Checkout
+                </button>
+                {% else %}
+                <a href="{% url 'login' %}?next={% url 'cart' %}" class="btn btn-primary btn-lg w-100 py-3 fw-bold shadow-sm">
+                    <i class="fas fa-sign-in-alt me-2"></i>Login to Checkout
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Empty Cart State -->
+    <div class="row" id="empty-cart-row">
         <div class="col-lg-12">
-            <div class="alert alert-info text-center py-5">
-                <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
-                <p class="lead">Your cart is empty</p>
-                <p class="text-muted">Start shopping to add items to your cart</p>
-                <a href="{% url 'product' %}" class="btn btn-primary mt-3">
-                    <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
+            <div class="alert alert-info text-center py-5 border-0 shadow-sm rounded-4">
+                <div class="mb-4">
+                    <span class="d-inline-flex align-items-center justify-content-center bg-white text-primary rounded-circle shadow-sm" style="width: 90px; height: 90px;">
+                        <i class="fas fa-shopping-cart fa-3x"></i>
+                    </span>
+                </div>
+                <h3 class="fw-bold mb-2">Your cart is empty</h3>
+                <p class="text-muted mb-4 fs-5">Add some amazing products to your cart and make them yours!</p>
+                <a href="{% url 'product' %}" class="btn btn-primary btn-lg px-5 py-3 shadow-sm fw-bold">
+                    <i class="fas fa-shopping-bag me-2"></i>Start Shopping
                 </a>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    /* Premium aesthetics and transitions */
+    .animate-fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .table th {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+    }
+    
+    .qty-btn {
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        border: 1px solid #dee2e6;
+        background: #fff;
+        color: #333;
+        font-weight: bold;
+        transition: all 0.2s ease;
+    }
+    
+    .qty-btn:hover {
+        background: #007bff;
+        color: #fff;
+        border-color: #007bff;
+    }
+    
+    #checkout-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3) !important;
+    }
+</style>
+
+<script>
+    // Load cart helper
+    function loadCart() {
+        const savedCart = localStorage.getItem('cart');
+        return savedCart ? JSON.parse(savedCart) : [];
+    }
+
+    // Save cart helper
+    function saveCart(cart) {
+        localStorage.setItem('cart', JSON.stringify(cart));
+        if (typeof updateCounts === 'function') {
+            updateCounts();
+        }
+    }
+
+    // Parse price to float
+    function parsePrice(priceStr) {
+        if (!priceStr) return 0;
+        const cleaned = priceStr.replace(/[^\d.]/g, '');
+        return parseFloat(cleaned) || 0;
+    }
+
+    // Format price to INR
+    function formatPrice(val) {
+        return '₹' + val.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    // Group cart items to display quantities
+    function getGroupedCart() {
+        const cart = loadCart();
+        const grouped = {};
+        cart.forEach(item => {
+            if (grouped[item.name]) {
+                grouped[item.name].quantity += 1;
+            } else {
+                grouped[item.name] = {
+                    name: item.name,
+                    price: item.price,
+                    image: item.image || '',
+                    quantity: 1
+                };
+            }
+        });
+        return Object.values(grouped);
+    }
+
+    // Modify quantity
+    function changeQty(name, delta) {
+        const cart = loadCart();
+        if (delta > 0) {
+            const existing = cart.find(item => item.name === name);
+            if (existing) {
+                cart.push({ ...existing });
+            }
+        } else if (delta < 0) {
+            const index = cart.findIndex(item => item.name === name);
+            if (index !== -1) {
+                cart.splice(index, 1);
+            }
+        }
+        saveCart(cart);
+        displayCart();
+    }
+
+    // Remove item entirely
+    function removeItem(name) {
+        let cart = loadCart();
+        cart = cart.filter(item => item.name !== name);
+        saveCart(cart);
+        displayCart();
+        
+        // Show item removed notification
+        const alertBox = document.getElementById('cart-alert-container');
+        alertBox.innerHTML = `
+            <div class="alert alert-warning alert-dismissible fade show border-0 shadow-sm" role="alert">
+                <i class="fas fa-info-circle me-2"></i>Removed <strong>${name}</strong> from your cart.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+    }
+
+    // Render cart items and totals
+    function displayCart() {
+        const groupedItems = getGroupedCart();
+        const cartContentRow = document.getElementById('cart-content-row');
+        const emptyCartRow = document.getElementById('empty-cart-row');
+        const tbody = document.getElementById('cart-items-tbody');
+
+        if (groupedItems.length === 0) {
+            cartContentRow.style.display = 'none';
+            emptyCartRow.style.display = 'block';
+            return;
+        }
+
+        cartContentRow.style.display = 'flex';
+        emptyCartRow.style.display = 'none';
+        tbody.innerHTML = '';
+
+        let subtotal = 0;
+
+        groupedItems.forEach(item => {
+            const unitPrice = parsePrice(item.price);
+            const itemTotal = unitPrice * item.quantity;
+            subtotal += itemTotal;
+
+            // Thumbnail layout
+            let imgMarkup = '';
+            if (item.image) {
+                imgMarkup = `<img src="${item.image}" alt="${item.name}" class="img-fluid rounded" style="max-height: 70px; max-width: 70px; object-fit: contain;">`;
+            } else {
+                imgMarkup = `<div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+                                <i class="fas fa-box text-muted" style="font-size: 1.5rem;"></i>
+                             </div>`;
+            }
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>
+                    <div class="d-flex align-items-center gap-3">
+                        ${imgMarkup}
+                        <div>
+                            <h6 class="mb-0 fw-bold text-dark">${item.name}</h6>
+                            <small class="text-muted">ShopSphere Assured</small>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <span class="text-muted font-monospace">${item.price}</span>
+                </td>
+                <td class="text-center">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <button class="qty-btn" onclick="changeQty('${item.name.replace(/'/g, "\\'")}', -1)">-</button>
+                        <span class="fw-bold px-2">${item.quantity}</span>
+                        <button class="qty-btn" onclick="changeQty('${item.name.replace(/'/g, "\\'")}', 1)">+</button>
+                    </div>
+                </td>
+                <td>
+                    <span class="fw-bold text-dark font-monospace">${formatPrice(itemTotal)}</span>
+                </td>
+                <td class="text-end">
+                    <button class="btn btn-link text-danger p-0" onclick="removeItem('${item.name.replace(/'/g, "\\'")}')" title="Remove Item">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        // Compute GST and total
+        const taxRate = 0.18; // 18% GST
+        const tax = subtotal * taxRate;
+        const total = subtotal + tax;
+
+        document.getElementById('cart-subtotal').textContent = formatPrice(subtotal);
+        document.getElementById('cart-tax').textContent = formatPrice(tax);
+        document.getElementById('cart-total').textContent = formatPrice(total);
+    }
+
+    // Checkout simulation
+    document.addEventListener('DOMContentLoaded', () => {
+        displayCart();
+
+        // Clear cart handler
+        const clearBtn = document.getElementById('clear-cart-btn');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', () => {
+                if (confirm('Are you sure you want to clear your cart?')) {
+                    saveCart([]);
+                    displayCart();
+                }
+            });
+        }
+
+        // Checkout button simulation handler
+        const checkoutBtn = document.getElementById('checkout-btn');
+        if (checkoutBtn) {
+            checkoutBtn.addEventListener('click', () => {
+                const groupedItems = getGroupedCart();
+                if (groupedItems.length === 0) return;
+
+                // 1. Generate Order details
+                const orderId = '#ORD-' + Math.floor(1000 + Math.random() * 9000);
+                
+                // Date format: e.g. June 21, 2026
+                const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+                const todayStr = new Date().toLocaleDateString('en-US', dateOptions);
+
+                // Main item name to display
+                const mainProduct = groupedItems[0].name;
+                const otherCount = groupedItems.length - 1;
+                const productSummary = otherCount > 0 ? `${mainProduct} (+${otherCount} more items)` : mainProduct;
+
+                // Grand total
+                let subtotal = 0;
+                groupedItems.forEach(item => {
+                    subtotal += parsePrice(item.price) * item.quantity;
+                });
+                const grandTotal = formatPrice(subtotal * 1.18);
+
+                // Create new order object
+                const newOrder = {
+                    id: orderId,
+                    date: todayStr,
+                    product: productSummary,
+                    price: grandTotal,
+                    status: 'Processing'
+                };
+
+                // Save to localStorage orders list
+                const savedOrders = localStorage.getItem('shopsphere_orders');
+                const orders = savedOrders ? JSON.parse(savedOrders) : [];
+                orders.unshift(newOrder); // Add to the top of list
+                localStorage.setItem('shopsphere_orders', JSON.stringify(orders));
+
+                // 2. Clear Cart
+                saveCart([]);
+
+                // 3. Save success alert to sessionStorage to display on the orders page
+                sessionStorage.setItem('order_success_alert', `🎉 Order placed successfully! Your Order ID is <strong>${orderId}</strong>.`);
+
+                // 4. Redirect to Orders Page
+                window.location.href = "{% url 'orders' %}";
+            });
+        }
+    });
+</script>
 {% endblock %}

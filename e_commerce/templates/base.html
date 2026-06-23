@@ -10,6 +10,12 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
 
+    <!-- Google Fonts - Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
     <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -22,250 +28,362 @@
     <!-- Custom CSS -->
     <style>
         :root {
-            --primary-color: #007bff;
-            --secondary-color: #6c757d;
+            /* Brand Color Palette from Logo analysis */
+            --primary-color: #0a1128;
+            --primary-rgb: 10, 17, 40;
+            --secondary-color: #475569;
+            --accent-magenta: #fc0466;
+            --accent-orange: #fe8701;
+            --accent-red: #fd253a;
+
+            /* Luxury Gradients */
+            --logo-gradient: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-magenta) 50%, var(--accent-orange) 100%);
+            --logo-gradient-horizontal: linear-gradient(90deg, var(--primary-color) 0%, var(--accent-magenta) 50%, var(--accent-orange) 100%);
+            --logo-gradient-light: linear-gradient(135deg, rgba(10, 17, 40, 0.03) 0%, rgba(252, 4, 102, 0.03) 50%, rgba(254, 135, 1, 0.03) 100%);
+
+            /* Premium Shadows */
+            --premium-shadow-sm: 0 2px 8px rgba(10, 17, 40, 0.04);
+            --premium-shadow: 0 10px 30px rgba(10, 17, 40, 0.06);
+            --premium-shadow-lg: 0 20px 40px rgba(10, 17, 40, 0.12);
+            --premium-shadow-hover: 0 20px 40px rgba(252, 4, 102, 0.15);
+
+            /* Bootstrap variable overrides */
+            --bs-primary: #0a1128;
+            --bs-primary-rgb: 10, 17, 40;
+            --bs-link-color: #fc0466;
+            --bs-link-hover-color: #fe8701;
+            --bs-border-color: #e2e8f0;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            background-color: #fafbfc;
+            color: #1e293b;
         }
 
         main {
             flex: 1;
         }
 
+        /* Glassmorphic Premium Navbar */
         .navbar {
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            background: #fff !important;
+            border-bottom: none !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            padding: 12px 0;
         }
 
         .navbar-brand {
-            font-weight: 700;
+            font-weight: 800;
             font-size: 1.5rem;
             color: var(--primary-color) !important;
             display: flex;
             align-items: center;
             gap: 12px;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            margin-left: 15px;
         }
 
         .navbar-brand:hover {
-            transform: scale(1.05);
+            transform: scale(1.03);
         }
 
         .navbar-brand img {
-            height: 60px;
+            height: 80px;
             width: auto;
-
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .navbar-brand:hover img {
-            transform: scale(1.1);
+            transform: scale(1.08);
         }
 
         .brand-text {
             font-size: 1.4rem;
             font-weight: 800;
-            color: #007bff;
+            background: var(--logo-gradient-horizontal);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             letter-spacing: -0.5px;
         }
 
-        /* Navigation Links Styling */
+        /* Premium Navigation Links styling matching screenshot */
         .navbar-nav .nav-link {
-            font-weight: 500;
-            margin: 0 8px;
-            color: #333 !important;
-            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin: 0 6px;
+            color: #334155 !important;
+            transition: all 0.2s ease;
             position: relative;
+            padding: 6px 16px !important;
+            border-radius: 30px;
         }
 
         .navbar-nav .nav-link:hover {
-            color: var(--primary-color) !important;
+            color: #1e40af !important;
+            background-color: rgba(30, 64, 175, 0.05);
+        }
+
+        /* Active navigation capsule */
+        .navbar-nav .nav-link.active {
+            background-color: #1e40af !important;
+            color: #ffffff !important;
+            font-weight: 700;
         }
 
         .navbar-nav .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--primary-color);
-            transition: width 0.3s ease;
+            display: none !important;
+            /* Hide old underline effects */
         }
 
-        .navbar-nav .nav-link:hover::after {
-            width: 100%;
-        }
-
-        /* Icon Styling */
+        /* Icon Buttons */
         .navbar-icons {
             display: flex;
             align-items: center;
-            gap: 25px;
+            gap: 22px;
         }
 
         .icon-btn {
             background: none;
             border: none;
             cursor: pointer;
-            color: #333;
+            color: #334155;
             font-size: 1.3rem;
             transition: all 0.3s ease;
             position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
         }
 
         .icon-btn:hover {
-            color: var(--primary-color);
-            transform: scale(1.1);
+            color: var(--accent-magenta);
+            background-color: rgba(252, 4, 102, 0.05);
+            transform: translateY(-2px);
         }
 
-        /* Badge for cart/wishlist count */
+        /* Premium Badges */
         .badge-count {
             position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #dc3545;
+            top: -2px;
+            right: -2px;
+            background: var(--accent-magenta);
             color: white;
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.75rem;
-            font-weight: bold;
+            font-size: 0.65rem;
+            font-weight: 800;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(252, 4, 102, 0.3);
+        }
+
+        /* Premium Card styling overrides */
+        .card {
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            border-radius: 16px;
+            box-shadow: var(--premium-shadow);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--premium-shadow-lg);
+            border-color: rgba(252, 4, 102, 0.15);
+        }
+
+        /* Premium Button Overrides */
+        .btn-primary {
+            background-color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+            color: #ffffff !important;
+            font-weight: 600;
+            padding: 10px 24px;
+            border-radius: 8px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 12px rgba(10, 17, 40, 0.12);
+            border: none;
+        }
+
+        .btn-primary:hover,
+        .btn-primary:focus,
+        .btn-primary:active {
+            background: var(--logo-gradient-horizontal) !important;
+            border-color: transparent !important;
+            box-shadow: var(--premium-shadow-hover) !important;
+            transform: translateY(-2px);
+            color: #ffffff !important;
+        }
+
+        .btn-outline-primary {
+            color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+            font-weight: 600;
+            padding: 10px 24px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            background: transparent;
+        }
+
+        .btn-outline-primary:hover,
+        .btn-outline-primary:focus,
+        .btn-outline-primary:active {
+            background: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+            color: #ffffff !important;
+            transform: translateY(-2px);
+            box-shadow: var(--premium-shadow-sm);
+        }
+
+        .text-primary {
+            color: var(--accent-magenta) !important;
         }
 
         /* Profile Dropdown */
-        .profile-dropdown {
-            position: relative;
+        .profile-dropdown-container .dropdown-menu {
+            border-radius: 12px;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: var(--premium-shadow-lg) !important;
+            padding: 8px;
+            min-width: 220px;
         }
 
-        .dropdown-menu-custom {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: white;
-            border: 1px solid #dee2e6;
+        .profile-dropdown-container .dropdown-item {
             border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            min-width: 200px;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-            margin-top: 10px;
-        }
-
-        .profile-dropdown:hover .dropdown-menu-custom {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .dropdown-menu-custom a {
-            display: block;
-            padding: 12px 16px;
-            color: #333;
-            text-decoration: none;
+            padding: 10px 16px;
             font-weight: 500;
-            transition: all 0.3s ease;
-            border-bottom: 1px solid #f0f0f0;
+            color: #334155;
+            transition: all 0.2s ease;
         }
 
-        .dropdown-menu-custom a:last-child {
-            border-bottom: none;
-        }
-
-        .dropdown-menu-custom a:hover {
-            background-color: #f8f9fa;
-            color: var(--primary-color);
-            padding-left: 20px;
-        }
-
-        .dropdown-menu-custom a i {
-            margin-right: 8px;
-            width: 16px;
-        }
-
-        .user-info {
-            padding: 12px 16px;
-            border-bottom: 1px solid #f0f0f0;
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-        /* Page Header Banner */
-        .page-header-banner {
-            width: 100%;
-            height: 300px;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            margin-top: 0;
-            margin-bottom: 30px;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .page-header-banner img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
+        .profile-dropdown-container .dropdown-item:hover {
+            background-color: #f8fafc;
+            color: var(--accent-magenta) !important;
+            transform: translateX(4px);
         }
 
         /* Page Header Section */
         .page-header-section {
-            background: linear-gradient(135deg, #1a7a6e 0%, #2a9a8e 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-magenta) 100%);
+            position: relative;
+            overflow: hidden;
             padding: 60px 0;
             text-align: center;
             color: white;
             margin-bottom: 40px;
+            border-radius: 0 0 24px 24px;
+            box-shadow: var(--premium-shadow);
+        }
+
+        .page-header-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 80% 20%, rgba(254, 135, 1, 0.15) 0%, transparent 60%);
+            pointer-events: none;
         }
 
         .page-header-subtitle {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             letter-spacing: 2px;
             text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 10px;
-            font-weight: 500;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 12px;
+            font-weight: 600;
         }
 
         .page-header-title {
-            font-size: 3rem;
-            font-weight: 700;
+            font-size: 2.8rem;
+            font-weight: 800;
             margin-bottom: 15px;
             color: white;
-            letter-spacing: -1px;
+            letter-spacing: -0.5px;
         }
 
         .page-header-description {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             color: rgba(255, 255, 255, 0.9);
-            max-width: 700px;
+            max-width: 650px;
             margin: 0 auto;
             line-height: 1.6;
         }
 
+        /* Premium Dark Footer */
         footer {
-            background-color: #f8f9fa;
-            border-top: 1px solid #dee2e6;
-            margin-top: 3rem;
-            padding: 2rem 0;
+            background-color: #0a1128;
+            color: #94a3b8;
+            border-top: none;
+            margin-top: 5rem;
+            padding: 4rem 0 2rem;
+            position: relative;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--logo-gradient-horizontal);
+        }
+
+        footer h5 {
+            color: #ffffff;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 1.5rem;
+        }
+
+        footer .text-muted {
+            color: #94a3b8 !important;
+        }
+
+        footer a.text-muted {
+            transition: all 0.25s ease;
+            display: inline-block;
+        }
+
+        footer a.text-muted:hover {
+            color: #ffffff !important;
+            padding-left: 6px;
+            transform: scale(1.02);
+        }
+
+        footer hr {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        footer .fab {
+            font-size: 1.25rem;
+            transition: all 0.3s ease;
+            color: #94a3b8;
+        }
+
+        footer .fab:hover {
+            color: var(--accent-orange) !important;
+            transform: translateY(-3px);
         }
 
         .footer-logo {
-            height: 50px;
+            height: 44px;
             width: auto;
             transition: transform 0.3s ease;
+            filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.05));
         }
 
         .footer-logo:hover {
@@ -279,32 +397,21 @@
                 margin-top: 15px;
                 gap: 15px;
             }
-
-            .dropdown-menu-custom {
-                position: static;
-                opacity: 1;
-                visibility: visible;
-                transform: none;
-                box-shadow: none;
-                border: none;
-                background: #f8f9fa;
-                margin-top: 0;
-            }
         }
 
-        /* Announcement Bar Styling */
+        /* Branded Announcement Bar */
         .announcement-bar {
-            background: linear-gradient(90deg, #007bff 0%, #0056b3 100%);
-            /* ShopSphere Brand Blue Gradient */
+            background: var(--logo-gradient-horizontal);
             color: #ffffff;
-            font-size: 0.9rem;
-            font-weight: 600;
-            padding: 8px 0;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            padding: 9px 0;
             overflow: hidden;
             white-space: nowrap;
             position: relative;
             z-index: 1030;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(10, 17, 40, 0.08);
         }
 
         .announcement-track {
@@ -337,148 +444,140 @@
 </head>
 
 <body>
-    <!-- Announcement Bar -->
-    {% if active_announcement %}
-    <div class="announcement-bar">
-        <div class="announcement-track">
-            <span><i class="fas fa-paper-plane me-2"></i>{{ active_announcement.text }}</span>
-            <span><i class="fas fa-paper-plane me-2"></i>{{ active_announcement.text }}</span>
-            <span><i class="fas fa-paper-plane me-2"></i>{{ active_announcement.text }}</span>
-            <span><i class="fas fa-paper-plane me-2"></i>{{ active_announcement.text }}</span>
-            <span><i class="fas fa-paper-plane me-2"></i>{{ active_announcement.text }}</span>
-            <span><i class="fas fa-paper-plane me-2"></i>{{ active_announcement.text }}</span>
-            <span><i class="fas fa-paper-plane me-2"></i>{{ active_announcement.text }}</span>
-            <span><i class="fas fa-paper-plane me-2"></i>{{ active_announcement.text }}</span>
-            <span><i class="fas fa-paper-plane me-2"></i>{{ active_announcement.text }}</span>
+    <!-- Sticky Header Wrapper (contains Announcement & Navbar) -->
+    <div class="sticky-top shadow-sm" style="z-index: 1030;">
+        <!-- Announcement Bar -->
+        {% if active_announcement %}
+        <div class="announcement-bar">
+            <div class="announcement-track">
+                <span><i class="fas fa-paper-plane me-2"></i>{{ active_announcement.text }}</span>
+                <span><i class="fas fa-paper-plane me-2"></i>{{ active_announcement.text }}</span>
+                <span><i class="fas fa-paper-plane me-2"></i>{{ active_announcement.text }}</span>
+                <span><i class="fas fa-paper-plane me-2"></i>{{ active_announcement.text }}</span>
+                <span><i class="fas fa-paper-plane me-2"></i>{{ active_announcement.text }}</span>
+                <span><i class="fas fa-paper-plane me-2"></i>{{ active_announcement.text }}</span>
+                <span><i class="fas fa-paper-plane me-2"></i>{{ active_announcement.text }}</span>
+                <span><i class="fas fa-paper-plane me-2"></i>{{ active_announcement.text }}</span>
+                <span><i class="fas fa-paper-plane me-2"></i>{{ active_announcement.text }}</span>
+            </div>
         </div>
-    </div>
-    {% endif %}
+        {% endif %}
 
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
-        <div class="container-fluid px-4">
-            <div class="d-flex w-100 align-items-center">
-                <!-- Brand (Left) -->
-                <a class="navbar-brand me-auto" href="{% url 'home' %}">
-                    <img src="{% static 'images/logo.png' %}" alt="ShopSphere Logo">
-
-                </a>
-
-                <!-- Toggler Button for Mobile -->
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <!-- Navbar Content (Center) -->
-                <div class="collapse navbar-collapse flex-grow-0 mx-auto" id="navbarNav">
-                    <!-- Center Navigation Links -->
-                    <ul class="navbar-nav text-center">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'home' %}">
-                                <i class="fas fa-home"></i> Home
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'product' %}">
-                                <i class="fas fa-box"></i> Product
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'category' %}">
-                                <i class="fas fa-list"></i> Category
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'gallery' %}">
-                                <i class="fas fa-images"></i> Gallery
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'about_us' %}">
-                                <i class="fas fa-info-circle"></i> About Us
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'contact' %}">
-                                <i class="fas fa-envelope"></i> Contact
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Right Side Icons -->
-                <div class="navbar-icons ms-auto">
-                    <!-- Wishlist Icon -->
-                    <a href="{% url 'wishlist' %}" class="icon-btn" title="Wishlist">
-                        <i class="fas fa-heart"></i>
-                        <span class="badge-count" id="wishlist-count" style="display: none;">0</span>
+        <!-- Navigation Bar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid px-4">
+                <div class="d-flex w-100 align-items-center">
+                    <!-- Brand (Left) -->
+                    <a class="navbar-brand me-auto" href="{% url 'home' %}">
+                        <img src="{% static 'images/logo.png1.png' %}?v=2" alt="ShopSphere Logo">
                     </a>
 
-                    <!-- Cart Icon -->
-                    <a href="{% url 'cart' %}" class="icon-btn" title="Shopping Cart">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span class="badge-count" id="cart-count" style="display: none;">0</span>
-                    </a>
+                    <!-- Toggler Button for Mobile -->
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
 
-                    <!-- Profile Icon with Dropdown -->
-                    {% if user.is_authenticated %}
-                    <div class="dropdown profile-dropdown-container">
-                        <button class="icon-btn" type="button" id="profileDropdown" data-bs-toggle="dropdown"
-                            aria-expanded="false" title="Profile Menu"
-                            style="background: none; border: none; outline: none;">
-                            <i class="fas fa-user-circle"></i>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="profileDropdown"
-                            style="border-radius: 8px; margin-top: 10px; min-width: 220px; z-index: 1100;">
-                            <li class="px-3 py-2 border-bottom">
-                                <div class="fw-bold text-dark">{{ user.full_name }}</div>
-                                <div class="text-muted small"
-                                    style="font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                    {{ user.email }}</div>
+                    <!-- Navbar Content (Center) -->
+                    <div class="collapse navbar-collapse flex-grow-0 mx-auto" id="navbarNav">
+                        <!-- Center Navigation Links (Clean text-only to match screenshot) -->
+                        <ul class="navbar-nav text-center">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'home' %}">Home</a>
                             </li>
-                            <li>
-                                <a class="dropdown-item py-2 d-flex align-items-center" href="{% url 'profile' %}"
-                                    style="font-weight: 500; transition: all 0.2s ease;">
-                                    <i class="fas fa-user me-2 text-primary" style="width: 16px;"></i> My Profile
-                                </a>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'product' %}">Products</a>
                             </li>
-                            <li>
-                                <a class="dropdown-item py-2 d-flex align-items-center" href="{% url 'orders' %}"
-                                    style="font-weight: 500; transition: all 0.2s ease;">
-                                    <i class="fas fa-box-open me-2 text-primary" style="width: 16px;"></i> My Orders
-                                </a>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'category' %}">Category</a>
                             </li>
-                            <li>
-                                <a class="dropdown-item py-2 d-flex align-items-center" href="{% url 'cart' %}"
-                                    style="font-weight: 500; transition: all 0.2s ease;">
-                                    <i class="fas fa-shopping-cart me-2 text-primary" style="width: 16px;"></i> My Cart
-                                </a>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'gallery' %}">Gallery</a>
                             </li>
-                            <li>
-                                <hr class="dropdown-divider my-1">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'about_us' %}">About</a>
                             </li>
-                            <li>
-                                <a class="dropdown-item py-2 text-danger d-flex align-items-center"
-                                    href="{% url 'logout' %}" style="font-weight: 500; transition: all 0.2s ease;">
-                                    <i class="fas fa-sign-out-alt me-2" style="width: 16px;"></i> Logout
-                                </a>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'contact' %}">Contact</a>
                             </li>
                         </ul>
                     </div>
-                    {% else %}
-                    <!-- Login/Register Buttons for Guest Users -->
-                    <a href="{% url 'register' %}" class="btn btn-outline-primary btn-sm">
-                        <i class="fas fa-user-plus"></i> Register
-                    </a>
-                    <a href="{% url 'login' %}" class="btn btn-primary btn-sm">
-                        <i class="fas fa-sign-in-alt"></i> Login
-                    </a>
-                    {% endif %}
+
+                    <!-- Right Side Icons -->
+                    <div class="navbar-icons ms-auto">
+                        <!-- Wishlist Icon -->
+                        <a href="{% url 'wishlist' %}" class="icon-btn" title="Wishlist">
+                            <i class="fas fa-heart"></i>
+                            <span class="badge-count" id="wishlist-count" style="display: none;">0</span>
+                        </a>
+
+                        <!-- Cart Icon -->
+                        <a href="{% url 'cart' %}" class="icon-btn" title="Shopping Cart">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="badge-count" id="cart-count" style="display: none;">0</span>
+                        </a>
+
+                        <!-- Profile Icon with Dropdown -->
+                        {% if user.is_authenticated %}
+                        <div class="dropdown profile-dropdown-container">
+                            <button class="icon-btn" type="button" id="profileDropdown" data-bs-toggle="dropdown"
+                                aria-expanded="false" title="Profile Menu"
+                                style="background: none; border: none; outline: none;">
+                                <i class="fas fa-user-circle"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0"
+                                aria-labelledby="profileDropdown"
+                                style="border-radius: 8px; margin-top: 10px; min-width: 220px; z-index: 1100;">
+                                <li class="px-3 py-2 border-bottom">
+                                    <div class="fw-bold text-dark">{{ user.full_name }}</div>
+                                    <div class="text-muted small"
+                                        style="font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                        {{ user.email }}</div>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2 d-flex align-items-center" href="{% url 'profile' %}"
+                                        style="font-weight: 500; transition: all 0.2s ease;">
+                                        <i class="fas fa-user me-2 text-primary" style="width: 16px;"></i> My Profile
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2 d-flex align-items-center" href="{% url 'orders' %}"
+                                        style="font-weight: 500; transition: all 0.2s ease;">
+                                        <i class="fas fa-box-open me-2 text-primary" style="width: 16px;"></i> My Orders
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2 d-flex align-items-center" href="{% url 'cart' %}"
+                                        style="font-weight: 500; transition: all 0.2s ease;">
+                                        <i class="fas fa-shopping-cart me-2 text-primary" style="width: 16px;"></i> My
+                                        Cart
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider my-1">
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2 text-danger d-flex align-items-center"
+                                        href="{% url 'logout' %}" style="font-weight: 500; transition: all 0.2s ease;">
+                                        <i class="fas fa-sign-out-alt me-2" style="width: 16px;"></i> Logout
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        {% else %}
+                        <!-- Login/Register Buttons for Guest Users -->
+                        <a href="{% url 'register' %}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-user-plus"></i> Register
+                        </a>
+                        <a href="{% url 'login' %}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-        </div>
-    </nav>
+        </nav>
+    </div>
 
     <!-- Page Header Banner (for non-home pages) -->
     {% block page_header_banner %}
@@ -513,7 +612,8 @@
                 <div class="col-md-4 mb-3 mb-md-0">
                     <div class="mb-3">
                         <a href="{% url 'home' %}" class="d-inline-block">
-                            <img src="{% static 'images/logo.png' %}" alt="ShopSphere Logo" class="footer-logo">
+                            <img src="{% static 'images/logo.png1.png' %}?v=2" alt="ShopSphere Logo"
+                                class="footer-logo">
                         </a>
                     </div>
                     <p class="text-muted">Your trusted online marketplace for quality products at great prices.</p>
@@ -585,8 +685,19 @@
             }
         }
 
-        // Update counts on page load
-        document.addEventListener('DOMContentLoaded', updateCounts);
+        // Update counts and active link on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCounts();
+
+            // Set active class on navbar link based on current path
+            const currentPath = window.location.pathname;
+            document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
+                const href = link.getAttribute('href');
+                if (href === currentPath || (href !== '/' && currentPath.startsWith(href))) {
+                    link.classList.add('active');
+                }
+            });
+        });
 
         // Listen for storage changes (when updated in other tabs)
         window.addEventListener('storage', updateCounts);

@@ -1,6 +1,18 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Gallery - ShopSphere{% endblock %}
+
+{% block page_header_banner %}
+<div class="container-fluid page-header-section">
+    <div class="container">
+        <p class="page-header-subtitle">SHOPSPHERE - GALLERY</p>
+        <h1 class="page-header-title">Gallery</h1>
+        <p class="page-header-description">Explore our beautiful shop collection showcasing our finest products and
+            store atmosphere.</p>
+    </div>
+</div>
+{% endblock %}
 
 {% block content %}
 <div class="container py-5">
@@ -40,7 +52,8 @@
         <!-- Gallery Item 1 -->
         <div class="col-md-6 col-lg-4 gallery-item" data-filter="products">
             <div class="gallery-card">
-                <div class="gallery-image bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                <div class="gallery-image bg-light d-flex align-items-center justify-content-center"
+                    style="height: 300px;">
                     <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
                 </div>
                 <div class="overlay">
@@ -58,7 +71,8 @@
         <!-- Gallery Item 2 -->
         <div class="col-md-6 col-lg-4 gallery-item" data-filter="lifestyle">
             <div class="gallery-card">
-                <div class="gallery-image bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                <div class="gallery-image bg-light d-flex align-items-center justify-content-center"
+                    style="height: 300px;">
                     <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
                 </div>
                 <div class="overlay">
@@ -76,7 +90,8 @@
         <!-- Gallery Item 3 -->
         <div class="col-md-6 col-lg-4 gallery-item" data-filter="customer">
             <div class="gallery-card">
-                <div class="gallery-image bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                <div class="gallery-image bg-light d-flex align-items-center justify-content-center"
+                    style="height: 300px;">
                     <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
                 </div>
                 <div class="overlay">
@@ -94,7 +109,8 @@
         <!-- Gallery Item 4 -->
         <div class="col-md-6 col-lg-4 gallery-item" data-filter="products">
             <div class="gallery-card">
-                <div class="gallery-image bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                <div class="gallery-image bg-light d-flex align-items-center justify-content-center"
+                    style="height: 300px;">
                     <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
                 </div>
                 <div class="overlay">
@@ -112,7 +128,8 @@
         <!-- Gallery Item 5 -->
         <div class="col-md-6 col-lg-4 gallery-item" data-filter="events">
             <div class="gallery-card">
-                <div class="gallery-image bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                <div class="gallery-image bg-light d-flex align-items-center justify-content-center"
+                    style="height: 300px;">
                     <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
                 </div>
                 <div class="overlay">
@@ -130,7 +147,8 @@
         <!-- Gallery Item 6 -->
         <div class="col-md-6 col-lg-4 gallery-item" data-filter="lifestyle">
             <div class="gallery-card">
-                <div class="gallery-image bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                <div class="gallery-image bg-light d-flex align-items-center justify-content-center"
+                    style="height: 300px;">
                     <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
                 </div>
                 <div class="overlay">
@@ -148,7 +166,8 @@
         <!-- Gallery Item 7 -->
         <div class="col-md-6 col-lg-4 gallery-item" data-filter="customer">
             <div class="gallery-card">
-                <div class="gallery-image bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                <div class="gallery-image bg-light d-flex align-items-center justify-content-center"
+                    style="height: 300px;">
                     <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
                 </div>
                 <div class="overlay">
@@ -166,7 +185,8 @@
         <!-- Gallery Item 8 -->
         <div class="col-md-6 col-lg-4 gallery-item" data-filter="products">
             <div class="gallery-card">
-                <div class="gallery-image bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                <div class="gallery-image bg-light d-flex align-items-center justify-content-center"
+                    style="height: 300px;">
                     <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
                 </div>
                 <div class="overlay">
@@ -184,7 +204,8 @@
         <!-- Gallery Item 9 -->
         <div class="col-md-6 col-lg-4 gallery-item" data-filter="events">
             <div class="gallery-card">
-                <div class="gallery-image bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                <div class="gallery-image bg-light d-flex align-items-center justify-content-center"
+                    style="height: 300px;">
                     <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
                 </div>
                 <div class="overlay">
@@ -254,12 +275,12 @@
 </style>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const filterButtons = document.querySelectorAll('[data-filter]');
         const galleryItems = document.querySelectorAll('.gallery-item');
 
         filterButtons.forEach(button => {
-            button.addEventListener('click', function() {
+            button.addEventListener('click', function () {
                 const filter = this.getAttribute('data-filter');
 
                 filterButtons.forEach(btn => btn.classList.remove('active'));

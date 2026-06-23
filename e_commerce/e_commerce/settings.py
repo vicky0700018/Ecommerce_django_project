@@ -32,6 +32,9 @@ ALLOWED_HOSTS = ['*']
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
+    'http://shopsphere.com:8000',
+    'http://shopsphere.com',
+    'https://shopsphere.com',
     'https://*.ngrok-free.app',
     'https://*.trycloudflare.com',
     'https://*.github.dev',
@@ -72,6 +75,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'shopsphere.context_processors.announcements',
             ],
         },
     },

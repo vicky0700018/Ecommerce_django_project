@@ -11,13 +11,25 @@ from .models import CustomUser, OTP, Category, Product
 import uuid
 
 def home(request):
-   return render(request, 'home.html')
+    categories = Category.objects.all()
+    products = Product.objects.filter(is_available=True).select_related('category')
+    featured_products = products[:8]
+    new_arrivals = products.order_by('-created_at')[:8]
+    best_sellers = products.order_by('-id')[:8]
+    
+    context = {
+        'categories': categories,
+        'featured_products': featured_products,
+        'new_arrivals': new_arrivals,
+        'best_sellers': best_sellers,
+    }
+    return render(request, 'home.html', context)
 
 def product(request):
     category_slug = request.GET.get('category')
     search_query = request.GET.get('q')
 
-    products = Product.objects.filter(is_available=True)
+    products = Product.objects.filter(is_available=True).select_related('category')
     categories = Category.objects.all()
 
     if category_slug:

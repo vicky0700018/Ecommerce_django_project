@@ -93,9 +93,9 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     discount_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     stock = models.IntegerField(default=0)
-    is_available = models.BooleanField(default=True)
+    is_available = models.BooleanField(default=True, db_index=True)
     image = models.ImageField(upload_to='products/', null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -114,7 +114,7 @@ class Product(models.Model):
 class Announcement(models.Model):
     text = models.CharField(max_length=255, help_text="Announcement text (e.g. Free Shipping All Over India)")
     link = models.URLField(blank=True, null=True, help_text="Optional link when the bar is clicked")
-    is_active = models.BooleanField(default=True, help_text="Designate if this announcement is displayed")
+    is_active = models.BooleanField(default=True, db_index=True, help_text="Designate if this announcement is displayed")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -75,7 +75,7 @@
                     <div class="product-card card h-100">
                         <div class="product-image bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
                             {% if product.image %}
-                                <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy">
                             {% else %}
                                 <i class="fas fa-box-open" style="font-size: 3rem; color: #ccc;"></i>
                             {% endif %}

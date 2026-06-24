@@ -38,85 +38,480 @@
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid py-5">
-    <!-- Hero Section -->
-    <section class="hero-section mb-5">
-
-        <div class="row align-items-center">
-            <div class="col-lg-6">
-                <h1 class="display-4 fw-bold text-primary mb-3">Welcome to ShopSphere</h1>
-                <p class="lead text-muted mb-4">Discover a world of premium products and exceptional shopping
-                    experience.</p>
-                <div class="d-flex gap-3">
-                    <a href="{% url 'product' %}" class="btn btn-primary btn-lg">
-                        <i class="fas fa-shopping-bag me-2"></i>Shop Now
-                    </a>
-                    <a href="{% url 'about_us' %}" class="btn btn-outline-primary btn-lg">
-                        <i class="fas fa-info-circle me-2"></i>Learn More
-                    </a>
-                </div>
+<div class="container-fluid px-0">
+    <!-- Shop By Category Section -->
+    <section class="category-section py-5">
+        <div class="container">
+            <div class="section-header text-center mb-5">
+                <h2 class="section-title">Shop By Category</h2>
+                <div class="section-divider mx-auto"></div>
+                <p class="text-muted mt-3">Explore our curated collection</p>
             </div>
-            <div class="col-lg-6 text-center">
-                <div class="hero-image p-5">
-                    <i class="fas fa-shopping-bags"
-                        style="font-size: 8rem; color: var(--accent-magenta); opacity: 0.15;"></i>
+            
+            <div class="category-slider-container position-relative">
+                <div class="category-slider d-flex gap-4 overflow-auto py-3">
+                    {% for category in categories %}
+                    <div class="category-slider-item">
+                        <a href="{% url 'product' %}?category={{ category.slug }}" class="category-circle-link">
+                            <div class="category-circle-image">
+                                {% if category.image %}
+                                    <img src="{{ category.image.url }}" alt="{{ category.name }}" loading="lazy">
+                                {% else %}
+                                    <div class="category-circle-placeholder d-flex align-items-center justify-content-center">
+                                        <i class="{{ category.icon_class|default:'fas fa-tags' }}"></i>
+                                    </div>
+                                {% endif %}
+                                <span class="category-circle-label">{{ category.name }}</span>
+                            </div>
+                        </a>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center py-4">
+                        <p class="text-muted">No categories available.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                <!-- Navigation Arrows -->
+                <button class="slider-btn prev-btn" onclick="slideCategories(-1)" type="button">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="slider-btn next-btn" onclick="slideCategories(1)" type="button">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products Section -->
+    <section class="products-section py-5 bg-light-section">
+        <div class="container">
+            <div class="section-header text-center mb-5">
+                <h2 class="section-title">Featured Products</h2>
+                <div class="section-divider mx-auto"></div>
+                <p class="text-muted mt-3">Our handpicked recommendations for you</p>
+            </div>
+            <div class="row g-4">
+                {% for product in featured_products %}
+                <div class="col-md-6 col-lg-3">
+                    <div class="product-card card h-100 border-0">
+                        <div class="product-image-container bg-light d-flex align-items-center justify-content-center">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+                            {% else %}
+                                <i class="fas fa-box-open placeholder-box" style="font-size: 3rem; color: #ccc;"></i>
+                            {% endif %}
+                            {% if product.discount_price %}
+                                <span class="product-badge discount-badge">Sale</span>
+                            {% endif %}
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <div class="mb-1">
+                                <small class="text-muted">{{ product.category.name }}</small>
+                            </div>
+                            <h6 class="product-card-title mb-2">{{ product.name }}</h6>
+                            <div class="mb-2">
+                                <span class="text-warning small">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </span>
+                                <small class="text-muted ms-2">(125)</small>
+                            </div>
+                            <p class="product-desc text-muted small mb-3">{{ product.description|truncatewords:10 }}</p>
+                            <div class="mt-auto d-flex justify-content-between align-items-center">
+                                <div class="product-price">
+                                    {% if product.discount_price %}
+                                        <span class="text-decoration-line-through text-muted small me-1">₹{{ product.price }}</span>
+                                        <span class="price-val">₹{{ product.discount_price }}</span>
+                                    {% else %}
+                                        <span class="price-val">₹{{ product.price }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-danger wishlist-btn" type="button" 
+                                        data-product="{{ product.name }}" data-price="₹{{ product.final_price }}" 
+                                        data-image="{% if product.image %}{{ product.image.url }}{% endif %}">
+                                        <i class="far fa-heart"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-primary add-to-cart-btn" type="button" 
+                                        data-product="{{ product.name }}" data-price="₹{{ product.final_price }}" 
+                                        data-image="{% if product.image %}{{ product.image.url }}{% endif %}">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted">No featured products available.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- New Arrivals Section -->
+    <section class="products-section py-5">
+        <div class="container">
+            <div class="section-header text-center mb-5">
+                <h2 class="section-title">New Arrivals</h2>
+                <div class="section-divider mx-auto"></div>
+                <p class="text-muted mt-3">Check out our latest arrivals fresh in stock</p>
+            </div>
+            <div class="row g-4">
+                {% for product in new_arrivals %}
+                <div class="col-md-6 col-lg-3">
+                    <div class="product-card card h-100 border-0">
+                        <div class="product-image-container bg-light d-flex align-items-center justify-content-center">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+                            {% else %}
+                                <i class="fas fa-box-open placeholder-box" style="font-size: 3rem; color: #ccc;"></i>
+                            {% endif %}
+                            <span class="product-badge new-badge">New</span>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <div class="mb-1">
+                                <small class="text-muted">{{ product.category.name }}</small>
+                            </div>
+                            <h6 class="product-card-title mb-2">{{ product.name }}</h6>
+                            <div class="mb-2">
+                                <span class="text-warning small">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </span>
+                                <small class="text-muted ms-2">(84)</small>
+                            </div>
+                            <p class="product-desc text-muted small mb-3">{{ product.description|truncatewords:10 }}</p>
+                            <div class="mt-auto d-flex justify-content-between align-items-center">
+                                <div class="product-price">
+                                    {% if product.discount_price %}
+                                        <span class="text-decoration-line-through text-muted small me-1">₹{{ product.price }}</span>
+                                        <span class="price-val">₹{{ product.discount_price }}</span>
+                                    {% else %}
+                                        <span class="price-val">₹{{ product.price }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-danger wishlist-btn" type="button" 
+                                        data-product="{{ product.name }}" data-price="₹{{ product.final_price }}" 
+                                        data-image="{% if product.image %}{{ product.image.url }}{% endif %}">
+                                        <i class="far fa-heart"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-primary add-to-cart-btn" type="button" 
+                                        data-product="{{ product.name }}" data-price="₹{{ product.final_price }}" 
+                                        data-image="{% if product.image %}{{ product.image.url }}{% endif %}">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted">No new arrivals available.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Best Sellers Section -->
+    <section class="products-section py-5 bg-light-section">
+        <div class="container">
+            <div class="section-header text-center mb-5">
+                <h2 class="section-title">Best Sellers</h2>
+                <div class="section-divider mx-auto"></div>
+                <p class="text-muted mt-3">Our most popular and highest selling items</p>
+            </div>
+            <div class="row g-4">
+                {% for product in best_sellers %}
+                <div class="col-md-6 col-lg-3">
+                    <div class="product-card card h-100 border-0">
+                        <div class="product-image-container bg-light d-flex align-items-center justify-content-center">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+                            {% else %}
+                                <i class="fas fa-box-open placeholder-box" style="font-size: 3rem; color: #ccc;"></i>
+                            {% endif %}
+                            <span class="product-badge hot-badge">Hot</span>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <div class="mb-1">
+                                <small class="text-muted">{{ product.category.name }}</small>
+                            </div>
+                            <h6 class="product-card-title mb-2">{{ product.name }}</h6>
+                            <div class="mb-2">
+                                <span class="text-warning small">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </span>
+                                <small class="text-muted ms-2">(342)</small>
+                            </div>
+                            <p class="product-desc text-muted small mb-3">{{ product.description|truncatewords:10 }}</p>
+                            <div class="mt-auto d-flex justify-content-between align-items-center">
+                                <div class="product-price">
+                                    {% if product.discount_price %}
+                                        <span class="text-decoration-line-through text-muted small me-1">₹{{ product.price }}</span>
+                                        <span class="price-val">₹{{ product.discount_price }}</span>
+                                    {% else %}
+                                        <span class="price-val">₹{{ product.price }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-danger wishlist-btn" type="button" 
+                                        data-product="{{ product.name }}" data-price="₹{{ product.final_price }}" 
+                                        data-image="{% if product.image %}{{ product.image.url }}{% endif %}">
+                                        <i class="far fa-heart"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-primary add-to-cart-btn" type="button" 
+                                        data-product="{{ product.name }}" data-price="₹{{ product.final_price }}" 
+                                        data-image="{% if product.image %}{{ product.image.url }}{% endif %}">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted">No best sellers available.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Counter Section -->
+    <section class="stats-section py-5">
+        <div class="container">
+            <div class="row g-4 text-center">
+                <div class="col-6 col-lg-3">
+                    <div class="stats-card p-4">
+                        <div class="stats-icon-box mx-auto mb-3">
+                            <i class="fas fa-shopping-bag"></i>
+                        </div>
+                        <h3 class="stats-number">10,000+</h3>
+                        <p class="stats-label text-muted mb-0">Products</p>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stats-card p-4">
+                        <div class="stats-icon-box mx-auto mb-3">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 class="stats-number">5,000+</h3>
+                        <p class="stats-label text-muted mb-0">Customers</p>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stats-card p-4">
+                        <div class="stats-icon-box mx-auto mb-3">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                        <h3 class="stats-number">50+</h3>
+                        <p class="stats-label text-muted mb-0">Categories</p>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stats-card p-4">
+                        <div class="stats-icon-box mx-auto mb-3">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <h3 class="stats-number">24/7</h3>
+                        <p class="stats-label text-muted mb-0">Support</p>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Features Section -->
-    <section class="features-section mb-5">
-        <h2 class="text-center mb-5">Why Choose ShopSphere?</h2>
-        <div class="row g-4">
-            <div class="col-md-3">
-                <div class="feature-card text-center p-4">
-                    <i class="fas fa-truck text-primary mb-3" style="font-size: 2.5rem;"></i>
-                    <h5>Fast Delivery</h5>
-                    <p class="text-muted">Get your orders delivered quickly to your doorstep.</p>
-                </div>
+    <!-- Why Choose ShopSphere Section -->
+    <section class="features-section py-5">
+        <div class="container">
+            <div class="section-header text-center mb-5">
+                <h2 class="section-title">Why Choose ShopSphere?</h2>
+                <div class="section-divider mx-auto"></div>
+                <p class="text-muted mt-3">We offer the ultimate shopping experience</p>
             </div>
-            <div class="col-md-3">
-                <div class="feature-card text-center p-4">
-                    <i class="fas fa-shield-alt text-primary mb-3" style="font-size: 2.5rem;"></i>
-                    <h5>Secure Payment</h5>
-                    <p class="text-muted">Your payment information is safe and secure with us.</p>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card text-center p-4">
+                        <div class="feature-icon-box mx-auto mb-3">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <h5 class="fw-bold">Fast Delivery</h5>
+                        <p class="text-muted small mb-0">Get your orders delivered quickly to your doorstep all over India.</p>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-3">
-                <div class="feature-card text-center p-4">
-                    <i class="fas fa-undo text-primary mb-3" style="font-size: 2.5rem;"></i>
-                    <h5>Easy Returns</h5>
-                    <p class="text-muted">Hassle-free returns within 30 days of purchase.</p>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card text-center p-4">
+                        <div class="feature-icon-box mx-auto mb-3">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h5 class="fw-bold">Secure Payment</h5>
+                        <p class="text-muted small mb-0">Your payment information is completely safe & secure with us.</p>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-3">
-                <div class="feature-card text-center p-4">
-                    <i class="fas fa-headset text-primary mb-3" style="font-size: 2.5rem;"></i>
-                    <h5>24/7 Support</h5>
-                    <p class="text-muted">Our customer support team is always here to help.</p>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card text-center p-4">
+                        <div class="feature-icon-box mx-auto mb-3">
+                            <i class="fas fa-undo"></i>
+                        </div>
+                        <h5 class="fw-bold">Easy Returns</h5>
+                        <p class="text-muted small mb-0">Hassle-free, no-questions-asked returns within 30 days of purchase.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card text-center p-4">
+                        <div class="feature-icon-box mx-auto mb-3">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <h5 class="fw-bold">24/7 Support</h5>
+                        <p class="text-muted small mb-0">Our dedicated support team is always online to help you anywhere.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Call to Action Section -->
-    <section class="cta-section bg-light p-5 rounded mb-5">
-        <div class="row align-items-center">
-            <div class="col-lg-8">
-                <h3 class="mb-3">Ready to Start Shopping?</h3>
-                <p class="text-muted">Browse our wide collection of products and find everything you need.</p>
+    <!-- Customer Reviews Section -->
+    <section class="reviews-section py-5 bg-light-section">
+        <div class="container">
+            <div class="section-header text-center mb-5">
+                <h2 class="section-title">Customer Reviews</h2>
+                <div class="section-divider mx-auto"></div>
+                <p class="text-muted mt-3">What our customers say about their experiences</p>
             </div>
-            <div class="col-lg-4 text-end">
-                <a href="{% url 'product' %}" class="btn btn-primary btn-lg">
-                    <i class="fas fa-arrow-right me-2"></i>Explore Products
-                </a>
+            <div class="row g-4 justify-content-center">
+                <div class="col-md-4">
+                    <div class="review-card card p-4 border-0 h-100">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="review-avatar-container">
+                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop&crop=face" class="review-avatar-img" alt="Aarav Mehta" loading="lazy">
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="mb-0 fw-bold text-primary-color">Aarav Mehta</h6>
+                                <span class="text-muted small">Mumbai, India</span>
+                            </div>
+                        </div>
+                        <div class="mb-3 text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="review-text text-muted mb-0">"Excellent service! The product quality is top-notch and delivery was faster than expected. The packaging was neat, and their customer support team was very responsive."</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="review-card card p-4 border-0 h-100">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="review-avatar-container">
+                                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&h=120&fit=crop&crop=face" class="review-avatar-img" alt="Neha Sharma" loading="lazy">
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="mb-0 fw-bold text-primary-color">Neha Sharma</h6>
+                                <span class="text-muted small">Delhi, India</span>
+                            </div>
+                        </div>
+                        <div class="mb-3 text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="review-text text-muted mb-0">"I am in love with the saree collection. The colors and fabrics are exactly as shown in the pictures. The size chart is accurate, and it fits me perfectly. Highly recommended!"</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="review-card card p-4 border-0 h-100">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="review-avatar-container">
+                                <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&h=120&fit=crop&crop=face" class="review-avatar-img" alt="Rohan Verma" loading="lazy">
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="mb-0 fw-bold text-primary-color">Rohan Verma</h6>
+                                <span class="text-muted small">Bangalore, India</span>
+                            </div>
+                        </div>
+                        <div class="mb-3 text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="review-text text-muted mb-0">"Very smooth shopping experience. Secure checkout, easy tracking, and quick refunds when I had to return an item. ShopSphere is now my default online store for shopping!"</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="newsletter-section py-5">
+        <div class="container">
+            <div class="newsletter-card p-5 text-center position-relative overflow-hidden">
+                <div class="newsletter-bg-glow"></div>
+                <div class="row justify-content-center position-relative z-index-2">
+                    <div class="col-lg-8">
+                        <span class="newsletter-tag mb-2 d-inline-block">Stay Updated</span>
+                        <h2 class="newsletter-title text-white mb-3">Get Latest Offers & Discounts</h2>
+                        <p class="newsletter-desc text-white-50 mb-4">Subscribe to our newsletter and get exclusive deals, sale alerts, and brand updates directly to your inbox.</p>
+                        <form id="newsletterForm" class="newsletter-form d-flex flex-column flex-sm-row gap-3 justify-content-center align-items-center max-w-lg mx-auto" onsubmit="handleNewsletterSubmit(event)">
+                            <div class="input-group-custom w-100">
+                                <span class="input-icon"><i class="far fa-envelope text-muted"></i></span>
+                                <input type="email" class="form-control newsletter-input" placeholder="Enter your email address" required id="newsletterEmail">
+                            </div>
+                            <button type="submit" class="btn btn-newsletter text-nowrap px-4 py-3">
+                                <span>Subscribe</span> <i class="fas fa-paper-plane ms-2"></i>
+                            </button>
+                        </form>
+                        <div id="newsletterSuccessMessage" class="mt-3 text-success-light fw-bold d-none">
+                            <i class="fas fa-check-circle me-1"></i> Thank you! You've successfully subscribed to our newsletter.
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 </div>
 
 <style>
+    /* Section Layouts */
+    .section-title {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: var(--primary-color);
+        letter-spacing: -0.5px;
+    }
+
+    .section-divider {
+        width: 60px;
+        height: 4px;
+        background: var(--logo-gradient-horizontal);
+        border-radius: 2px;
+    }
+
+    .bg-light-section {
+        background-color: #f8fafc !important;
+    }
+
     /* Carousel Banner Styling */
     #homeBannerCarousel {
         margin-top: 0;
@@ -203,48 +598,666 @@
         height: 12px;
     }
 
-    .feature-card {
-        background: #f8f9fa;
-        border-radius: 10px;
+    /* Category Slider Section Styles */
+    .category-slider-container {
+        padding: 0 45px;
+    }
+
+    .category-slider {
+        scrollbar-width: none; /* Hide scrollbar for Firefox */
+        -ms-overflow-style: none; /* Hide scrollbar for IE/Edge */
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .category-slider::-webkit-scrollbar {
+        display: none; /* Hide scrollbar for Chrome/Safari */
+    }
+
+    .category-slider-item {
+        flex: 0 0 auto;
+        width: 170px;
+    }
+
+    .category-circle-link {
+        text-decoration: none;
+        display: block;
+    }
+
+    .category-circle-image {
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        overflow: hidden;
+        position: relative;
+        border: 4px solid #ffffff;
+        box-shadow: var(--premium-shadow-sm);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        background: #f1f5f9;
+    }
+
+    .category-circle-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .category-circle-image:hover {
+        transform: scale(1.05);
+        box-shadow: var(--premium-shadow-lg);
+        border-color: var(--accent-magenta);
+    }
+
+    .category-circle-image:hover img {
+        transform: scale(1.1);
+    }
+
+    .category-circle-placeholder {
+        width: 100%;
+        height: 100%;
+        background: var(--logo-gradient-light);
+        color: var(--primary-color);
+    }
+
+    .category-circle-placeholder i {
+        font-size: 2.5rem;
+        background: var(--logo-gradient-horizontal);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .category-circle-label {
+        position: absolute;
+        bottom: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(10, 17, 40, 0.85); /* Premium brand dark background */
+        color: #ffffff;
+        padding: 5px 16px;
+        border-radius: 30px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        white-space: nowrap;
+        letter-spacing: 0.5px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
         transition: all 0.3s ease;
-        border: 1px solid #e9ecef;
+    }
+
+    .category-circle-image:hover .category-circle-label {
+        background: var(--logo-gradient-horizontal);
+    }
+
+    /* Slider Arrows */
+    .slider-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        color: #334155;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        cursor: pointer;
+        z-index: 10;
+        transition: all 0.2s ease;
+    }
+
+    .slider-btn:hover {
+        background: var(--primary-color);
+        color: #ffffff;
+        transform: translateY(-50%) scale(1.1);
+    }
+
+    .prev-btn {
+        left: 0;
+    }
+
+    .next-btn {
+        right: 0;
+    }
+
+    /* Product Card Styles */
+    .product-card {
+        border-radius: 16px;
+        box-shadow: var(--premium-shadow-sm);
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        overflow: hidden;
+        background: #ffffff;
+        border: 1px solid #f1f5f9 !important;
+    }
+
+    .product-card:hover {
+        transform: translateY(-6px);
+        box-shadow: var(--premium-shadow-lg);
+        border-color: rgba(252, 4, 102, 0.15) !important;
+    }
+
+    .product-image-container {
+        height: 240px;
+        position: relative;
+        overflow: hidden;
+        background-color: #f8fafc !important;
+    }
+
+    .product-image-container img {
+        max-height: 80%;
+        max-width: 80%;
+        object-fit: contain;
+        transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .product-card:hover .product-image-container img {
+        transform: scale(1.06);
+    }
+
+    .product-badge {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        padding: 4px 12px;
+        font-size: 0.72rem;
+        font-weight: 800;
+        border-radius: 20px;
+        color: white;
+        text-transform: uppercase;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .discount-badge {
+        background: var(--accent-magenta);
+    }
+
+    .new-badge {
+        background: #10b981;
+    }
+
+    .hot-badge {
+        background: var(--accent-orange);
+    }
+
+    .product-card-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1e293b;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .product-desc {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        height: 38px;
+        line-height: 1.4;
+    }
+
+    .price-val {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: var(--primary-color);
+    }
+
+    /* Feature Card Styles */
+    .feature-card {
+        background: #ffffff;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        box-shadow: var(--premium-shadow-sm);
+        transition: all 0.3s ease;
     }
 
     .feature-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--premium-shadow-lg);
+        border-color: rgba(252, 4, 102, 0.1);
         background: white;
     }
 
-    .hero-section {
-        margin-top: 0 !important;
-        padding-top: 0 !important;
-        min-height: auto;
+    .feature-icon-box {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: var(--logo-gradient-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        transition: all 0.4s ease;
     }
 
-    .cta-section {
+    .feature-icon-box i {
         background: var(--logo-gradient-horizontal);
-        color: white;
-        border-radius: 16px !important;
-        box-shadow: var(--premium-shadow);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 
-    .cta-section h3,
-    .cta-section p {
-        color: white;
+    .feature-card:hover .feature-icon-box {
+        background: var(--logo-gradient-horizontal);
+        transform: rotateY(360deg);
     }
 
-    .cta-section .btn-primary {
-        background: white;
-        color: var(--primary-color) !important;
-        border: none;
+    .feature-card:hover .feature-icon-box i {
+        background: none;
+        -webkit-text-fill-color: #ffffff;
+        color: #ffffff;
+    }
+
+    /* Review Card Styles */
+    .review-card {
+        background: #ffffff;
+        border-radius: 16px;
         box-shadow: var(--premium-shadow-sm);
+        border: 1px solid #f1f5f9;
+        transition: all 0.3s ease;
     }
 
-    .cta-section .btn-primary:hover {
-        background: #fafbfc;
+    .review-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--premium-shadow-lg);
+    }
+
+    .avatar-circle {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        color: white;
+        font-weight: 700;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .review-text {
+        font-size: 0.9rem;
+        line-height: 1.6;
+        font-style: italic;
+    }
+
+    /* Stats Counter Section Styles */
+    .stats-section {
+        background-color: #ffffff !important;
+        border-top: 1px solid #f1f5f9;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .stats-card {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: var(--premium-shadow-sm);
+        border: 1px solid #f1f5f9;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--premium-shadow-lg);
+        border-color: rgba(252, 4, 102, 0.1);
+    }
+
+    .stats-icon-box {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        background: var(--logo-gradient-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        transition: all 0.4s ease;
+    }
+
+    .stats-icon-box i {
+        background: var(--logo-gradient-horizontal);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .stats-card:hover .stats-icon-box {
+        background: var(--logo-gradient-horizontal);
+        transform: scale(1.1);
+    }
+
+    .stats-card:hover .stats-icon-box i {
+        background: none;
+        -webkit-text-fill-color: #ffffff;
+        color: #ffffff;
+    }
+
+    .stats-number {
+        font-size: 2rem;
+        font-weight: 800;
+        background: var(--logo-gradient-horizontal);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 4px;
+    }
+
+    .stats-label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* Review Avatar Custom Styles */
+    .review-avatar-container {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 3px solid #ffffff;
+        box-shadow: var(--premium-shadow-sm);
+        background: #f1f5f9;
+        flex-shrink: 0;
+    }
+
+    .review-avatar-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .text-primary-color {
+        color: var(--primary-color);
+    }
+
+    /* Newsletter Section Styles */
+    .newsletter-section {
+        background-color: #ffffff;
+    }
+
+    .newsletter-card {
+        background: var(--logo-gradient-horizontal);
+        border-radius: 24px;
+        box-shadow: var(--premium-shadow-lg);
+        border: none;
+        color: #ffffff;
+    }
+
+    .newsletter-bg-glow {
+        position: absolute;
+        top: -50%;
+        left: -20%;
+        width: 60%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 70%);
+        transform: rotate(-15deg);
+        pointer-events: none;
+    }
+
+    .newsletter-tag {
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        background: rgba(255, 255, 255, 0.15);
+        color: #ffffff;
+        padding: 6px 16px;
+        border-radius: 30px;
+    }
+
+    .newsletter-title {
+        font-size: 2.2rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+
+    .newsletter-desc {
+        font-size: 1rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.6;
+    }
+
+    .newsletter-form {
+        max-width: 500px;
+    }
+
+    .input-group-custom {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 16px;
+        color: #94a3b8;
+        z-index: 5;
+        font-size: 1.1rem;
+    }
+
+    .newsletter-input {
+        background: rgba(255, 255, 255, 0.12) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-radius: 12px !important;
+        padding: 14px 16px 14px 48px !important;
+        color: #ffffff !important;
+        font-size: 0.95rem !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .newsletter-input::placeholder {
+        color: rgba(255, 255, 255, 0.6) !important;
+    }
+
+    .newsletter-input:focus {
+        background: rgba(255, 255, 255, 0.2) !important;
+        border-color: #ffffff !important;
+        box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.15) !important;
+        outline: none;
+    }
+
+    .btn-newsletter {
+        background: #ffffff;
+        color: var(--primary-color);
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        height: 52px;
+    }
+
+    .btn-newsletter:hover {
+        background: var(--primary-color);
+        color: #ffffff;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         transform: translateY(-2px);
-        box-shadow: var(--premium-shadow-lg) !important;
+    }
+
+    .text-success-light {
+        color: #a7f3d0;
+        font-size: 0.95rem;
+    }
+
+    .z-index-2 {
+        z-index: 2;
+    }
+
+    @media (max-width: 576px) {
+        .newsletter-card {
+            padding: 3rem 1.5rem !important;
+        }
+        .newsletter-title {
+            font-size: 1.6rem;
+        }
+        .btn-newsletter {
+            width: 100%;
+        }
     }
 </style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // LocalStorage helper functions
+    function loadWishlist() {
+        const savedWishlist = localStorage.getItem('shopsphere_wishlist');
+        return savedWishlist ? JSON.parse(savedWishlist) : [];
+    }
+
+    function saveWishlist(wishlist) {
+        localStorage.setItem('shopsphere_wishlist', JSON.stringify(wishlist));
+    }
+
+    function isInWishlist(productName) {
+        const wishlist = loadWishlist();
+        return wishlist.some(item => item.name === productName);
+    }
+
+    function loadCart() {
+        const savedCart = localStorage.getItem('cart');
+        return savedCart ? JSON.parse(savedCart) : [];
+    }
+
+    function saveCart(cart) {
+        localStorage.setItem('cart', JSON.stringify(cart));
+        if (typeof updateCounts === 'function') {
+            updateCounts();
+        }
+    }
+
+    // Initialize button states
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.wishlist-btn').forEach(btn => {
+            const productName = btn.getAttribute('data-product');
+            if (isInWishlist(productName)) {
+                btn.classList.add('active');
+                btn.innerHTML = '<i class="fas fa-heart"></i>';
+            }
+        });
+    });
+
+    // Wishlist click handler
+    document.querySelectorAll('.wishlist-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            this.classList.toggle('active');
+            const productName = this.getAttribute('data-product');
+            const price = this.getAttribute('data-price');
+            const image = this.getAttribute('data-image') || '';
+            const wishlist = loadWishlist();
+            
+            if (this.classList.contains('active')) {
+                this.innerHTML = '<i class="fas fa-heart"></i>';
+                if (!isInWishlist(productName)) {
+                    wishlist.push({ name: productName, price: price, image: image });
+                    saveWishlist(wishlist);
+                }
+                alert(productName + ' added to wishlist!');
+            } else {
+                this.innerHTML = '<i class="far fa-heart"></i>';
+                const updatedWishlist = wishlist.filter(item => item.name !== productName);
+                saveWishlist(updatedWishlist);
+                alert(productName + ' removed from wishlist!');
+            }
+        });
+    });
+
+    // Add to cart click handler
+    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const productName = this.getAttribute('data-product');
+            const price = this.getAttribute('data-price');
+            const image = this.getAttribute('data-image') || '';
+            
+            const cart = loadCart();
+            cart.push({ name: productName, price: price, image: image });
+            saveCart(cart);
+            alert(productName + ' added to cart!');
+        });
+    });
+
+    // Category slider auto scroll function
+    let autoScrollInterval;
+
+    function startAutoScroll() {
+        const slider = document.querySelector('.category-slider');
+        if (!slider) return;
+
+        autoScrollInterval = setInterval(() => {
+            const maxScrollLeft = slider.scrollWidth - slider.clientWidth;
+            if (slider.scrollLeft >= maxScrollLeft - 1) {
+                slider.scrollTo({
+                    left: 0,
+                    behavior: 'smooth'
+                });
+            } else {
+                slider.scrollBy({
+                    left: 200,
+                    behavior: 'smooth'
+                });
+            }
+        }, 3000); // Auto scroll every 3 seconds
+    }
+
+    function stopAutoScroll() {
+        clearInterval(autoScrollInterval);
+    }
+
+    // Initialize auto scroll and pause on hover
+    document.addEventListener('DOMContentLoaded', () => {
+        const sliderContainer = document.querySelector('.category-slider-container');
+        if (sliderContainer) {
+            startAutoScroll();
+
+            // Pause auto scroll when user hovers
+            sliderContainer.addEventListener('mouseenter', stopAutoScroll);
+            sliderContainer.addEventListener('mouseleave', startAutoScroll);
+        }
+    });
+
+    // Category slider function (with timer reset)
+    function slideCategories(direction) {
+        const slider = document.querySelector('.category-slider');
+        if (!slider) return;
+        const scrollAmount = 300;
+        slider.scrollBy({
+            left: direction * scrollAmount,
+            behavior: 'smooth'
+        });
+        
+        // Reset timer on manual scroll
+        stopAutoScroll();
+        startAutoScroll();
+    }
+
+    // Newsletter form submit handler
+    function handleNewsletterSubmit(e) {
+        e.preventDefault();
+        const emailInput = document.getElementById('newsletterEmail');
+        const successMessage = document.getElementById('newsletterSuccessMessage');
+        
+        if (emailInput && emailInput.value) {
+            if (successMessage) {
+                successMessage.classList.remove('d-none');
+                emailInput.value = '';
+                setTimeout(() => {
+                    successMessage.classList.add('d-none');
+                }, 5000);
+            }
+            alert('Thank you for subscribing to our newsletter!');
+        }
+    }
+</script>
 {% endblock %}

@@ -7,7 +7,7 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
-from .models import CustomUser, OTP, Category, Product
+from .models import CustomUser, OTP, Category, Product, TeamMember, Gallery, ContactMessage
 import uuid
 
 def home(request):
@@ -53,13 +53,44 @@ def category(request):
     return render(request, 'category.html', context)
 
 def gallery(request):
-   return render(request, 'gallery.html')
+    images = Gallery.objects.all()
+    return render(request, 'gallery.html', {'images': images})
 
 def about_us(request):
-   return render(request, 'about_us.html')
+    team_members = TeamMember.objects.all()
+    return render(request, 'about_us.html', {'team_members': team_members})
 
 def contact(request):
-   return render(request, 'contact.html')
+    if request.method == 'POST':
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        email = request.POST.get('email', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        subject = request.POST.get('subject', '').strip()
+        message = request.POST.get('message', '').strip()
+        agree = request.POST.get('agree')
+
+        if not first_name or not last_name or not email or not subject or not message or not agree:
+            messages.error(request, 'Please fill in all required fields and agree to the terms and conditions.')
+            return redirect('contact')
+
+        try:
+            contact_msg = ContactMessage(
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                phone=phone,
+                subject=subject,
+                message=message
+            )
+            contact_msg.save()
+            messages.success(request, 'Your message has been sent successfully! We will get back to you soon.')
+        except Exception as e:
+            messages.error(request, f'Something went wrong while sending your message: {str(e)}')
+            
+        return redirect('contact')
+
+    return render(request, 'contact.html')
 
 def register(request):
     if request.method == 'POST':

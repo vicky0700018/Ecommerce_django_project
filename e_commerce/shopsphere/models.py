@@ -124,4 +124,43 @@ class Announcement(models.Model):
         return self.text
 
 
+class TeamMember(models.Model):
+    employee_image = models.ImageField(upload_to='team/', help_text="Upload employee photo")
+    employee_name = models.CharField(max_length=150)
+    role = models.CharField(max_length=100)
+    description = models.TextField()
+
+    def __str__(self):
+        return f"{self.employee_name} - {self.role}"
+
+
+class Gallery(models.Model):
+    image = models.ImageField(upload_to='gallery/', help_text="Upload gallery image")
+    title = models.CharField(max_length=150, blank=True, help_text="Optional caption or title")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Gallery'
+        verbose_name_plural = 'Galleries'
+        ordering = ('-created_at',)
+
+    def __str__(self):
+        return self.title or f"Gallery Image {self.id}"
+
+
+class ContactMessage(models.Model):
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20, blank=True, null=True)
+    subject = models.CharField(max_length=150)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} - {self.subject}"
+
+
+
+
 

@@ -87,10 +87,63 @@
                     <span class="fs-5 fw-bold">Grand Total</span>
                     <span class="fs-4 fw-bold text-primary" id="cart-total">₹0.00</span>
                 </div>
+
+                <!-- Payment Method Selection -->
+                <div class="mb-4" id="payment-selection-section">
+                    <label class="fw-bold mb-2 text-dark small text-uppercase" style="letter-spacing: 0.5px; font-size: 0.75rem; color: #475569 !important;">Select Payment Method</label>
+                    
+                    <!-- COD Option -->
+                    <div class="payment-option-card p-3 mb-2 d-flex align-items-center justify-content-between active" id="option-cod">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle p-2 me-3 d-flex align-items-center justify-content-center text-success" style="width: 40px; height: 40px; background-color: rgba(40, 167, 69, 0.1); font-size: 1.1rem;">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold text-dark mb-0" style="font-size: 0.95rem;">Cash on Delivery (COD)</div>
+                                <small class="text-muted d-block" style="font-size: 0.75rem;">Pay in cash when order is delivered</small>
+                            </div>
+                        </div>
+                        <div class="radio-indicator">
+                            <div class="radio-dot"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Online Payment Option -->
+                    <div class="payment-option-card p-3 mb-2 d-flex align-items-center justify-content-between" id="option-online">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle p-2 me-3 d-flex align-items-center justify-content-center text-primary" style="width: 40px; height: 40px; background-color: rgba(10, 17, 40, 0.08); font-size: 1.1rem;">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold text-dark mb-0" style="font-size: 0.95rem;">Online Payment (Razorpay)</div>
+                                <small class="text-muted d-block" style="font-size: 0.75rem;">Pay via Card, UPI, NetBanking</small>
+                            </div>
+                        </div>
+                        <div class="radio-indicator">
+                            <div class="radio-dot"></div>
+                        </div>
+                    </div>
+
+                    <!-- Demo Payment Option -->
+                    <div class="payment-option-card p-3 mb-3 d-flex align-items-center justify-content-between" id="option-demo">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle p-2 me-3 d-flex align-items-center justify-content-center text-warning" style="width: 40px; height: 40px; background-color: rgba(254, 135, 1, 0.1); font-size: 1.1rem;">
+                                <i class="fas fa-magic"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold text-dark mb-0" style="font-size: 0.95rem;">Demo Payment (Simulated)</div>
+                                <small class="text-muted d-block" style="font-size: 0.75rem;">Simulate successful online payment</small>
+                            </div>
+                        </div>
+                        <div class="radio-indicator">
+                            <div class="radio-dot"></div>
+                        </div>
+                    </div>
+                </div>
                 
                 {% if user.is_authenticated %}
                 <button class="btn btn-primary btn-lg w-100 py-3 fw-bold shadow-sm" id="checkout-btn" style="transition: all 0.3s ease;">
-                    <i class="fas fa-credit-card me-2"></i>Proceed to Checkout
+                    <i class="fas fa-check-circle me-2"></i>Place Order (COD)
                 </button>
                 {% else %}
                 <a href="{% url 'login' %}?next={% url 'cart' %}" class="btn btn-primary btn-lg w-100 py-3 fw-bold shadow-sm">
@@ -162,8 +215,57 @@
         transform: translateY(-2px);
         box-shadow: var(--premium-shadow-hover) !important;
     }
+
+    /* Payment Option Card Styles */
+    .payment-option-card {
+        border: 2px solid #e2e8f0;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        border-radius: 12px;
+    }
+    
+    .payment-option-card:hover {
+        border-color: #cbd5e1;
+        transform: translateY(-1px);
+    }
+    
+    .payment-option-card.active {
+        border-color: var(--accent-magenta) !important;
+        background-color: rgba(252, 4, 102, 0.02) !important;
+        box-shadow: 0 4px 12px rgba(252, 4, 102, 0.05);
+    }
+    
+    .payment-option-card .radio-indicator {
+        width: 22px;
+        height: 22px;
+        border: 2px solid #cbd5e1;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+    }
+    
+    .payment-option-card.active .radio-indicator {
+        border-color: var(--accent-magenta);
+        background-color: var(--accent-magenta);
+    }
+    
+    .payment-option-card .radio-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: #fff;
+        display: none;
+    }
+    
+    .payment-option-card.active .radio-dot {
+        display: block;
+    }
 </style>
 
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
     // Load cart helper
     function loadCart() {
@@ -326,6 +428,52 @@
     document.addEventListener('DOMContentLoaded', () => {
         displayCart();
 
+        // Payment method selection logic
+        let selectedPaymentMethod = 'COD';
+        const optionCod = document.getElementById('option-cod');
+        const optionOnline = document.getElementById('option-online');
+        const optionDemo = document.getElementById('option-demo');
+        const checkoutBtn = document.getElementById('checkout-btn');
+
+        function selectPaymentMethod(method) {
+            selectedPaymentMethod = method;
+            
+            // Remove active classes from all options
+            if (optionCod) optionCod.classList.remove('active');
+            if (optionOnline) optionOnline.classList.remove('active');
+            if (optionDemo) optionDemo.classList.remove('active');
+            
+            if (method === 'COD') {
+                if (optionCod) optionCod.classList.add('active');
+                if (checkoutBtn) {
+                    checkoutBtn.innerHTML = '<i class="fas fa-check-circle me-2"></i>Place Order (COD)';
+                }
+            } else if (method === 'Online') {
+                if (optionOnline) optionOnline.classList.add('active');
+                if (checkoutBtn) {
+                    checkoutBtn.innerHTML = '<i class="fas fa-credit-card me-2"></i>Pay & Place Order';
+                }
+            } else if (method === 'Demo') {
+                if (optionDemo) optionDemo.classList.add('active');
+                if (checkoutBtn) {
+                    checkoutBtn.innerHTML = '<i class="fas fa-magic me-2"></i>Place Demo Order (Simulated)';
+                }
+            }
+        }
+
+        if (optionCod) {
+            optionCod.addEventListener('click', () => selectPaymentMethod('COD'));
+        }
+        if (optionOnline) {
+            optionOnline.addEventListener('click', () => selectPaymentMethod('Online'));
+        }
+        if (optionDemo) {
+            optionDemo.addEventListener('click', () => selectPaymentMethod('Demo'));
+        }
+
+        // Initialize state
+        selectPaymentMethod('COD');
+
         // Clear cart handler
         const clearBtn = document.getElementById('clear-cart-btn');
         if (clearBtn) {
@@ -338,7 +486,6 @@
         }
 
         // Checkout button simulation handler
-        const checkoutBtn = document.getElementById('checkout-btn');
         if (checkoutBtn) {
             checkoutBtn.addEventListener('click', () => {
                 const groupedItems = getGroupedCart();
@@ -363,29 +510,113 @@
                 });
                 const grandTotal = formatPrice(subtotal * 1.18);
 
-                // Create new order object
-                const newOrder = {
-                    id: orderId,
-                    date: todayStr,
-                    product: productSummary,
-                    price: grandTotal,
-                    status: 'Processing'
-                };
+                // Checkout helper function to actually place the order
+                function placeOrder(paymentId = null) {
+                    const newOrder = {
+                        id: orderId,
+                        date: todayStr,
+                        product: productSummary,
+                        price: grandTotal,
+                        status: selectedPaymentMethod === 'COD' ? 'Processing' : 'Paid',
+                        payment_method: selectedPaymentMethod,
+                        razorpay_payment_id: paymentId,
+                        timestamp: Date.now() // For status simulation
+                    };
 
-                // Save to localStorage orders list
-                const savedOrders = localStorage.getItem('shopsphere_orders');
-                const orders = savedOrders ? JSON.parse(savedOrders) : [];
-                orders.unshift(newOrder); // Add to the top of list
-                localStorage.setItem('shopsphere_orders', JSON.stringify(orders));
+                    // Save to localStorage orders list
+                    const savedOrders = localStorage.getItem('shopsphere_orders');
+                    const orders = savedOrders ? JSON.parse(savedOrders) : [];
+                    orders.unshift(newOrder); // Add to the top of list
+                    localStorage.setItem('shopsphere_orders', JSON.stringify(orders));
 
-                // 2. Clear Cart
-                saveCart([]);
+                    // 2. Clear Cart
+                    saveCart([]);
 
-                // 3. Save success alert to sessionStorage to display on the orders page
-                sessionStorage.setItem('order_success_alert', `🎉 Order placed successfully! Your Order ID is <strong>${orderId}</strong>.`);
+                    // 3. Save success alert to sessionStorage to display on the orders page
+                    let alertMessage = '';
+                    if (selectedPaymentMethod === 'COD') {
+                        alertMessage = `🎉 Order placed successfully via Cash on Delivery (COD)! Your Order ID is <strong>${orderId}</strong>.`;
+                    } else {
+                        alertMessage = `🎉 Payment successful! Order placed successfully. Order ID: <strong>${orderId}</strong>. Payment ID: <strong>${paymentId || 'Simulated'}</strong>.`;
+                    }
+                    sessionStorage.setItem('order_success_alert', alertMessage);
 
-                // 4. Redirect to Orders Page
-                window.location.href = "{% url 'orders' %}";
+                    // 4. Redirect to Orders Page
+                    window.location.href = "{% url 'orders' %}";
+                }
+
+                if (selectedPaymentMethod === 'COD') {
+                    placeOrder();
+                } else if (selectedPaymentMethod === 'Demo') {
+                    // Demo Payment (Simulated)
+                    const btn = document.getElementById('checkout-btn');
+                    if (btn) {
+                        btn.disabled = true;
+                        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing Demo Payment...';
+                    }
+                    setTimeout(() => {
+                        const simulatedPayId = 'pay_demo_' + Math.random().toString(36).substr(2, 9).toUpperCase();
+                        placeOrder(simulatedPayId);
+                    }, 1500);
+                } else {
+                    // Online Payment via Razorpay
+                    const RAZORPAY_KEY_ID = 'rzp_test_T5vIU1rCb7Us7d'; // REPLACE WITH YOUR RAZORPAY KEY ID FROM DASHBOARD
+
+                    if (RAZORPAY_KEY_ID === 'rzp_test_YOUR_KEY_ID') {
+                        // User has not configured their key yet. Alert them and simulate successful payment.
+                        alert("ℹ️ ShopSphere Payment Demo:\n\nRazorpay Key ID is not configured in 'cart.html'. We will simulate a successful Razorpay payment for you.");
+                        
+                        // Simulate a small delay for payment processing to make it feel real
+                        const btn = document.getElementById('checkout-btn');
+                        const originalHTML = btn.innerHTML;
+                        btn.disabled = true;
+                        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing Online Payment...';
+                        
+                        setTimeout(() => {
+                            const simulatedPayId = 'pay_' + Math.random().toString(36).substr(2, 9).toUpperCase();
+                            placeOrder(simulatedPayId);
+                        }, 1500);
+                    } else {
+                        // Use real Razorpay Checkout
+                        // Amount needs to be in paise (e.g. ₹100.00 = 10000 paise)
+                        const rawAmount = subtotal * 1.18;
+                        const amountInPaise = Math.round(rawAmount * 100);
+
+                        const options = {
+                            "key": RAZORPAY_KEY_ID,
+                            "amount": amountInPaise,
+                            "currency": "INR",
+                            "name": "ShopSphere",
+                            "description": `Payment for Order ${orderId}`,
+                            "image": "https://i.imgur.com/3g7nWdB.png",
+                            "handler": function (response) {
+                                placeOrder(response.razorpay_payment_id);
+                            },
+                            "prefill": {
+                                "name": "{{ user.full_name|escapejs }}",
+                                "email": "{{ user.email|escapejs }}",
+                                "contact": "{{ user.mobile_no|escapejs }}"
+                            },
+                            "theme": {
+                                "color": "#fc0466"
+                            },
+                            "modal": {
+                                "ondismiss": function() {
+                                    alert("❌ Payment cancelled by user.");
+                                }
+                            }
+                        };
+                        
+                        try {
+                            const rzp = new Razorpay(options);
+                            rzp.open();
+                        } catch (err) {
+                            console.error("Razorpay SDK Error:", err);
+                            alert("⚠️ Razorpay failed to open. Simulating payment instead.");
+                            placeOrder('pay_sim_' + Math.random().toString(36).substr(2, 9).toUpperCase());
+                        }
+                    }
+                }
             });
         }
     });

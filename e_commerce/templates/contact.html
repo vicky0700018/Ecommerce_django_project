@@ -89,35 +89,47 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-body p-5">
                     <h5 class="card-title mb-4">Send us a Message</h5>
-                    <form>
+                    
+                    <!-- Display Messages -->
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+
+                    <form method="POST">
+                        {% csrf_token %}
                         <!-- Name Row -->
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="firstName" class="form-label">First Name</label>
-                                <input type="text" class="form-control" id="firstName" placeholder="John" required>
+                                <input type="text" class="form-control" id="firstName" name="first_name" placeholder="John" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="lastName" class="form-label">Last Name</label>
-                                <input type="text" class="form-control" id="lastName" placeholder="Doe" required>
+                                <input type="text" class="form-control" id="lastName" name="last_name" placeholder="Doe" required>
                             </div>
                         </div>
 
                         <!-- Email Row -->
                         <div class="mb-3">
                             <label for="email" class="form-label">Email Address</label>
-                            <input type="email" class="form-control" id="email" placeholder="john@example.com" required>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="john@example.com" required>
                         </div>
 
                         <!-- Phone Row -->
                         <div class="mb-3">
                             <label for="phone" class="form-label">Phone Number</label>
-                            <input type="tel" class="form-control" id="phone" placeholder="+1 (234) 567-8900">
+                            <input type="tel" class="form-control" id="phone" name="phone" placeholder="+1 (234) 567-8900">
                         </div>
 
                         <!-- Subject Row -->
                         <div class="mb-3">
                             <label for="subject" class="form-label">Subject</label>
-                            <select class="form-select" id="subject" required>
+                            <select class="form-select" id="subject" name="subject" required>
                                 <option value="">Select a subject...</option>
                                 <option value="general">General Inquiry</option>
                                 <option value="order">Order Related</option>
@@ -131,13 +143,13 @@
                         <!-- Message Row -->
                         <div class="mb-4">
                             <label for="message" class="form-label">Message</label>
-                            <textarea class="form-control" id="message" rows="5" placeholder="Type your message here..." required></textarea>
+                            <textarea class="form-control" id="message" name="message" rows="5" placeholder="Type your message here..." required></textarea>
                         </div>
 
                         <!-- Checkbox -->
                         <div class="mb-4">
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="agree" required>
+                                <input class="form-check-input" type="checkbox" id="agree" name="agree" value="true" required>
                                 <label class="form-check-label" for="agree">
                                     I agree to the terms and conditions
                                 </label>

@@ -24,201 +24,56 @@
         </div>
     </div>
 
-    <!-- Filter Tabs -->
-    <div class="row mb-5">
-        <div class="col-lg-12">
-            <div class="d-flex justify-content-center gap-2 flex-wrap">
-                <button class="btn btn-primary active" data-filter="all">
-                    <i class="fas fa-th me-2"></i>All
-                </button>
-                <button class="btn btn-outline-primary" data-filter="products">
-                    <i class="fas fa-box me-2"></i>Products
-                </button>
-                <button class="btn btn-outline-primary" data-filter="lifestyle">
-                    <i class="fas fa-heart me-2"></i>Lifestyle
-                </button>
-                <button class="btn btn-outline-primary" data-filter="customer">
-                    <i class="fas fa-users me-2"></i>Customer Reviews
-                </button>
-                <button class="btn btn-outline-primary" data-filter="events">
-                    <i class="fas fa-calendar me-2"></i>Events
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- Gallery Grid -->
     <div class="row g-4">
-        <!-- Gallery Item 1 -->
-        <div class="col-md-6 col-lg-4 gallery-item" data-filter="products">
+        {% for img in images %}
+        <div class="col-md-6 col-lg-4 gallery-item">
             <div class="gallery-card">
                 <div class="gallery-image bg-light d-flex align-items-center justify-content-center"
-                    style="height: 300px;">
+                    style="height: 300px; overflow: hidden; position: relative;">
+                    {% if img.image %}
+                    <img src="{{ img.image.url }}" alt="{{ img.title }}" class="w-100 h-100" style="object-fit: cover; transition: transform 0.5s ease;" />
+                    {% else %}
                     <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
+                    {% endif %}
                 </div>
                 <div class="overlay">
-                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#galleryModal1">
-                        <i class="fas fa-search-plus"></i> View
+                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#galleryModal{{ img.id }}">
+                        <i class="fas fa-search-plus"></i> View Full Screen
                     </button>
                 </div>
                 <div class="gallery-info p-3">
-                    <h6 class="mb-1">Product Photography</h6>
-                    <small class="text-muted">Professional product shots</small>
+                    <h6 class="mb-1 fw-bold text-dark">{{ img.title|default:"Gallery Image" }}</h6>
+                    <small class="text-muted">Uploaded on {{ img.created_at|date:"F d, Y" }}</small>
                 </div>
             </div>
         </div>
 
-        <!-- Gallery Item 2 -->
-        <div class="col-md-6 col-lg-4 gallery-item" data-filter="lifestyle">
-            <div class="gallery-card">
-                <div class="gallery-image bg-light d-flex align-items-center justify-content-center"
-                    style="height: 300px;">
-                    <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
-                </div>
-                <div class="overlay">
-                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#galleryModal2">
-                        <i class="fas fa-search-plus"></i> View
-                    </button>
-                </div>
-                <div class="gallery-info p-3">
-                    <h6 class="mb-1">Lifestyle Moments</h6>
-                    <small class="text-muted">Daily lifestyle inspiration</small>
+        <!-- Modal for Image Details -->
+        <div class="modal fade" id="galleryModal{{ img.id }}" tabindex="-1" aria-labelledby="galleryModalLabel{{ img.id }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
+                    <div class="modal-header border-0 pb-0">
+                        <h5 class="modal-title fw-bold text-dark" id="galleryModalLabel{{ img.id }}">{{ img.title|default:"Gallery Image" }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-4 text-center">
+                        {% if img.image %}
+                        <img src="{{ img.image.url }}" alt="{{ img.title }}" class="img-fluid rounded shadow-sm" style="max-height: 70vh; object-fit: contain;" />
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
-
-        <!-- Gallery Item 3 -->
-        <div class="col-md-6 col-lg-4 gallery-item" data-filter="customer">
-            <div class="gallery-card">
-                <div class="gallery-image bg-light d-flex align-items-center justify-content-center"
-                    style="height: 300px;">
-                    <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
-                </div>
-                <div class="overlay">
-                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#galleryModal3">
-                        <i class="fas fa-search-plus"></i> View
-                    </button>
-                </div>
-                <div class="gallery-info p-3">
-                    <h6 class="mb-1">Customer Reviews</h6>
-                    <small class="text-muted">Happy customers sharing their experience</small>
-                </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="text-muted mb-3">
+                <i class="fas fa-images" style="font-size: 4rem; opacity: 0.4;"></i>
             </div>
+            <h5>No Images in Gallery Yet</h5>
+            <p class="text-muted mb-2">Please log into the Django Admin panel and upload some images.</p>
         </div>
-
-        <!-- Gallery Item 4 -->
-        <div class="col-md-6 col-lg-4 gallery-item" data-filter="products">
-            <div class="gallery-card">
-                <div class="gallery-image bg-light d-flex align-items-center justify-content-center"
-                    style="height: 300px;">
-                    <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
-                </div>
-                <div class="overlay">
-                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#galleryModal4">
-                        <i class="fas fa-search-plus"></i> View
-                    </button>
-                </div>
-                <div class="gallery-info p-3">
-                    <h6 class="mb-1">New Collections</h6>
-                    <small class="text-muted">Latest product arrivals</small>
-                </div>
-            </div>
-        </div>
-
-        <!-- Gallery Item 5 -->
-        <div class="col-md-6 col-lg-4 gallery-item" data-filter="events">
-            <div class="gallery-card">
-                <div class="gallery-image bg-light d-flex align-items-center justify-content-center"
-                    style="height: 300px;">
-                    <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
-                </div>
-                <div class="overlay">
-                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#galleryModal5">
-                        <i class="fas fa-search-plus"></i> View
-                    </button>
-                </div>
-                <div class="gallery-info p-3">
-                    <h6 class="mb-1">Store Events</h6>
-                    <small class="text-muted">Special events and promotions</small>
-                </div>
-            </div>
-        </div>
-
-        <!-- Gallery Item 6 -->
-        <div class="col-md-6 col-lg-4 gallery-item" data-filter="lifestyle">
-            <div class="gallery-card">
-                <div class="gallery-image bg-light d-flex align-items-center justify-content-center"
-                    style="height: 300px;">
-                    <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
-                </div>
-                <div class="overlay">
-                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#galleryModal6">
-                        <i class="fas fa-search-plus"></i> View
-                    </button>
-                </div>
-                <div class="gallery-info p-3">
-                    <h6 class="mb-1">Fashion & Style</h6>
-                    <small class="text-muted">Trending fashion styles</small>
-                </div>
-            </div>
-        </div>
-
-        <!-- Gallery Item 7 -->
-        <div class="col-md-6 col-lg-4 gallery-item" data-filter="customer">
-            <div class="gallery-card">
-                <div class="gallery-image bg-light d-flex align-items-center justify-content-center"
-                    style="height: 300px;">
-                    <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
-                </div>
-                <div class="overlay">
-                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#galleryModal7">
-                        <i class="fas fa-search-plus"></i> View
-                    </button>
-                </div>
-                <div class="gallery-info p-3">
-                    <h6 class="mb-1">Unboxing Videos</h6>
-                    <small class="text-muted">Product unboxing experiences</small>
-                </div>
-            </div>
-        </div>
-
-        <!-- Gallery Item 8 -->
-        <div class="col-md-6 col-lg-4 gallery-item" data-filter="products">
-            <div class="gallery-card">
-                <div class="gallery-image bg-light d-flex align-items-center justify-content-center"
-                    style="height: 300px;">
-                    <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
-                </div>
-                <div class="overlay">
-                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#galleryModal8">
-                        <i class="fas fa-search-plus"></i> View
-                    </button>
-                </div>
-                <div class="gallery-info p-3">
-                    <h6 class="mb-1">Studio Collection</h6>
-                    <small class="text-muted">Professional studio shots</small>
-                </div>
-            </div>
-        </div>
-
-        <!-- Gallery Item 9 -->
-        <div class="col-md-6 col-lg-4 gallery-item" data-filter="events">
-            <div class="gallery-card">
-                <div class="gallery-image bg-light d-flex align-items-center justify-content-center"
-                    style="height: 300px;">
-                    <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
-                </div>
-                <div class="overlay">
-                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#galleryModal9">
-                        <i class="fas fa-search-plus"></i> View
-                    </button>
-                </div>
-                <div class="gallery-info p-3">
-                    <h6 class="mb-1">Launch Events</h6>
-                    <small class="text-muted">Product launch celebrations</small>
-                </div>
-            </div>
-        </div>
+        {% endfor %}
     </div>
 </div>
 
@@ -230,14 +85,16 @@
     .gallery-card {
         position: relative;
         overflow: hidden;
-        border-radius: 8px;
+        border-radius: 16px;
         background: white;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
+        box-shadow: var(--premium-shadow);
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        border: 1px solid rgba(226, 232, 240, 0.8);
     }
 
     .gallery-card:hover {
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        transform: translateY(-8px);
+        box-shadow: var(--premium-shadow-lg);
     }
 
     .gallery-image {
@@ -245,8 +102,8 @@
         overflow: hidden;
     }
 
-    .gallery-card:hover .gallery-image {
-        background-color: #f1f1f1 !important;
+    .gallery-card:hover .gallery-image img {
+        transform: scale(1.08);
     }
 
     .overlay {
@@ -255,13 +112,14 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
+        background: rgba(10, 17, 40, 0.4);
         display: flex;
         align-items: center;
         justify-content: center;
         opacity: 0;
         transition: opacity 0.3s ease;
         z-index: 10;
+        backdrop-filter: blur(2px);
     }
 
     .gallery-card:hover .overlay {
@@ -270,33 +128,7 @@
 
     .gallery-info {
         background: white;
-        border-top: 1px solid #e9ecef;
+        border-top: 1px solid #e2e8f0;
     }
 </style>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const filterButtons = document.querySelectorAll('[data-filter]');
-        const galleryItems = document.querySelectorAll('.gallery-item');
-
-        filterButtons.forEach(button => {
-            button.addEventListener('click', function () {
-                const filter = this.getAttribute('data-filter');
-
-                filterButtons.forEach(btn => btn.classList.remove('active'));
-                this.classList.add('active');
-
-                galleryItems.forEach(item => {
-                    if (filter === 'all' || item.getAttribute('data-filter') === filter) {
-                        item.style.display = 'block';
-                        setTimeout(() => item.style.opacity = '1', 0);
-                    } else {
-                        item.style.opacity = '0';
-                        setTimeout(() => item.style.display = 'none', 300);
-                    }
-                });
-            });
-        });
-    });
-</script>
 {% endblock %}

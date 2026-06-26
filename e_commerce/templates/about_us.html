@@ -51,34 +51,46 @@
         </div>
     </div>
 
-    <!-- Mission & Vision Section -->
+    <!-- Mission, Vision & Core Values Section -->
     <div class="row mb-5 pb-5 border-bottom">
-        <div class="col-lg-6 mb-4 mb-lg-0">
-            <div class="mission-card card border-0 shadow-sm" id="mission">
-                <div class="card-body p-5">
+        <div class="col-lg-4 mb-4 mb-lg-0">
+            <div class="mission-card card border-0 h-100 shadow-sm" id="mission">
+                <div class="card-body p-4">
                     <div class="mb-4">
                         <i class="fas fa-bullseye text-primary" style="font-size: 2.5rem;"></i>
                     </div>
-                    <h5 class="card-title mb-3">Our Mission</h5>
-                    <p class="text-muted">
+                    <h5 class="card-title mb-3 fw-bold">Our Mission</h5>
+                    <p class="text-muted small">
                         To empower customers with easy access to quality products at competitive prices, while
-                        maintaining the
-                        highest standards of customer service and satisfaction.
+                        maintaining the highest standards of customer service and satisfaction.
                     </p>
                 </div>
             </div>
         </div>
-        <div class="col-lg-6">
-            <div class="vision-card card border-0 shadow-sm" id="vision">
-                <div class="card-body p-5">
+        <div class="col-lg-4 mb-4 mb-lg-0">
+            <div class="vision-card card border-0 h-100 shadow-sm" id="vision">
+                <div class="card-body p-4">
                     <div class="mb-4">
                         <i class="fas fa-eye text-success" style="font-size: 2.5rem;"></i>
                     </div>
-                    <h5 class="card-title mb-3">Our Vision</h5>
-                    <p class="text-muted">
+                    <h5 class="card-title mb-3 fw-bold">Our Vision</h5>
+                    <p class="text-muted small">
                         To become the most trusted and customer-friendly online shopping platform, recognized for our
-                        commitment
-                        to quality, innovation, and sustainability.
+                        commitment to quality, innovation, and sustainability.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="values-card card border-0 h-100 shadow-sm" id="values">
+                <div class="card-body p-4">
+                    <div class="mb-4">
+                        <i class="fas fa-gem text-warning" style="font-size: 2.5rem;"></i>
+                    </div>
+                    <h5 class="card-title mb-3 fw-bold">Our Core Values</h5>
+                    <p class="text-muted small">
+                        Integrity, Quality, Customer Obsession, and Continuous Innovation guide our actions and define
+                        our commitment to excellence.
                     </p>
                 </div>
             </div>
@@ -100,7 +112,7 @@
         </div>
         <div class="col-md-6 col-lg-4 mb-4">
             <div class="reason-card text-center p-4">
-                <i class="fas fa-dollar-sign text-success mb-3" style="font-size: 2.5rem;"></i>
+                <i class="fas fa-indian-rupee-sign text-success mb-3" style="font-size: 2.5rem;"></i>
                 <h6 class="mb-3">Competitive Prices</h6>
                 <p class="text-muted small">Enjoy best prices with frequent discounts and special offers</p>
             </div>
@@ -161,54 +173,35 @@
             <h3 class="mb-4">Meet Our Team</h3>
             <p class="lead text-muted">Dedicated professionals committed to your satisfaction</p>
         </div>
+        {% for member in team_members %}
         <div class="col-md-6 col-lg-3 mb-4">
-            <div class="team-member card border-0">
+            <div class="team-member card border-0 h-100 shadow-sm">
                 <div class="team-image bg-light d-flex align-items-center justify-content-center"
-                    style="height: 250px;">
-                    <i class="fas fa-user-circle" style="font-size: 5rem; color: #ccc;"></i>
+                    style="height: 280px; overflow: hidden; position: relative;">
+                    {% if member.employee_image %}
+                    <img src="{{ member.employee_image.url }}" alt="{{ member.employee_name }}" class="w-100 h-100"
+                        style="object-fit: cover; transition: transform 0.5s ease;" />
+                    {% else %}
+                    <i class="fas fa-user-circle" style="font-size: 6rem; color: #cbd5e1;"></i>
+                    {% endif %}
                 </div>
-                <div class="card-body text-center">
-                    <h6 class="card-title">John Smith</h6>
-                    <p class="text-muted small">CEO & Founder</p>
+                <div class="card-body text-center p-4">
+                    <h5 class="card-title fw-bold mb-1">{{ member.employee_name }}</h5>
+                    <p class="text-primary small fw-semibold mb-3"
+                        style="letter-spacing: 0.5px; text-transform: uppercase;">{{ member.role }}</p>
+                    <p class="text-muted small mb-0">{{ member.description }}</p>
                 </div>
             </div>
         </div>
-        <div class="col-md-6 col-lg-3 mb-4">
-            <div class="team-member card border-0">
-                <div class="team-image bg-light d-flex align-items-center justify-content-center"
-                    style="height: 250px;">
-                    <i class="fas fa-user-circle" style="font-size: 5rem; color: #ccc;"></i>
-                </div>
-                <div class="card-body text-center">
-                    <h6 class="card-title">Sarah Johnson</h6>
-                    <p class="text-muted small">COO & Co-Founder</p>
-                </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="text-muted mb-3">
+                <i class="fas fa-users-cog" style="font-size: 3.5rem; opacity: 0.4;"></i>
             </div>
+            <h5>No Team Members Added Yet</h5>
+            <p class="text-muted mb-2">Please log in to the Django admin panel and add team members.</p>
         </div>
-        <div class="col-md-6 col-lg-3 mb-4">
-            <div class="team-member card border-0">
-                <div class="team-image bg-light d-flex align-items-center justify-content-center"
-                    style="height: 250px;">
-                    <i class="fas fa-user-circle" style="font-size: 5rem; color: #ccc;"></i>
-                </div>
-                <div class="card-body text-center">
-                    <h6 class="card-title">Mike Davis</h6>
-                    <p class="text-muted small">Head of Operations</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-3 mb-4">
-            <div class="team-member card border-0">
-                <div class="team-image bg-light d-flex align-items-center justify-content-center"
-                    style="height: 250px;">
-                    <i class="fas fa-user-circle" style="font-size: 5rem; color: #ccc;"></i>
-                </div>
-                <div class="card-body text-center">
-                    <h6 class="card-title">Emily Wilson</h6>
-                    <p class="text-muted small">Customer Service Manager</p>
-                </div>
-            </div>
-        </div>
+        {% endfor %}
     </div>
 
     <!-- CTA Section -->
@@ -237,12 +230,18 @@
     }
 
     .team-member {
-        transition: all 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        border-radius: 16px;
+        overflow: hidden;
     }
 
     .team-member:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        transform: translateY(-8px);
+        box-shadow: var(--premium-shadow-lg) !important;
+    }
+
+    .team-member:hover img {
+        transform: scale(1.08);
     }
 
     .bg-light {

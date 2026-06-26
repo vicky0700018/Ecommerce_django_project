@@ -64,6 +64,7 @@
                                 <th>Date</th>
                                 <th>Product</th>
                                 <th>Price</th>
+                                <th>Payment Method</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -105,9 +106,9 @@
 
         // 2. Initialize orders from localStorage or default mock database
         const defaultMockOrders = [
-            { id: '#ORD-8273', date: 'June 18, 2026', product: 'Wireless Controller', price: '₹3,999.00', status: 'Delivered' },
-            { id: '#ORD-6752', date: 'June 15, 2026', product: 'Shreelekha KT87 Saree', price: '₹1,100.00', status: 'Delivered' },
-            { id: '#ORD-5491', date: 'June 10, 2026', product: 'Mechanical Keyboard', price: '₹5,999.00', status: 'Delivered' }
+            { id: '#ORD-8273', date: 'June 18, 2026', product: 'Wireless Controller', price: '₹3,999.00', status: 'Delivered', payment_method: 'Online' },
+            { id: '#ORD-6752', date: 'June 15, 2026', product: 'Shreelekha KT87 Saree', price: '₹1,100.00', status: 'Delivered', payment_method: 'COD' },
+            { id: '#ORD-5491', date: 'June 10, 2026', product: 'Mechanical Keyboard', price: '₹5,999.00', status: 'Delivered', payment_method: 'Online' }
         ];
 
         let savedOrders = localStorage.getItem('shopsphere_orders');
@@ -117,36 +118,88 @@
         }
 
         const orders = JSON.parse(savedOrders);
-        const tbody = document.getElementById('orders-tbody');
-        tbody.innerHTML = '';
 
-        if (orders.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-muted">No orders found.</td></tr>`;
-            return;
-        }
+        // Render orders table
+        function renderOrders() {
+            const tbody = document.getElementById('orders-tbody');
+            tbody.innerHTML = '';
 
-        orders.forEach(order => {
-            let statusBadge = '';
-            if (order.status === 'Delivered') {
-                statusBadge = `<span class="badge bg-success py-2 px-3 rounded-pill"><i class="fas fa-check-circle me-1"></i>Delivered</span>`;
-            } else if (order.status === 'Processing') {
-                statusBadge = `<span class="badge bg-primary py-2 px-3 rounded-pill"><i class="fas fa-spinner fa-spin me-1"></i>Processing</span>`;
-            } else {
-                statusBadge = `<span class="badge bg-warning py-2 px-3 rounded-pill">${order.status}</span>`;
+            if (orders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted">No orders found.</td></tr>`;
+                return;
             }
 
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td class="fw-bold text-primary font-monospace">${order.id}</td>
-                <td class="text-secondary">${order.date}</td>
-                <td>
-                    <div class="fw-semibold text-dark">${order.product}</div>
-                </td>
-                <td class="font-monospace fw-bold text-dark">${order.price}</td>
-                <td>${statusBadge}</td>
-            `;
-            tbody.appendChild(tr);
-        });
+            orders.forEach(order => {
+                let statusBadge = '';
+                if (order.status === 'Delivered') {
+                    statusBadge = `<span class="badge bg-success py-2 px-3 rounded-pill"><i class="fas fa-check-circle me-1"></i>Delivered</span>`;
+                } else if (order.status === 'Shipped') {
+                    statusBadge = `<span class="badge bg-warning py-2 px-3 rounded-pill text-dark"><i class="fas fa-shipping-fast me-1"></i>Shipped</span>`;
+                } else if (order.status === 'Processing') {
+                    statusBadge = `<span class="badge bg-primary py-2 px-3 rounded-pill"><i class="fas fa-spinner fa-spin me-1"></i>Processing</span>`;
+                } else if (order.status === 'Paid') {
+                    statusBadge = `<span class="badge bg-info py-2 px-3 rounded-pill text-white" style="background-color: #0dcaf0 !important;"><i class="fas fa-check-double me-1"></i>Paid</span>`;
+                } else {
+                    statusBadge = `<span class="badge bg-secondary py-2 px-3 rounded-pill">${order.status}</span>`;
+                }
+
+                const paymentMethod = order.payment_method || 'Online';
+                let paymentBadge = '';
+                if (paymentMethod === 'COD') {
+                    paymentBadge = `<span class="badge bg-light py-2 px-3 rounded-pill text-dark" style="border: 1px solid #ced4da;"><i class="fas fa-money-bill-wave text-success me-1"></i>Cash on Delivery</span>`;
+                } else {
+                    paymentBadge = `<span class="badge bg-light py-2 px-3 rounded-pill text-dark" style="border: 1px solid #ced4da;"><i class="fas fa-credit-card text-primary me-1"></i>Online Payment</span>`;
+                }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="fw-bold text-primary font-monospace">${order.id}</td>
+                    <td class="text-secondary">${order.date}</td>
+                    <td>
+                        <div class="fw-semibold text-dark">${order.product}</div>
+                    </td>
+                    <td class="font-monospace fw-bold text-dark">${order.price}</td>
+                    <td>${paymentBadge}</td>
+                    <td>${statusBadge}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Live status transitions: Processing/Paid -> Shipped (1m) -> Delivered (3m)
+        function checkAndUpdateStatuses() {
+            let updated = false;
+            const now = Date.now();
+
+            orders.forEach(order => {
+                if (order.status === 'Processing' || order.status === 'Paid') {
+                    if (!order.timestamp) {
+                        order.timestamp = Date.now(); // Set initial timestamp if missing
+                        updated = true;
+                    }
+                    const elapsed = now - order.timestamp;
+                    if (elapsed >= 180000) { // 3 minutes
+                        order.status = 'Delivered';
+                        updated = true;
+                    } else if (elapsed >= 60000) { // 1 minute
+                        order.status = 'Shipped';
+                        updated = true;
+                    }
+                }
+            });
+
+            if (updated) {
+                localStorage.setItem('shopsphere_orders', JSON.stringify(orders));
+                renderOrders();
+            }
+        }
+
+        // Initial render and check
+        renderOrders();
+        checkAndUpdateStatuses();
+
+        // Run checking loop every 5 seconds
+        setInterval(checkAndUpdateStatuses, 5000);
     });
 </script>
 {% endblock %}

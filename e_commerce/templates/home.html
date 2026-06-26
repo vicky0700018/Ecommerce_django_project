@@ -16,10 +16,12 @@
             <img src="{% static 'images/banner.png' %}?v=2026_new" class="d-block w-100 banner-img" alt="First Slide">
         </div>
         <div class="carousel-item">
-            <img src="{% static 'images/banner.png2.png' %}?v=2026_new" class="d-block w-100 banner-img" alt="Second Slide">
+            <img src="{% static 'images/banner.png2.png' %}?v=2026_new" class="d-block w-100 banner-img"
+                alt="Second Slide">
         </div>
         <div class="carousel-item">
-            <img src="{% static 'images/banner.png3.png' %}?v=2026_new" class="d-block w-100 banner-img" alt="Third Slide">
+            <img src="{% static 'images/banner.png3.png' %}?v=2026_updated_v3" class="d-block w-100 banner-img"
+                alt="Third Slide">
         </div>
     </div>
     <button class="carousel-control-prev" type="button" data-bs-target="#homeBannerCarousel" data-bs-slide="prev">
@@ -47,7 +49,7 @@
                 <div class="section-divider mx-auto"></div>
                 <p class="text-muted mt-3">Explore our curated collection</p>
             </div>
-            
+
             <div class="category-slider-container position-relative">
                 <div class="category-slider d-flex gap-4 overflow-auto py-3">
                     {% for category in categories %}
@@ -55,11 +57,12 @@
                         <a href="{% url 'product' %}?category={{ category.slug }}" class="category-circle-link">
                             <div class="category-circle-image">
                                 {% if category.image %}
-                                    <img src="{{ category.image.url }}" alt="{{ category.name }}" loading="lazy">
+                                <img src="{{ category.image.url }}" alt="{{ category.name }}" loading="lazy">
                                 {% else %}
-                                    <div class="category-circle-placeholder d-flex align-items-center justify-content-center">
-                                        <i class="{{ category.icon_class|default:'fas fa-tags' }}"></i>
-                                    </div>
+                                <div
+                                    class="category-circle-placeholder d-flex align-items-center justify-content-center">
+                                    <i class="{{ category.icon_class|default:'fas fa-tags' }}"></i>
+                                </div>
                                 {% endif %}
                                 <span class="category-circle-label">{{ category.name }}</span>
                             </div>
@@ -96,12 +99,12 @@
                     <div class="product-card card h-100 border-0">
                         <div class="product-image-container bg-light d-flex align-items-center justify-content-center">
                             {% if product.image %}
-                                <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
                             {% else %}
-                                <i class="fas fa-box-open placeholder-box" style="font-size: 3rem; color: #ccc;"></i>
+                            <i class="fas fa-box-open placeholder-box" style="font-size: 3rem; color: #ccc;"></i>
                             {% endif %}
                             {% if product.discount_price %}
-                                <span class="product-badge discount-badge">Sale</span>
+                            <span class="product-badge discount-badge">Sale</span>
                             {% endif %}
                         </div>
                         <div class="card-body d-flex flex-column">
@@ -123,20 +126,21 @@
                             <div class="mt-auto d-flex justify-content-between align-items-center">
                                 <div class="product-price">
                                     {% if product.discount_price %}
-                                        <span class="text-decoration-line-through text-muted small me-1">₹{{ product.price }}</span>
-                                        <span class="price-val">₹{{ product.discount_price }}</span>
+                                    <span class="text-decoration-line-through text-muted small me-1">₹{{ product.price
+                                        }}</span>
+                                    <span class="price-val">₹{{ product.discount_price }}</span>
                                     {% else %}
-                                        <span class="price-val">₹{{ product.price }}</span>
+                                    <span class="price-val">₹{{ product.price }}</span>
                                     {% endif %}
                                 </div>
                                 <div class="d-flex gap-2">
-                                    <button class="btn btn-sm btn-outline-danger wishlist-btn" type="button" 
-                                        data-product="{{ product.name }}" data-price="₹{{ product.final_price }}" 
+                                    <button class="btn btn-sm btn-outline-danger wishlist-btn" type="button"
+                                        data-product="{{ product.name }}" data-price="₹{{ product.final_price }}"
                                         data-image="{% if product.image %}{{ product.image.url }}{% endif %}">
                                         <i class="far fa-heart"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-primary add-to-cart-btn" type="button" 
-                                        data-product="{{ product.name }}" data-price="₹{{ product.final_price }}" 
+                                    <button class="btn btn-sm btn-primary add-to-cart-btn" type="button"
+                                        data-product="{{ product.name }}" data-price="₹{{ product.final_price }}"
                                         data-image="{% if product.image %}{{ product.image.url }}{% endif %}">
                                         <i class="fas fa-shopping-cart"></i>
                                     </button>
@@ -168,9 +172,9 @@
                     <div class="product-card card h-100 border-0">
                         <div class="product-image-container bg-light d-flex align-items-center justify-content-center">
                             {% if product.image %}
-                                <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
                             {% else %}
-                                <i class="fas fa-box-open placeholder-box" style="font-size: 3rem; color: #ccc;"></i>
+                            <i class="fas fa-box-open placeholder-box" style="font-size: 3rem; color: #ccc;"></i>
                             {% endif %}
                             <span class="product-badge new-badge">New</span>
                         </div>
@@ -193,20 +197,21 @@
                             <div class="mt-auto d-flex justify-content-between align-items-center">
                                 <div class="product-price">
                                     {% if product.discount_price %}
-                                        <span class="text-decoration-line-through text-muted small me-1">₹{{ product.price }}</span>
-                                        <span class="price-val">₹{{ product.discount_price }}</span>
+                                    <span class="text-decoration-line-through text-muted small me-1">₹{{ product.price
+                                        }}</span>
+                                    <span class="price-val">₹{{ product.discount_price }}</span>
                                     {% else %}
-                                        <span class="price-val">₹{{ product.price }}</span>
+                                    <span class="price-val">₹{{ product.price }}</span>
                                     {% endif %}
                                 </div>
                                 <div class="d-flex gap-2">
-                                    <button class="btn btn-sm btn-outline-danger wishlist-btn" type="button" 
-                                        data-product="{{ product.name }}" data-price="₹{{ product.final_price }}" 
+                                    <button class="btn btn-sm btn-outline-danger wishlist-btn" type="button"
+                                        data-product="{{ product.name }}" data-price="₹{{ product.final_price }}"
                                         data-image="{% if product.image %}{{ product.image.url }}{% endif %}">
                                         <i class="far fa-heart"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-primary add-to-cart-btn" type="button" 
-                                        data-product="{{ product.name }}" data-price="₹{{ product.final_price }}" 
+                                    <button class="btn btn-sm btn-primary add-to-cart-btn" type="button"
+                                        data-product="{{ product.name }}" data-price="₹{{ product.final_price }}"
                                         data-image="{% if product.image %}{{ product.image.url }}{% endif %}">
                                         <i class="fas fa-shopping-cart"></i>
                                     </button>
@@ -238,9 +243,9 @@
                     <div class="product-card card h-100 border-0">
                         <div class="product-image-container bg-light d-flex align-items-center justify-content-center">
                             {% if product.image %}
-                                <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
                             {% else %}
-                                <i class="fas fa-box-open placeholder-box" style="font-size: 3rem; color: #ccc;"></i>
+                            <i class="fas fa-box-open placeholder-box" style="font-size: 3rem; color: #ccc;"></i>
                             {% endif %}
                             <span class="product-badge hot-badge">Hot</span>
                         </div>
@@ -263,20 +268,21 @@
                             <div class="mt-auto d-flex justify-content-between align-items-center">
                                 <div class="product-price">
                                     {% if product.discount_price %}
-                                        <span class="text-decoration-line-through text-muted small me-1">₹{{ product.price }}</span>
-                                        <span class="price-val">₹{{ product.discount_price }}</span>
+                                    <span class="text-decoration-line-through text-muted small me-1">₹{{ product.price
+                                        }}</span>
+                                    <span class="price-val">₹{{ product.discount_price }}</span>
                                     {% else %}
-                                        <span class="price-val">₹{{ product.price }}</span>
+                                    <span class="price-val">₹{{ product.price }}</span>
                                     {% endif %}
                                 </div>
                                 <div class="d-flex gap-2">
-                                    <button class="btn btn-sm btn-outline-danger wishlist-btn" type="button" 
-                                        data-product="{{ product.name }}" data-price="₹{{ product.final_price }}" 
+                                    <button class="btn btn-sm btn-outline-danger wishlist-btn" type="button"
+                                        data-product="{{ product.name }}" data-price="₹{{ product.final_price }}"
                                         data-image="{% if product.image %}{{ product.image.url }}{% endif %}">
                                         <i class="far fa-heart"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-primary add-to-cart-btn" type="button" 
-                                        data-product="{{ product.name }}" data-price="₹{{ product.final_price }}" 
+                                    <button class="btn btn-sm btn-primary add-to-cart-btn" type="button"
+                                        data-product="{{ product.name }}" data-price="₹{{ product.final_price }}"
                                         data-image="{% if product.image %}{{ product.image.url }}{% endif %}">
                                         <i class="fas fa-shopping-cart"></i>
                                     </button>
@@ -353,7 +359,8 @@
                             <i class="fas fa-truck"></i>
                         </div>
                         <h5 class="fw-bold">Fast Delivery</h5>
-                        <p class="text-muted small mb-0">Get your orders delivered quickly to your doorstep all over India.</p>
+                        <p class="text-muted small mb-0">Get your orders delivered quickly to your doorstep all over
+                            India.</p>
                     </div>
                 </div>
                 <div class="col-md-6 col-lg-3">
@@ -362,7 +369,8 @@
                             <i class="fas fa-shield-alt"></i>
                         </div>
                         <h5 class="fw-bold">Secure Payment</h5>
-                        <p class="text-muted small mb-0">Your payment information is completely safe & secure with us.</p>
+                        <p class="text-muted small mb-0">Your payment information is completely safe & secure with us.
+                        </p>
                     </div>
                 </div>
                 <div class="col-md-6 col-lg-3">
@@ -371,7 +379,8 @@
                             <i class="fas fa-undo"></i>
                         </div>
                         <h5 class="fw-bold">Easy Returns</h5>
-                        <p class="text-muted small mb-0">Hassle-free, no-questions-asked returns within 30 days of purchase.</p>
+                        <p class="text-muted small mb-0">Hassle-free, no-questions-asked returns within 30 days of
+                            purchase.</p>
                     </div>
                 </div>
                 <div class="col-md-6 col-lg-3">
@@ -380,7 +389,8 @@
                             <i class="fas fa-headset"></i>
                         </div>
                         <h5 class="fw-bold">24/7 Support</h5>
-                        <p class="text-muted small mb-0">Our dedicated support team is always online to help you anywhere.</p>
+                        <p class="text-muted small mb-0">Our dedicated support team is always online to help you
+                            anywhere.</p>
                     </div>
                 </div>
             </div>
@@ -390,78 +400,245 @@
     <!-- Customer Reviews Section -->
     <section class="reviews-section py-5 bg-light-section">
         <div class="container">
-            <div class="section-header text-center mb-5">
+            <div class="section-header text-center mb-4">
                 <h2 class="section-title">Customer Reviews</h2>
                 <div class="section-divider mx-auto"></div>
                 <p class="text-muted mt-3">What our customers say about their experiences</p>
             </div>
-            <div class="row g-4 justify-content-center">
-                <div class="col-md-4">
-                    <div class="review-card card p-4 border-0 h-100">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="review-avatar-container">
-                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop&crop=face" class="review-avatar-img" alt="Aarav Mehta" loading="lazy">
+
+            <!-- Add Review Button -->
+            <div class="text-center mb-5">
+                <button class="btn btn-outline-primary btn-add-review" data-bs-toggle="modal"
+                    data-bs-target="#addReviewModal">
+                    <i class="fas fa-plus me-2"></i>Add Review
+                </button>
+            </div>
+
+            <!-- Reviews Slider -->
+            <div class="reviews-slider-container position-relative">
+                <div class="reviews-slider d-flex gap-4 overflow-auto py-3 px-1" id="reviewsSlider">
+                    <!-- Review Item 1 -->
+                    <div class="review-slider-item">
+                        <div class="review-card card p-4 border-0 h-100 shadow-sm">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="review-avatar-container">
+                                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop&crop=face"
+                                        class="review-avatar-img" alt="vicky kumar" loading="lazy">
+                                </div>
+                                <div class="ms-3">
+                                    <h6 class="mb-0 fw-bold text-dark">vicky kumar</h6>
+                                    <span class="text-muted small">Mumbai, India</span>
+                                </div>
                             </div>
-                            <div class="ms-3">
-                                <h6 class="mb-0 fw-bold text-primary-color">Aarav Mehta</h6>
-                                <span class="text-muted small">Mumbai, India</span>
+                            <div class="mb-3 text-warning">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                    class="fas fa-star"></i><i class="fas fa-star"></i>
                             </div>
+                            <p class="review-text text-muted mb-0">"Excellent service! The product quality is top-notch
+                                and delivery was faster than expected. The packaging was neat, and their customer
+                                support team was very responsive."</p>
                         </div>
-                        <div class="mb-3 text-warning">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <p class="review-text text-muted mb-0">"Excellent service! The product quality is top-notch and delivery was faster than expected. The packaging was neat, and their customer support team was very responsive."</p>
                     </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="review-card card p-4 border-0 h-100">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="review-avatar-container">
-                                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&h=120&fit=crop&crop=face" class="review-avatar-img" alt="Neha Sharma" loading="lazy">
+
+                    <!-- Review Item 2 -->
+                    <div class="review-slider-item">
+                        <div class="review-card card p-4 border-0 h-100 shadow-sm">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="review-avatar-container">
+                                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&h=120&fit=crop&crop=face"
+                                        class="review-avatar-img" alt="Neha Sharma" loading="lazy">
+                                </div>
+                                <div class="ms-3">
+                                    <h6 class="mb-0 fw-bold text-dark">Neha Sharma</h6>
+                                    <span class="text-muted small">Delhi, India</span>
+                                </div>
                             </div>
-                            <div class="ms-3">
-                                <h6 class="mb-0 fw-bold text-primary-color">Neha Sharma</h6>
-                                <span class="text-muted small">Delhi, India</span>
+                            <div class="mb-3 text-warning">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                    class="fas fa-star"></i><i class="fas fa-star"></i>
                             </div>
+                            <p class="review-text text-muted mb-0">"I am in love with the saree collection. The colors
+                                and fabrics are exactly as shown in the pictures. The size chart is accurate, and it
+                                fits me perfectly. Highly recommended!"</p>
                         </div>
-                        <div class="mb-3 text-warning">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <p class="review-text text-muted mb-0">"I am in love with the saree collection. The colors and fabrics are exactly as shown in the pictures. The size chart is accurate, and it fits me perfectly. Highly recommended!"</p>
                     </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="review-card card p-4 border-0 h-100">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="review-avatar-container">
-                                <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&h=120&fit=crop&crop=face" class="review-avatar-img" alt="Rohan Verma" loading="lazy">
+
+                    <!-- Review Item 3 -->
+                    <div class="review-slider-item">
+                        <div class="review-card card p-4 border-0 h-100 shadow-sm">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="review-avatar-container">
+                                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&h=120&fit=crop&crop=face"
+                                        class="review-avatar-img" alt="Rohan Verma" loading="lazy">
+                                </div>
+                                <div class="ms-3">
+                                    <h6 class="mb-0 fw-bold text-dark">Rohan Verma</h6>
+                                    <span class="text-muted small">Bangalore, India</span>
+                                </div>
                             </div>
-                            <div class="ms-3">
-                                <h6 class="mb-0 fw-bold text-primary-color">Rohan Verma</h6>
-                                <span class="text-muted small">Bangalore, India</span>
+                            <div class="mb-3 text-warning">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                    class="fas fa-star"></i><i class="fas fa-star"></i>
                             </div>
+                            <p class="review-text text-muted mb-0">"Very smooth shopping experience. Secure checkout,
+                                easy tracking, and quick refunds when I had to return an item. ShopSphere is now my
+                                default online store for shopping!"</p>
                         </div>
-                        <div class="mb-3 text-warning">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
+                    </div>
+
+                    <!-- Review Item 4 -->
+                    <div class="review-slider-item">
+                        <div class="review-card card p-4 border-0 h-100 shadow-sm">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="review-avatar-container">
+                                    <div class="review-avatar-initials" style="background-color: #059669;">ज</div>
+                                </div>
+                                <div class="ms-3">
+                                    <h6 class="mb-0 fw-bold text-dark">जयश्री</h6>
+                                    <span class="text-muted small">Maharashtra, India</span>
+                                </div>
+                            </div>
+                            <div class="mb-3 text-warning">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                    class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                            <p class="review-text text-muted mb-0">"खूप सुंदर साडी आहेत तुमच्या कडे ताई"</p>
                         </div>
-                        <p class="review-text text-muted mb-0">"Very smooth shopping experience. Secure checkout, easy tracking, and quick refunds when I had to return an item. ShopSphere is now my default online store for shopping!"</p>
+                    </div>
+
+                    <!-- Review Item 5 -->
+                    <div class="review-slider-item">
+                        <div class="review-card card p-4 border-0 h-100 shadow-sm">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="review-avatar-container">
+                                    <div class="review-avatar-initials" style="background-color: #0d9488;">MG</div>
+                                </div>
+                                <div class="ms-3">
+                                    <h6 class="mb-0 fw-bold text-dark">Meera Gawari</h6>
+                                    <span class="text-muted small">Pune, India</span>
+                                </div>
+                            </div>
+                            <div class="mb-3 text-warning">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                    class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                            <p class="review-text text-muted mb-0">"खूप छान sadya"</p>
+                        </div>
+                    </div>
+
+                    <!-- Review Item 6 -->
+                    <div class="review-slider-item">
+                        <div class="review-card card p-4 border-0 h-100 shadow-sm">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="review-avatar-container">
+                                    <div class="review-avatar-initials" style="background-color: #0284c7;">A</div>
+                                </div>
+                                <div class="ms-3">
+                                    <h6 class="mb-0 fw-bold text-dark">Akash</h6>
+                                    <span class="text-muted small">Gujarat, India</span>
+                                </div>
+                            </div>
+                            <div class="mb-3 text-warning">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                    class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                            <p class="review-text text-muted mb-0">"Good quality and uniq collection morpankhsaree.com"
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Review Item 7 -->
+                    <div class="review-slider-item">
+                        <div class="review-card card p-4 border-0 h-100 shadow-sm">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="review-avatar-container">
+                                    <div class="review-avatar-initials" style="background-color: #4f46e5;">AK</div>
+                                </div>
+                                <div class="ms-3">
+                                    <h6 class="mb-0 fw-bold text-dark">Aditya Kumar</h6>
+                                    <span class="text-muted small">Patna, India</span>
+                                </div>
+                            </div>
+                            <div class="mb-3 text-warning">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                    class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                            <p class="review-text text-muted mb-0">"All product quality is best"</p>
+                        </div>
+                    </div>
+
+                    <!-- Review Item 8 -->
+                    <div class="review-slider-item">
+                        <div class="review-card card p-4 border-0 h-100 shadow-sm">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="review-avatar-container">
+                                    <div class="review-avatar-initials" style="background-color: #059669;">C</div>
+                                </div>
+                                <div class="ms-3">
+                                    <h6 class="mb-0 fw-bold text-dark">Chandrakala</h6>
+                                    <span class="text-muted small">Karnataka, India</span>
+                                </div>
+                            </div>
+                            <div class="mb-3 text-warning">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                    class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                            <p class="review-text text-muted mb-0">"Nice"</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- Modal for adding review -->
+    <div class="modal fade" id="addReviewModal" tabindex="-1" aria-labelledby="addReviewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
+                <div class="modal-header bg-primary text-white py-3 border-0">
+                    <h5 class="modal-title fw-bold" id="addReviewModalLabel"><i class="fas fa-edit me-2"></i>Write a
+                        Customer Review</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="addReviewForm" onsubmit="submitCustomReview(event)">
+                        <div class="mb-3">
+                            <label for="reviewName" class="form-label fw-600 text-muted">Your Name</label>
+                            <input type="text" class="form-control" id="reviewName" placeholder="e.g. Vicky Kumar"
+                                required style="border-radius: 10px;">
+                        </div>
+                        <div class="mb-3">
+                            <label for="reviewLocation" class="form-label fw-600 text-muted">Location</label>
+                            <input type="text" class="form-control" id="reviewLocation" placeholder="e.g. Mumbai, India"
+                                required style="border-radius: 10px;">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-600 text-muted d-block">Rating</label>
+                            <div class="star-rating-input d-flex gap-2 fs-3 text-warning">
+                                <i class="fas fa-star rating-star" data-rating="1" style="cursor: pointer;"></i>
+                                <i class="fas fa-star rating-star" data-rating="2" style="cursor: pointer;"></i>
+                                <i class="fas fa-star rating-star" data-rating="3" style="cursor: pointer;"></i>
+                                <i class="fas fa-star rating-star" data-rating="4" style="cursor: pointer;"></i>
+                                <i class="fas fa-star rating-star" data-rating="5" style="cursor: pointer;"></i>
+                            </div>
+                            <input type="hidden" id="reviewRating" value="5" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reviewText" class="form-label fw-600 text-muted">Review Message</label>
+                            <textarea class="form-control" id="reviewText" rows="4"
+                                placeholder="Share your experience with our products..." required
+                                style="border-radius: 10px;"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 fw-bold py-3"
+                            style="border-radius: 12px; background: var(--logo-gradient-horizontal); border: none;">
+                            Submit Review
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Newsletter Section -->
     <section class="newsletter-section py-5">
@@ -472,18 +649,23 @@
                     <div class="col-lg-8">
                         <span class="newsletter-tag mb-2 d-inline-block">Stay Updated</span>
                         <h2 class="newsletter-title text-white mb-3">Get Latest Offers & Discounts</h2>
-                        <p class="newsletter-desc text-white-50 mb-4">Subscribe to our newsletter and get exclusive deals, sale alerts, and brand updates directly to your inbox.</p>
-                        <form id="newsletterForm" class="newsletter-form d-flex flex-column flex-sm-row gap-3 justify-content-center align-items-center max-w-lg mx-auto" onsubmit="handleNewsletterSubmit(event)">
+                        <p class="newsletter-desc text-white-50 mb-4">Subscribe to our newsletter and get exclusive
+                            deals, sale alerts, and brand updates directly to your inbox.</p>
+                        <form id="newsletterForm"
+                            class="newsletter-form d-flex flex-column flex-sm-row gap-3 justify-content-center align-items-center max-w-lg mx-auto"
+                            onsubmit="handleNewsletterSubmit(event)">
                             <div class="input-group-custom w-100">
                                 <span class="input-icon"><i class="far fa-envelope text-muted"></i></span>
-                                <input type="email" class="form-control newsletter-input" placeholder="Enter your email address" required id="newsletterEmail">
+                                <input type="email" class="form-control newsletter-input"
+                                    placeholder="Enter your email address" required id="newsletterEmail">
                             </div>
                             <button type="submit" class="btn btn-newsletter text-nowrap px-4 py-3">
                                 <span>Subscribe</span> <i class="fas fa-paper-plane ms-2"></i>
                             </button>
                         </form>
                         <div id="newsletterSuccessMessage" class="mt-3 text-success-light fw-bold d-none">
-                            <i class="fas fa-check-circle me-1"></i> Thank you! You've successfully subscribed to our newsletter.
+                            <i class="fas fa-check-circle me-1"></i> Thank you! You've successfully subscribed to our
+                            newsletter.
                         </div>
                     </div>
                 </div>
@@ -604,14 +786,17 @@
     }
 
     .category-slider {
-        scrollbar-width: none; /* Hide scrollbar for Firefox */
-        -ms-overflow-style: none; /* Hide scrollbar for IE/Edge */
+        scrollbar-width: none;
+        /* Hide scrollbar for Firefox */
+        -ms-overflow-style: none;
+        /* Hide scrollbar for IE/Edge */
         scroll-behavior: smooth;
         -webkit-overflow-scrolling: touch;
     }
 
     .category-slider::-webkit-scrollbar {
-        display: none; /* Hide scrollbar for Chrome/Safari */
+        display: none;
+        /* Hide scrollbar for Chrome/Safari */
     }
 
     .category-slider-item {
@@ -673,7 +858,8 @@
         bottom: 12px;
         left: 50%;
         transform: translateX(-50%);
-        background: rgba(10, 17, 40, 0.85); /* Premium brand dark background */
+        background: rgba(10, 17, 40, 0.85);
+        /* Premium brand dark background */
         color: #ffffff;
         padding: 5px 16px;
         border-radius: 30px;
@@ -974,8 +1160,69 @@
         object-fit: cover;
     }
 
+    .review-avatar-initials {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #ffffff;
+    }
+
     .text-primary-color {
         color: var(--primary-color);
+    }
+
+    /* Reviews Slider Styles */
+    .reviews-slider-container {
+        padding: 0 45px;
+    }
+
+    .reviews-slider {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .reviews-slider::-webkit-scrollbar {
+        display: none;
+    }
+
+    .review-slider-item {
+        flex: 0 0 auto;
+        width: 350px;
+    }
+
+    .review-card {
+        border-radius: 16px;
+        box-shadow: var(--premium-shadow-sm) !important;
+        border: 1px solid rgba(226, 232, 240, 0.8) !important;
+        transition: all 0.3s ease;
+        background: #ffffff;
+    }
+
+    .review-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--premium-shadow-lg) !important;
+        border-color: rgba(252, 4, 102, 0.15) !important;
+    }
+
+    .btn-add-review {
+        border-radius: 30px;
+        padding: 10px 24px;
+        font-weight: 600;
+        border: 2px solid var(--primary-color) !important;
+        color: var(--primary-color) !important;
+        background: transparent;
+        transition: all 0.3s ease;
+    }
+
+    .btn-add-review:hover {
+        background: var(--primary-color) !important;
+        color: #ffffff !important;
     }
 
     /* Newsletter Section Styles */
@@ -1097,9 +1344,11 @@
         .newsletter-card {
             padding: 3rem 1.5rem !important;
         }
+
         .newsletter-title {
             font-size: 1.6rem;
         }
+
         .btn-newsletter {
             width: 100%;
         }
@@ -1137,7 +1386,7 @@
     }
 
     // Initialize button states
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.wishlist-btn').forEach(btn => {
             const productName = btn.getAttribute('data-product');
             if (isInWishlist(productName)) {
@@ -1149,14 +1398,14 @@
 
     // Wishlist click handler
     document.querySelectorAll('.wishlist-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
+        btn.addEventListener('click', function (e) {
             e.preventDefault();
             this.classList.toggle('active');
             const productName = this.getAttribute('data-product');
             const price = this.getAttribute('data-price');
             const image = this.getAttribute('data-image') || '';
             const wishlist = loadWishlist();
-            
+
             if (this.classList.contains('active')) {
                 this.innerHTML = '<i class="fas fa-heart"></i>';
                 if (!isInWishlist(productName)) {
@@ -1175,12 +1424,12 @@
 
     // Add to cart click handler
     document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
+        btn.addEventListener('click', function (e) {
             e.preventDefault();
             const productName = this.getAttribute('data-product');
             const price = this.getAttribute('data-price');
             const image = this.getAttribute('data-image') || '';
-            
+
             const cart = loadCart();
             cart.push({ name: productName, price: price, image: image });
             saveCart(cart);
@@ -1225,6 +1474,42 @@
             sliderContainer.addEventListener('mouseenter', stopAutoScroll);
             sliderContainer.addEventListener('mouseleave', startAutoScroll);
         }
+
+        // Initialize reviews slider
+        const reviewsSlider = document.getElementById('reviewsSlider');
+        if (reviewsSlider) {
+            startReviewsAutoScroll();
+            reviewsSlider.addEventListener('mouseenter', stopReviewsAutoScroll);
+            reviewsSlider.addEventListener('mouseleave', startReviewsAutoScroll);
+            reviewsSlider.addEventListener('touchstart', stopReviewsAutoScroll);
+            reviewsSlider.addEventListener('touchend', startReviewsAutoScroll);
+        }
+
+        // Render custom reviews from local storage on load
+        const customReviews = getCustomReviews();
+        customReviews.forEach(review => {
+            appendReviewToSlider(review, true);
+        });
+
+        // Star rating selection in review modal
+        document.querySelectorAll('.rating-star').forEach(star => {
+            star.addEventListener('click', function () {
+                const rating = parseInt(this.getAttribute('data-rating'));
+                document.getElementById('reviewRating').value = rating;
+
+                // Update stars appearance
+                document.querySelectorAll('.rating-star').forEach(s => {
+                    const sRating = parseInt(s.getAttribute('data-rating'));
+                    if (sRating <= rating) {
+                        s.classList.remove('far');
+                        s.classList.add('fas');
+                    } else {
+                        s.classList.remove('fas');
+                        s.classList.add('far');
+                    }
+                });
+            });
+        });
     });
 
     // Category slider function (with timer reset)
@@ -1236,7 +1521,7 @@
             left: direction * scrollAmount,
             behavior: 'smooth'
         });
-        
+
         // Reset timer on manual scroll
         stopAutoScroll();
         startAutoScroll();
@@ -1247,7 +1532,7 @@
         e.preventDefault();
         const emailInput = document.getElementById('newsletterEmail');
         const successMessage = document.getElementById('newsletterSuccessMessage');
-        
+
         if (emailInput && emailInput.value) {
             if (successMessage) {
                 successMessage.classList.remove('d-none');
@@ -1257,6 +1542,127 @@
                 }, 5000);
             }
             alert('Thank you for subscribing to our newsletter!');
+        }
+    }
+
+    // Auto-scroll Reviews Slider
+    let reviewScrollTimer;
+    function startReviewsAutoScroll() {
+        reviewScrollTimer = setInterval(() => {
+            const slider = document.getElementById('reviewsSlider');
+            if (!slider) return;
+            const cardWidth = 374; // 350px card width + 24px gap
+            const maxScrollLeft = slider.scrollWidth - slider.clientWidth;
+
+            if (slider.scrollLeft >= maxScrollLeft - 10) {
+                slider.scrollTo({ left: 0, behavior: 'smooth' });
+            } else {
+                slider.scrollBy({ left: cardWidth, behavior: 'smooth' });
+            }
+        }, 4000); // every 4 seconds
+    }
+
+    function stopReviewsAutoScroll() {
+        clearInterval(reviewScrollTimer);
+    }
+
+    // LocalStorage helper functions for reviews
+    function getCustomReviews() {
+        const reviews = localStorage.getItem('shopsphere_reviews');
+        return reviews ? JSON.parse(reviews) : [];
+    }
+
+    function saveCustomReview(review) {
+        const reviews = getCustomReviews();
+        reviews.unshift(review);
+        localStorage.setItem('shopsphere_reviews', JSON.stringify(reviews));
+    }
+
+    function submitCustomReview(e) {
+        e.preventDefault();
+        const name = document.getElementById('reviewName').value.trim();
+        const location = document.getElementById('reviewLocation').value.trim();
+        const rating = parseInt(document.getElementById('reviewRating').value);
+        const text = document.getElementById('reviewText').value.trim();
+
+        // Generate initials
+        const nameParts = name.split(' ');
+        let initials = nameParts[0].charAt(0).toUpperCase();
+        if (nameParts.length > 1) {
+            initials += nameParts[nameParts.length - 1].charAt(0).toUpperCase();
+        }
+
+        // Assign color
+        const colors = ['#059669', '#0d9488', '#0284c7', '#4f46e5', '#db2777', '#d97706'];
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+        const review = {
+            name: name,
+            location: location,
+            rating: rating,
+            text: text,
+            initials: initials,
+            color: randomColor
+        };
+
+        saveCustomReview(review);
+        appendReviewToSlider(review, true);
+
+        // Reset form and close modal
+        document.getElementById('addReviewForm').reset();
+        document.querySelectorAll('.rating-star').forEach(s => {
+            s.classList.remove('far');
+            s.classList.add('fas');
+        });
+        document.getElementById('reviewRating').value = 5;
+
+        const modalEl = document.getElementById('addReviewModal');
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) modal.hide();
+
+        alert("Thank you for your review! It has been successfully posted.");
+    }
+
+    function appendReviewToSlider(review, prepend = false) {
+        const slider = document.getElementById('reviewsSlider');
+        if (!slider) return;
+
+        const item = document.createElement('div');
+        item.className = 'review-slider-item';
+
+        let starsHTML = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= review.rating) {
+                starsHTML += '<i class="fas fa-star"></i>';
+            } else {
+                starsHTML += '<i class="far fa-star"></i>';
+            }
+        }
+
+        item.innerHTML = `
+            <div class="review-card card p-4 border-0 h-100 shadow-sm">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="review-avatar-container">
+                        <div class="review-avatar-initials" style="background-color: ${review.color};">
+                            ${review.initials}
+                        </div>
+                    </div>
+                    <div class="ms-3">
+                        <h6 class="mb-0 fw-bold text-dark">${review.name}</h6>
+                        <span class="text-muted small">${review.location}</span>
+                    </div>
+                </div>
+                <div class="mb-3 text-warning">
+                    ${starsHTML}
+                </div>
+                <p class="review-text text-muted mb-0">"${review.text}"</p>
+            </div>
+        `;
+
+        if (prepend) {
+            slider.insertBefore(item, slider.firstChild);
+        } else {
+            slider.appendChild(item);
         }
     }
 </script>

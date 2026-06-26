@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.safestring import mark_safe
 from django.utils import timezone
-from .models import CustomUser, OTP, Category, Product, Announcement
+from .models import CustomUser, OTP, Category, Product, Announcement, TeamMember, Gallery, ContactMessage
 
 class CustomUserAdmin(UserAdmin):
     # Completely redefine fieldsets to move 'email'
@@ -105,6 +105,43 @@ class AnnouncementAdmin(admin.ModelAdmin):
     list_filter = ('is_active', 'created_at')
     search_fields = ('text',)
     list_editable = ('is_active',)
+
+
+@admin.register(TeamMember)
+class TeamMemberAdmin(admin.ModelAdmin):
+    list_display = ('employee_name', 'role', 'description_snippet', 'image_preview')
+    search_fields = ('employee_name', 'role', 'description')
+
+    def description_snippet(self, obj):
+        return obj.description[:50] + '...' if len(obj.description) > 50 else obj.description
+    description_snippet.short_description = 'Description'
+
+    def image_preview(self, obj):
+        if obj.employee_image:
+            return mark_safe(f'<img src="{obj.employee_image.url}" width="50" height="50" style="object-fit: cover; border-radius: 4px;" />')
+        return "No Image"
+    image_preview.short_description = 'Photo'
+
+
+@admin.register(Gallery)
+class GalleryAdmin(admin.ModelAdmin):
+    list_display = ('title', 'created_at', 'image_preview')
+    search_fields = ('title',)
+    list_filter = ('created_at',)
+
+    def image_preview(self, obj):
+        if obj.image:
+            return mark_safe(f'<img src="{obj.image.url}" width="50" style="object-fit: cover; border-radius: 4px;" />')
+        return "No Image"
+    image_preview.short_description = 'Preview'
+
+
+@admin.register(ContactMessage)
+class ContactMessageAdmin(admin.ModelAdmin):
+    list_display = ('first_name', 'last_name', 'email', 'subject', 'created_at')
+    search_fields = ('first_name', 'last_name', 'email', 'subject', 'message')
+    readonly_fields = ('created_at',)
+
 
 
 

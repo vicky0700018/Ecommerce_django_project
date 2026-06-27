@@ -299,6 +299,9 @@ def login(request):
                     request.session.set_expiry(0)  # Browser session
                 
                 messages.success(request, f'Welcome back, {user.full_name}!')
+                next_url = request.GET.get('next') or request.POST.get('next')
+                if next_url and next_url.startswith('/') and not next_url.startswith('//'):
+                    return redirect(next_url)
                 return redirect('home')
             else:
                 messages.error(request, 'Invalid email or password!')
@@ -322,6 +325,13 @@ def wishlist(request):
 def cart(request):
     """Display shopping cart page"""
     return render(request, 'cart.html')
+
+def checkout(request):
+    """Display checkout page"""
+    if not request.user.is_authenticated:
+        messages.warning(request, 'Please log in to proceed to checkout.')
+        return redirect('/login/?next=/checkout/')
+    return render(request, 'checkout.html')
 
 def privacy_policy(request):
     """Display privacy policy page"""

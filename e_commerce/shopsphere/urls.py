@@ -15,6 +15,7 @@ urlpatterns = [
     path('logout/', logout, name='logout'),
     path('wishlist/', wishlist, name='wishlist'),
     path('cart/', cart, name='cart'),
+    path('checkout/', checkout, name='checkout'),
     path('privacy-policy/', privacy_policy, name='privacy_policy'),
     path('refund-policy/', refund_policy, name='refund_policy'),
     path('shipping-policy/', shipping_policy, name='shipping_policy'),

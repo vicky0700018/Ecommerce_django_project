@@ -15,6 +15,8 @@ class CustomUser(AbstractUser):
     mobile_no = models.CharField(max_length=15)
     dob = models.DateField(null=True, blank=True)
     address = models.TextField()
+    city = models.CharField(max_length=100, null=True, blank=True)
+    pincode = models.CharField(max_length=10, null=True, blank=True)
     alternate_mobile_no = models.CharField(max_length=15, null=True, blank=True)
     profile_image = models.ImageField(upload_to='profiles/', null=True, blank=True)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, null=True, blank=True)

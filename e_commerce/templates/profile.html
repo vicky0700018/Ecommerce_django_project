@@ -4,105 +4,367 @@
 {% block title %}My Profile - ShopSphere{% endblock %}
 
 {% block page_header_banner %}
-<div class="container-fluid page-header-section">
-    <div class="container">
-        <p class="page-header-subtitle">SHOPSPHERE - ACCOUNT</p>
-        <h1 class="page-header-title">My Profile</h1>
-        <p class="page-header-description">View and update your personal details and account settings.</p>
-    </div>
-</div>
+<!-- Clean background override: no large page banner to match the mockups -->
 {% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row">
-        <!-- Sidebar Navigation -->
-        <div class="col-lg-3 mb-4">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body text-center p-4">
-                    <div class="mb-3">
+<!-- Custom Styles for Profile Redesign -->
+<style>
+    :root {
+        --brand-green: var(--primary-color, #0a1128);
+        --brand-green-hover: var(--accent-magenta, #fc0466);
+        --brand-light-green: rgba(var(--primary-rgb, 10, 17, 40), 0.05);
+        --profile-bg: #f8fafc;
+        --border-color: #e2e8f0;
+    }
+
+    body {
+        background-color: #f5f6f8 !important;
+    }
+
+    .profile-card {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        border: 1px solid rgba(226, 232, 240, 0.6);
+        transition: all 0.3s ease;
+    }
+
+    .profile-card:hover {
+        transform: none; /* Override base.html scale effect for profile page container */
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        border-color: rgba(226, 232, 240, 0.6);
+    }
+
+    .info-item-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .info-item-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        color: #64748b;
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+
+    .info-value {
+        color: #1e293b;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .icon-container {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background-color: var(--brand-light-green);
+        color: var(--brand-green);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+    }
+
+    /* Modal Styling */
+    .active-tab {
+        background-color: var(--brand-green) !important;
+        color: #ffffff !important;
+        box-shadow: 0 2px 6px rgba(var(--primary-rgb, 10, 17, 40), 0.15);
+    }
+
+    .tab-btn {
+        border: none;
+        outline: none;
+        background: transparent;
+        transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover:not(.active-tab) {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    /* Avatar Edit Button */
+    .avatar-edit-btn {
+        width: 32px;
+        height: 32px;
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-radius: 50%;
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        z-index: 10;
+    }
+
+    .avatar-edit-btn:hover {
+        background-color: #f8fafc;
+        transform: scale(1.05);
+    }
+</style>
+
+<div class="container py-4">
+    <!-- Main Profile Card -->
+    <div class="profile-card p-4 p-md-5 mb-4">
+        <div class="row align-items-center g-4">
+            <!-- Left: Profile Image -->
+            <div class="col-12 col-md-auto text-center">
+                <div class="position-relative d-inline-block">
+                    <div class="rounded-circle overflow-hidden border border-3 border-light shadow-sm" style="width: 140px; height: 140px;">
                         {% if user.profile_image %}
-                            <img src="{{ user.profile_image.url }}" alt="{{ user.full_name }}" class="rounded-circle border border-primary p-1" style="width: 120px; height: 120px; object-fit: cover;">
+                            <img src="{{ user.profile_image.url }}" alt="{{ user.full_name }}" class="w-100 h-100" style="object-fit: cover;">
                         {% else %}
-                            <i class="fas fa-user-circle text-muted" style="font-size: 100px;"></i>
+                            <div class="w-100 h-100 d-flex align-items-center justify-content-center bg-light text-muted">
+                                <i class="fas fa-user" style="font-size: 64px; color: #cbd5e1;"></i>
+                            </div>
                         {% endif %}
                     </div>
-                    <h5 class="fw-bold mb-1">{{ user.full_name }}</h5>
-                    <p class="text-muted small mb-4">{{ user.email }}</p>
+                    <!-- Camera Edit Button -->
+                    <div class="avatar-edit-btn" onclick="triggerAvatarUpload()" title="Change Profile Picture">
+                        <i class="fas fa-pencil-alt" style="font-size: 0.85rem; color: #475569;"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Middle: User basic info -->
+            <div class="col-12 col-md text-center text-md-start">
+                <h2 class="fw-bold mb-2 text-dark" style="font-size: 1.85rem;">{{ user.full_name }}</h2>
+                <div class="d-flex flex-wrap justify-content-center justify-content-md-start align-items-center gap-2 mb-3">
+                    <!-- Verified Status -->
+                    {% if user.is_email_verified %}
+                        <span class="badge rounded-pill d-inline-flex align-items-center gap-1.5 px-3 py-1.5 font-medium border border-success-subtle text-success bg-success-subtle" style="font-size: 0.8rem; font-weight: 500;">
+                            <i class="fas fa-check-circle"></i> Verified
+                        </span>
+                    {% else %}
+                        <span class="badge rounded-pill d-inline-flex align-items-center gap-1.5 px-3 py-1.5 font-medium border border-warning-subtle text-warning bg-warning-subtle" style="font-size: 0.8rem; font-weight: 500;">
+                            <i class="fas fa-exclamation-circle"></i> Unverified
+                        </span>
+                    {% endif %}
                     
-                    <div class="list-group list-group-flush text-start">
-                        <a href="{% url 'profile' %}" class="list-group-item list-group-item-action active">
-                            <i class="fas fa-user me-2"></i>My Profile
-                        </a>
-                        <a href="{% url 'orders' %}" class="list-group-item list-group-item-action">
-                            <i class="fas fa-box-open me-2"></i>My Orders
-                        </a>
-                        <a href="{% url 'cart' %}" class="list-group-item list-group-item-action">
-                            <i class="fas fa-shopping-cart me-2"></i>My Cart
-                        </a>
-                        <a href="{% url 'logout' %}" class="list-group-item list-group-item-action text-danger">
-                            <i class="fas fa-sign-out-alt me-2"></i>Logout
-                        </a>
+                    <!-- ID Badge -->
+                    <span class="badge rounded-pill d-inline-flex align-items-center px-3 py-1.5 border border-secondary-subtle text-secondary bg-light" style="font-size: 0.8rem; font-weight: 500;">
+                        ID: user_{{ user.id|default:"178" }}
+                    </span>
+                </div>
+                <div class="d-flex justify-content-center justify-content-md-start align-items-center gap-2 text-secondary">
+                    <i class="far fa-envelope"></i>
+                    <span>{{ user.email }}</span>
+                </div>
+            </div>
+
+            <!-- Right: Edit Profile Button -->
+            <div class="col-12 col-md-auto text-center text-md-end">
+                <button type="button" class="btn btn-primary px-4 py-2.5 fw-semibold d-inline-flex align-items-center gap-2 shadow-sm" style="border-radius: 8px; font-size: 0.95rem;" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                    <i class="fas fa-pencil-alt" style="font-size: 0.9rem;"></i> Edit Profile
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Details Sections -->
+    <div class="row g-4">
+        <!-- Contact Information Card -->
+        <div class="col-12 col-lg-6">
+            <div class="profile-card p-4 h-100">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div class="icon-container">
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                    <h4 class="mb-0 fw-bold" style="color: var(--brand-green); font-size: 1.25rem;">Contact Information</h4>
+                </div>
+                
+                <div class="info-list">
+                    <div class="info-item-row">
+                        <span class="info-label">Mobile</span>
+                        <span class="info-value">{{ user.mobile_no|default:"Not provided" }}</span>
+                    </div>
+                    <div class="info-item-row">
+                        <span class="info-label">Alternate Mobile</span>
+                        <span class="info-value">{{ user.alternate_mobile_no|default:"Not provided" }}</span>
+                    </div>
+                    <div class="info-item-row">
+                        <span class="info-label">Email</span>
+                        <span class="info-value">{{ user.email }}</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Profile Form Content -->
-        <div class="col-lg-9">
-            <div class="card border-0 shadow-sm p-4 p-md-5">
-                <h3 class="mb-4 fw-bold">Personal Information</h3>
+        <!-- Address Information Card -->
+        <div class="col-12 col-lg-6">
+            <div class="profile-card p-4 h-100">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div class="icon-container">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h4 class="mb-0 fw-bold" style="color: var(--brand-green); font-size: 1.25rem;">Address Information</h4>
+                </div>
                 
+                <div class="info-list">
+                    <div class="info-item-row">
+                        <span class="info-label">Address</span>
+                        <span class="info-value text-end" style="max-width: 65%; word-break: break-word;">{{ user.address|default:"Not provided" }}</span>
+                    </div>
+                    <div class="info-item-row">
+                        <span class="info-label">City</span>
+                        <span class="info-value">{{ user.city|default:"Not provided" }}</span>
+                    </div>
+                    <div class="info-item-row">
+                        <span class="info-label">Pincode</span>
+                        <span class="info-value">{{ user.pincode|default:"Not provided" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
+            <!-- Modal Header -->
+            <div class="modal-header border-0 pb-0 px-4 pt-4">
+                <h4 class="modal-title fw-bold" id="editProfileModalLabel" style="color: var(--brand-green); font-size: 1.4rem;">Edit Profile</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="modal-body px-4 pb-4 pt-3">
+                <!-- Tabs navigation inside modal -->
+                <div class="d-flex p-1 bg-light rounded-pill mb-4" style="border: 1px solid #e2e8f0;">
+                    <button type="button" class="tab-btn w-50 py-2.5 fw-semibold rounded-pill active-tab text-center" id="basicInfoTab" onclick="switchTab('basic-info')">
+                        Basic Info
+                    </button>
+                    <button type="button" class="tab-btn w-50 py-2.5 fw-semibold rounded-pill text-secondary text-center" id="contactDetailsTab" onclick="switchTab('contact-details')">
+                        Contact Details
+                    </button>
+                </div>
+                
+                <!-- Main Edit Form -->
                 <form method="POST" action="{% url 'profile' %}" enctype="multipart/form-data" class="needs-validation">
                     {% csrf_token %}
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label for="full_name" class="form-label">Full Name</label>
-                            <input type="text" class="form-control" id="full_name" name="full_name" value="{{ user.full_name }}" required>
+                    
+                    <!-- Pane 1: Basic Info -->
+                    <div id="basicInfoPane">
+                        <div class="mb-3">
+                            <label for="modal_full_name" class="form-label fw-bold text-secondary mb-1" style="font-size: 0.9rem;">Full Name</label>
+                            <input type="text" class="form-control px-3 py-2.5" id="modal_full_name" name="full_name" value="{{ user.full_name }}" required style="border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.95rem;">
                         </div>
-                        <div class="col-md-6">
-                            <label for="email" class="form-label">Email Address</label>
-                            <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" readonly disabled>
-                            <small class="text-muted">Email cannot be changed.</small>
+                        <div class="mb-3">
+                            <label for="modal_email" class="form-label fw-bold text-secondary mb-1" style="font-size: 0.9rem;">Email Address</label>
+                            <input type="email" class="form-control px-3 py-2.5 text-secondary" id="modal_email" name="email" value="{{ user.email }}" readonly disabled style="border-radius: 8px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-size: 0.95rem; cursor: not-allowed;">
                         </div>
-                        <div class="col-md-6">
-                            <label for="mobile_no" class="form-label">Mobile Number</label>
-                            <input type="text" class="form-control" id="mobile_no" name="mobile_no" value="{{ user.mobile_no }}">
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label for="modal_gender" class="form-label fw-bold text-secondary mb-1" style="font-size: 0.9rem;">Gender</label>
+                                <select class="form-select px-3 py-2.5" id="modal_gender" name="gender" style="border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.95rem;">
+                                    <option value="" {% if not user.gender %}selected{% endif %}>Select Gender</option>
+                                    <option value="Male" {% if user.gender == 'Male' %}selected{% endif %}>Male</option>
+                                    <option value="Female" {% if user.gender == 'Female' %}selected{% endif %}>Female</option>
+                                    <option value="Other" {% if user.gender == 'Other' %}selected{% endif %}>Other</option>
+                                </select>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label for="modal_dob" class="form-label fw-bold text-secondary mb-1" style="font-size: 0.9rem;">Date of Birth</label>
+                                <input type="date" class="form-control px-3 py-2.5" id="modal_dob" name="dob" value="{{ user.dob|date:'Y-m-d' }}" style="border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.95rem;">
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <label for="alternate_mobile_no" class="form-label">Alternate Mobile Number</label>
-                            <input type="text" class="form-control" id="alternate_mobile_no" name="alternate_mobile_no" value="{{ user.alternate_mobile_no|default:'' }}">
+                    </div>
+                    
+                    <!-- Pane 2: Contact Details (hidden initially) -->
+                    <div id="contactDetailsPane" class="d-none">
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label for="modal_mobile_no" class="form-label fw-bold text-secondary mb-1" style="font-size: 0.9rem;">Mobile Number</label>
+                                <input type="text" class="form-control px-3 py-2.5" id="modal_mobile_no" name="mobile_no" value="{{ user.mobile_no|default:'' }}" style="border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.95rem;">
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label for="modal_alternate_mobile_no" class="form-label fw-bold text-secondary mb-1" style="font-size: 0.9rem;">Alternate Mobile</label>
+                                <input type="text" class="form-control px-3 py-2.5" id="modal_alternate_mobile_no" name="alternate_mobile_no" value="{{ user.alternate_mobile_no|default:'' }}" style="border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.95rem;">
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <label for="gender" class="form-label">Gender</label>
-                            <select class="form-select" id="gender" name="gender">
-                                <option value="" {% if not user.gender %}selected{% endif %}>Select Gender</option>
-                                <option value="Male" {% if user.gender == 'Male' %}selected{% endif %}>Male</option>
-                                <option value="Female" {% if user.gender == 'Female' %}selected{% endif %}>Female</option>
-                                <option value="Other" {% if user.gender == 'Other' %}selected{% endif %}>Other</option>
-                            </select>
+                        <div class="mb-3">
+                            <label for="modal_address" class="form-label fw-bold text-secondary mb-1" style="font-size: 0.9rem;">Shipping Address</label>
+                            <textarea class="form-control px-3 py-2" id="modal_address" name="address" rows="3" style="border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.95rem; resize: none;">{{ user.address }}</textarea>
                         </div>
-                        <div class="col-md-6">
-                            <label for="dob" class="form-label">Date of Birth</label>
-                            <input type="date" class="form-control" id="dob" name="dob" value="{{ user.dob|date:'Y-m-d' }}">
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label for="modal_city" class="form-label fw-bold text-secondary mb-1" style="font-size: 0.9rem;">City</label>
+                                <input type="text" class="form-control px-3 py-2.5" id="modal_city" name="city" value="{{ user.city|default:'' }}" style="border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.95rem;">
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label for="modal_pincode" class="form-label fw-bold text-secondary mb-1" style="font-size: 0.9rem;">Pincode</label>
+                                <input type="text" class="form-control px-3 py-2.5" id="modal_pincode" name="pincode" value="{{ user.pincode|default:'' }}" style="border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.95rem;">
+                            </div>
                         </div>
-                        <div class="col-12">
-                            <label for="address" class="form-label">Shipping Address</label>
-                            <textarea class="form-control" id="address" name="address" rows="3">{{ user.address }}</textarea>
-                        </div>
-                        <div class="col-md-12">
-                            <label for="profile_image" class="form-label">Profile Image</label>
-                            <input type="file" class="form-control" id="profile_image" name="profile_image">
-                        </div>
-                        <div class="col-12 mt-4">
-                            <button type="submit" class="btn btn-primary btn-lg px-5">
-                                <i class="fas fa-save me-2"></i>Save Changes
-                            </button>
-                        </div>
+                    </div>
+                    
+                    <!-- Footer Buttons -->
+                    <div class="d-flex justify-content-end gap-3 pt-3 border-top mt-4">
+                        <button type="button" class="btn btn-light px-4 py-2.5 fw-semibold border" data-bs-dismiss="modal" style="border-radius: 8px; font-size: 0.95rem; background-color: #f8fafc;">Cancel</button>
+                        <button type="submit" class="btn btn-primary px-4 py-2.5 fw-semibold shadow-sm" style="border-radius: 8px; font-size: 0.95rem;">Save Changes</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Hidden Avatar Upload Form -->
+<form id="avatarForm" method="POST" action="{% url 'profile' %}" enctype="multipart/form-data" style="display: none;">
+    {% csrf_token %}
+    <input type="file" id="profile_image_input" name="profile_image" accept="image/*" onchange="submitAvatarForm()">
+</form>
+
+<!-- Tab Switching and Photo Upload Javascript -->
+<script>
+    function switchTab(tabId) {
+        const basicTab = document.getElementById('basicInfoTab');
+        const contactTab = document.getElementById('contactDetailsTab');
+        const basicPane = document.getElementById('basicInfoPane');
+        const contactPane = document.getElementById('contactDetailsPane');
+        
+        if (tabId === 'basic-info') {
+            basicTab.classList.add('active-tab');
+            basicTab.classList.remove('text-secondary');
+            contactTab.classList.remove('active-tab');
+            contactTab.classList.add('text-secondary');
+            
+            basicPane.classList.remove('d-none');
+            contactPane.classList.add('d-none');
+        } else {
+            contactTab.classList.add('active-tab');
+            contactTab.classList.remove('text-secondary');
+            basicTab.classList.remove('active-tab');
+            basicTab.classList.add('text-secondary');
+            
+            contactPane.classList.remove('d-none');
+            basicPane.classList.add('d-none');
+        }
+    }
+
+    function triggerAvatarUpload() {
+        document.getElementById('profile_image_input').click();
+    }
+
+    function submitAvatarForm() {
+        const fileInput = document.getElementById('profile_image_input');
+        if (fileInput.files.length > 0) {
+            document.getElementById('avatarForm').submit();
+        }
+    }
+</script>
 {% endblock %}

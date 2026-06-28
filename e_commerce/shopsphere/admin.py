@@ -9,7 +9,7 @@ class CustomUserAdmin(UserAdmin):
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
         ('Personal info', {'fields': ('first_name', 'last_name')}),
-        ('Custom Profile Details', {'fields': ('email', 'full_name', 'mobile_no', 'alternate_mobile_no', 'dob', 'address', 'profile_image', 'gender')}),
+        ('Custom Profile Details', {'fields': ('email', 'full_name', 'mobile_no', 'alternate_mobile_no', 'dob', 'address', 'city', 'pincode', 'profile_image', 'gender')}),
         ('Email Verification', {'fields': ('is_email_verified',)}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
@@ -17,7 +17,7 @@ class CustomUserAdmin(UserAdmin):
     
     # Create New User page
     add_fieldsets = UserAdmin.add_fieldsets + (
-        ('Custom Profile Details', {'fields': ('full_name', 'email', 'mobile_no', 'alternate_mobile_no', 'dob', 'address', 'profile_image', 'gender')}),
+        ('Custom Profile Details', {'fields': ('full_name', 'email', 'mobile_no', 'alternate_mobile_no', 'dob', 'address', 'city', 'pincode', 'profile_image', 'gender')}),
     )
     
     list_display = ('username', 'email', 'full_name', 'mobile_no', 'is_staff', 'email_verification_status')

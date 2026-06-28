@@ -370,6 +370,8 @@ def profile(request):
         user.alternate_mobile_no = request.POST.get('alternate_mobile_no', '').strip()
         user.gender = request.POST.get('gender', '').strip()
         user.address = request.POST.get('address', '').strip()
+        user.city = request.POST.get('city', '').strip()
+        user.pincode = request.POST.get('pincode', '').strip()
         
         dob_val = request.POST.get('dob')
         if dob_val:
@@ -391,6 +393,113 @@ def orders(request):
         messages.warning(request, 'Please log in to access your orders.')
         return redirect('login')
     return render(request, 'orders.html')
+
+
+def forgot_password(request):
+    """Handle password reset request by sending an OTP to user email"""
+    if request.user.is_authenticated:
+        return redirect('home')
+        
+    if request.method == 'POST':
+        email = request.POST.get('email', '').strip()
+        
+        if not email:
+            messages.error(request, 'Please enter your registered email address.')
+            return redirect('forgot_password')
+            
+        try:
+            user = CustomUser.objects.get(email=email)
+            # Generate and send OTP
+            otp = OTP.generate_otp(user)
+            send_reset_password_email(user, otp.code)
+            
+            request.session['reset_password_email'] = email
+            messages.success(request, 'An OTP has been sent to your email. Please verify to reset your password.')
+            return redirect('reset_password')
+            
+        except CustomUser.DoesNotExist:
+            messages.error(request, 'No account found with this email address.')
+            return redirect('forgot_password')
+            
+    return render(request, 'forgot_password.html')
+
+
+def send_reset_password_email(user, otp_code):
+    """Send password reset OTP email to user"""
+    subject = 'Reset Password OTP - ShopSphere'
+    html_message = render_to_string('reset_password_email.html', {
+        'full_name': user.full_name,
+        'otp_code': otp_code
+    })
+    plain_message = strip_tags(html_message)
+    
+    send_mail(
+        subject,
+        plain_message,
+        settings.EMAIL_HOST_USER,
+        [user.email],
+        html_message=html_message,
+        fail_silently=False,
+    )
+
+
+def reset_password(request):
+    """Verify OTP and update user password"""
+    if request.user.is_authenticated:
+        return redirect('home')
+        
+    email = request.session.get('reset_password_email')
+    if not email:
+        messages.error(request, 'Invalid request session. Please request OTP again.')
+        return redirect('forgot_password')
+        
+    if request.method == 'POST':
+        otp_code = request.POST.get('otp_code', '').strip()
+        new_password = request.POST.get('new_password', '')
+        confirm_password = request.POST.get('confirm_password', '')
+        
+        if not otp_code or not new_password or not confirm_password:
+            messages.error(request, 'All fields are required.')
+            return render(request, 'reset_password.html', {'email': email})
+            
+        if new_password != confirm_password:
+            messages.error(request, 'Passwords do not match.')
+            return render(request, 'reset_password.html', {'email': email})
+            
+        if len(new_password) < 6:
+            messages.error(request, 'Password must be at least 6 characters long.')
+            return render(request, 'reset_password.html', {'email': email})
+            
+        try:
+            user = CustomUser.objects.get(email=email)
+            otp = OTP.objects.get(user=user)
+            
+            if otp.is_expired():
+                messages.error(request, 'OTP has expired. Please request a new one.')
+                return redirect('forgot_password')
+                
+            if otp.verify(otp_code):
+                # Update password
+                user.password = make_password(new_password)
+                user.save()
+                
+                # Delete OTP
+                otp.delete()
+                
+                # Clear session
+                del request.session['reset_password_email']
+                
+                messages.success(request, 'Password reset successful! You can now log in with your new password.')
+                return redirect('login')
+            else:
+                messages.error(request, 'Invalid OTP. Please try again.')
+                return render(request, 'reset_password.html', {'email': email})
+                
+        except (CustomUser.DoesNotExist, OTP.DoesNotExist):
+            messages.error(request, 'Invalid request or expired OTP.')
+            return redirect('forgot_password')
+            
+    return render(request, 'reset_password.html', {'email': email})
 
 
 

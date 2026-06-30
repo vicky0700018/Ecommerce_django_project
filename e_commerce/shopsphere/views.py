@@ -7,8 +7,19 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
-from .models import CustomUser, OTP, Category, Product, TeamMember, Gallery, ContactMessage
+from .models import CustomUser, OTP, Category, Product, TeamMember, Gallery, ContactMessage, Order
+from decimal import Decimal
 import uuid
+import razorpay
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+client = razorpay.Client(
+    auth=(
+        settings.RAZORPAY_API_KEY,
+        settings.RAZORPAY_API_SECRET
+    )
+)
 
 def home(request):
     categories = Category.objects.all()
@@ -325,13 +336,43 @@ def wishlist(request):
 def cart(request):
     """Display shopping cart page"""
     return render(request, 'cart.html')
-
 def checkout(request):
     """Display checkout page"""
     if not request.user.is_authenticated:
         messages.warning(request, 'Please log in to proceed to checkout.')
         return redirect('/login/?next=/checkout/')
-    return render(request, 'checkout.html')
+
+    context = {
+        'RAZORPAY_API_KEY': settings.RAZORPAY_API_KEY,
+    }
+
+    return render(request, 'checkout.html', context)
+
+
+@csrf_exempt
+def create_order(request):
+    if request.method == "POST":
+        try:
+            amount = int(request.POST.get("amount"))
+
+            order = client.order.create({
+                "amount": amount,
+                "currency": "INR"
+            })
+
+            return JsonResponse(order)
+
+        except Exception as e:
+            return JsonResponse({
+                "success": False,
+                "error": str(e)
+            })
+
+    return JsonResponse({
+        "success": False,
+        "error": "Invalid Request"
+    })
+
 
 def privacy_policy(request):
     """Display privacy policy page"""
@@ -392,7 +433,8 @@ def orders(request):
     if not request.user.is_authenticated:
         messages.warning(request, 'Please log in to access your orders.')
         return redirect('login')
-    return render(request, 'orders.html')
+    user_orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    return render(request, 'orders.html', {'orders': user_orders})
 
 
 def forgot_password(request):
@@ -501,5 +543,38 @@ def reset_password(request):
             
     return render(request, 'reset_password.html', {'email': email})
 
+@csrf_exempt
+def save_order(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
 
+            order = Order.objects.create(
+                user=request.user,
+                order_id=data["order_id"],
+                payment_id=data.get("payment_id"),
+                full_name=data["full_name"],
+                email=data["email"],
+                phone=data["phone"],
+                address=data["address"],
+                city=data["city"],
+                pincode=data["pincode"],
+                amount=Decimal(str(data["amount"])),
+                payment_method=data["payment_method"],
+                status="Paid" if data["payment_method"] == "ONLINE" else "Pending",
+                product=data.get("product", "Order Items"),
+            )
+
+            return JsonResponse({
+                "success": True,
+                "order": order.order_id
+            })
+
+        except Exception as e:
+            return JsonResponse({
+                "success": False,
+                "error": str(e)
+            }, status=400)
+
+    return JsonResponse({"success": False}, status=405)
 

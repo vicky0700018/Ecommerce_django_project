@@ -163,6 +163,39 @@ class ContactMessage(models.Model):
         return f"{self.first_name} {self.last_name} - {self.subject}"
 
 
+class Order(models.Model):
+    PAYMENT_METHODS = (
+        ('COD', 'Cash On Delivery'),
+        ('ONLINE', 'Online Payment'),
+    )
 
+    STATUS_CHOICES = (
+        ('Pending', 'Pending'),
+        ('Paid', 'Paid'),
+        ('Cancelled', 'Cancelled'),
+        ('Delivered', 'Delivered'),
+    )
+
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    order_id = models.CharField(max_length=100, unique=True)
+    payment_id = models.CharField(max_length=100, blank=True, null=True)
+
+    full_name = models.CharField(max_length=255)
+    email = models.EmailField()
+    phone = models.CharField(max_length=15)
+    address = models.TextField()
+    city = models.CharField(max_length=100)
+    pincode = models.CharField(max_length=10)
+
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    product = models.TextField(default="Order Items")
+
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.order_id
 
 

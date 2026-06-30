@@ -2,7 +2,17 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.safestring import mark_safe
 from django.utils import timezone
-from .models import CustomUser, OTP, Category, Product, Announcement, TeamMember, Gallery, ContactMessage
+from .models import (
+    CustomUser,
+    OTP,
+    Category,
+    Product,
+    Announcement,
+    TeamMember,
+    Gallery,
+    ContactMessage,
+    Order
+)
 
 class CustomUserAdmin(UserAdmin):
     # Completely redefine fieldsets to move 'email'
@@ -144,4 +154,33 @@ class ContactMessageAdmin(admin.ModelAdmin):
 
 
 
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = (
+        'order_id',
+        'user',
+        'amount',
+        'payment_method',
+        'payment_id',
+        'status',
+        'created_at'
+    )
 
+    list_filter = (
+        'status',
+        'payment_method',
+        'created_at'
+    )
+
+    search_fields = (
+        'order_id',
+        'payment_id',
+        'full_name',
+        'email'
+    )
+
+    readonly_fields = (
+        'order_id',
+        'payment_id',
+        'created_at'
+    )

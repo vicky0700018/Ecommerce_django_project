@@ -125,7 +125,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
@@ -165,3 +165,8 @@ SESSION_COOKIE_SECURE = False
 
 # Custom User Model
 AUTH_USER_MODEL = 'shopsphere.CustomUser'
+
+# Razorpay API credentials
+RAZORPAY_API_KEY = 'rzp_test_T7ub9uRXOT69Du'
+RAZORPAY_API_SECRET = 'r071X4HV5n7so70Qmstrg54v'
+

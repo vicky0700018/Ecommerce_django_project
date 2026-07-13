@@ -4,6 +4,7 @@ from .views import *
 urlpatterns = [
     path('', home, name='home'),
     path('product/', product, name='product'),
+    path('product/<slug:slug>/', product_detail, name='product_detail'),
     path('category/', category, name='category'),
     path('gallery/', gallery, name='gallery'),
     path('about-us/', about_us, name='about_us'),
@@ -30,4 +31,27 @@ urlpatterns = [
     path('forgot-password/', forgot_password, name='forgot_password'),
     path('reset-password/', reset_password, name='reset_password'),
     path('orders/', orders, name='orders'),
+    
+    # Inventory Management Routes
+    path('inventory/', inventory_view, name='inventory'),
+    path('inventory/update-stock/', update_stock, name='inventory_update_stock'),
+    path('inventory/toggle-availability/', toggle_availability, name='inventory_toggle_availability'),
+
+    # Order Listing Actions
+    path('orders/<str:order_id>/', order_detail, name='order_detail'),
+    path('orders/<str:order_id>/details/', order_details_api, name='order_details_api'),
+    path('orders/<str:order_id>/invoice/', download_invoice, name='download_invoice'),
+    path('orders/<str:order_id>/delete/', delete_order, name='delete_order'),
+
+    # Feedback System Routes
+    path('feedback/submit/', submit_feedback, name='submit_feedback'),
+    path('admin-dashboard/feedback/', feedback_admin_view, name='feedback_admin'),
+    path('admin-dashboard/feedback/<int:feedback_id>/approve/', approve_feedback, name='approve_feedback'),
+    path('admin-dashboard/feedback/<int:feedback_id>/reject/', reject_feedback, name='reject_feedback'),
+
+    # Cart & Wishlist Sync API Routes
+    path('cart/sync/', sync_cart_api, name='sync_cart_api'),
+    path('cart/get/', get_cart_api, name='get_cart_api'),
+    path('wishlist/sync/', sync_wishlist_api, name='sync_wishlist_api'),
+    path('wishlist/get/', get_wishlist_api, name='get_wishlist_api'),
 ]

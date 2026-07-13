@@ -11,7 +11,12 @@ from .models import (
     TeamMember,
     Gallery,
     ContactMessage,
-    Order
+    Order,
+    Feedback,
+    Cart,
+    Wishlist,
+    ContactPageConfiguration,
+    Inventory
 )
 
 class CustomUserAdmin(UserAdmin):
@@ -102,11 +107,11 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'price', 'discount_price', 'stock', 'is_available', 'created_at')
+    list_display = ('name', 'sku', 'category', 'price', 'discount_price', 'stock', 'is_available', 'created_at')
     list_filter = ('is_available', 'category', 'created_at')
-    search_fields = ('name', 'description')
+    search_fields = ('name', 'sku', 'description')
     prepopulated_fields = {'slug': ('name',)}
-    list_editable = ('price', 'discount_price', 'stock', 'is_available')
+    list_editable = ('sku', 'price', 'discount_price', 'stock', 'is_available')
 
 
 @admin.register(Announcement)
@@ -184,3 +189,122 @@ class OrderAdmin(admin.ModelAdmin):
         'payment_id',
         'created_at'
     )
+
+
+from django.utils.html import format_html
+from django.urls import reverse
+from django.shortcuts import redirect
+
+@admin.register(Feedback)
+class FeedbackAdmin(admin.ModelAdmin):
+    list_display = ('product_name', 'stars', 'status_display', 'action_buttons')
+    list_filter = ('rating', 'is_approved', 'is_rejected', 'created_at')
+    search_fields = ('product__name', 'message')
+
+    def product_name(self, obj):
+        url = reverse('admin:shopsphere_feedback_change', args=[obj.id])
+        return format_html('<a href="{}">{}</a>', url, obj.product.name)
+    product_name.short_description = 'PRODUCT NAME'
+    product_name.admin_order_field = 'product__name'
+
+    def stars(self, obj):
+        return obj.rating
+    stars.short_description = 'STARS'
+    stars.admin_order_field = 'rating'
+
+    def status_display(self, obj):
+        if obj.is_approved:
+            return 'Approved'
+        elif obj.is_rejected:
+            return 'Rejected'
+        return 'Pending'
+    status_display.short_description = 'STATUS'
+
+    def action_buttons(self, obj):
+        approve_url = reverse('admin:feedback_approve_custom', args=[obj.id])
+        reject_url = reverse('admin:feedback_reject_custom', args=[obj.id])
+        view_url = reverse('admin:feedback_view_custom', args=[obj.id])
+        return format_html(
+            '<a href="{}">View</a> | <a href="{}">Approve</a> | <a href="{}">Reject</a>',
+            view_url, approve_url, reject_url
+        )
+    action_buttons.short_description = 'ACTION'
+
+    def get_urls(self):
+        from django.urls import path
+        urls = super().get_urls()
+        custom_urls = [
+            path('<int:feedback_id>/approve-custom/', self.admin_site.admin_view(self.approve_fb), name='feedback_approve_custom'),
+            path('<int:feedback_id>/reject-custom/', self.admin_site.admin_view(self.reject_fb), name='feedback_reject_custom'),
+            path('<int:feedback_id>/view-custom/', self.admin_site.admin_view(self.view_fb), name='feedback_view_custom'),
+        ]
+        return custom_urls + urls
+
+    def approve_fb(self, request, feedback_id):
+        fb = self.get_object(request, feedback_id)
+        if fb:
+            fb.is_approved = True
+            fb.is_rejected = False
+            fb.save()
+            self.message_user(request, f"Feedback for {fb.product.name} approved.")
+        return redirect('admin:shopsphere_feedback_changelist')
+
+    def reject_fb(self, request, feedback_id):
+        fb = self.get_object(request, feedback_id)
+        if fb:
+            fb.is_approved = False
+            fb.is_rejected = True
+            fb.save()
+            self.message_user(request, f"Feedback for {fb.product.name} rejected.")
+        return redirect('admin:shopsphere_feedback_changelist')
+
+    def view_fb(self, request, feedback_id):
+        fb = self.get_object(request, feedback_id)
+        if fb:
+            self.message_user(request, f"Message from {fb.user.full_name} ({fb.user.email}) regarding {fb.product.name}: {fb.message}")
+        return redirect('admin:shopsphere_feedback_changelist')
+
+
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = ('user', 'product', 'quantity', 'created_at', 'updated_at')
+    list_filter = ('created_at', 'updated_at')
+    search_fields = ('user__username', 'user__email', 'product__name')
+
+
+@admin.register(Wishlist)
+class WishlistAdmin(admin.ModelAdmin):
+    list_display = ('user', 'product', 'created_at')
+    list_filter = ('created_at',)
+    search_fields = ('user__username', 'user__email', 'product__name')
+
+
+@admin.register(ContactPageConfiguration)
+class ContactPageConfigurationAdmin(admin.ModelAdmin):
+    list_display = ('email', 'phone', 'address', 'working_hours')
+    
+    def has_add_permission(self, request):
+        if self.model.objects.count() >= 1:
+            return False
+        return super().has_add_permission(request)
+
+
+@admin.register(Inventory)
+class InventoryAdmin(admin.ModelAdmin):
+    list_display = ('product', 'get_sku', 'get_stock', 'warehouse_location', 'last_restocked')
+    search_fields = ('product__name', 'product__sku')
+    list_filter = ('last_restocked', 'warehouse_location')
+    list_editable = ('warehouse_location',)
+
+    def get_sku(self, obj):
+        return obj.product.sku
+    get_sku.short_description = 'SKU'
+    get_sku.admin_order_field = 'product__sku'
+
+    def get_stock(self, obj):
+        return obj.product.stock
+    get_stock.short_description = 'STOCK'
+    get_stock.admin_order_field = 'product__stock'
+
+
+

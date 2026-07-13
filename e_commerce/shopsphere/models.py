@@ -97,6 +97,7 @@ class Product(models.Model):
     stock = models.IntegerField(default=0)
     is_available = models.BooleanField(default=True, db_index=True)
     image = models.ImageField(upload_to='products/', null=True, blank=True)
+    sku = models.CharField(max_length=100, unique=True, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -111,6 +112,33 @@ class Product(models.Model):
         if self.discount_price:
             return self.discount_price
         return self.price
+
+    @property
+    def discount_percentage(self):
+        if self.discount_price and self.price:
+            try:
+                discount = ((self.price - self.discount_price) / self.price) * 100
+                return int(discount)
+            except ZeroDivisionError:
+                return 0
+        return 0
+
+    @property
+    def approved_feedbacks(self):
+        return self.feedbacks.filter(is_approved=True)
+
+    @property
+    def average_rating(self):
+        approved = self.approved_feedbacks
+        if not approved:
+            return 0
+        return round(sum(f.rating for f in approved) / len(approved), 1)
+
+    @property
+    def average_rating_stars(self):
+        avg = self.average_rating
+        return range(int(avg))
+
 
 
 class Announcement(models.Model):
@@ -197,5 +225,88 @@ class Order(models.Model):
 
     def __str__(self):
         return self.order_id
+
+
+class Feedback(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='feedbacks')
+    message = models.TextField()
+    rating = models.IntegerField(default=5)  # 1 to 5 stars
+    is_approved = models.BooleanField(default=False)
+    is_rejected = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('-created_at',)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.product.name} ({self.rating} stars)"
+
+
+class Cart(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='carts')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Cart'
+        verbose_name_plural = 'Carts'
+
+    def __str__(self):
+        return f"{self.user.username}'s Cart - {self.product.name} ({self.quantity})"
+
+
+class Wishlist(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='wishlists')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Wishlist'
+        verbose_name_plural = 'Wishlists'
+
+    def __str__(self):
+        return f"{self.user.username}'s Wishlist - {self.product.name}"
+
+
+class ContactPageConfiguration(models.Model):
+    email = models.EmailField(default="support@shopsphere.com")
+    phone = models.CharField(max_length=20, default="+91 1234567890")
+    address = models.TextField(default="123 ShopSphere Street, India")
+    working_hours = models.CharField(max_length=150, default="Mon - Sat: 9:00 AM - 6:00 PM")
+    google_map_embed_url = models.TextField(blank=True, null=True, help_text="Google Maps Embed iframe URL or HTML")
+
+    class Meta:
+        verbose_name = 'Contact Page Configuration'
+        verbose_name_plural = 'Contact Page Configuration'
+
+    def __str__(self):
+        return "Contact Page Configuration"
+
+
+class Inventory(models.Model):
+    product = models.OneToOneField(Product, on_delete=models.CASCADE, related_name='inventory')
+    warehouse_location = models.CharField(max_length=100, blank=True, null=True, default="Main Warehouse")
+    last_restocked = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Inventory'
+        verbose_name_plural = 'Inventory'
+
+    def __str__(self):
+        return f"Inventory for {self.product.name} (Stock: {self.product.stock})"
+
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+@receiver(post_save, sender=Product)
+def create_product_inventory(sender, instance, created, **kwargs):
+    if created:
+        Inventory.objects.get_or_create(product=instance)
+
+
 
 

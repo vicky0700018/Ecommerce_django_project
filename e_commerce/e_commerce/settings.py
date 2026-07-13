@@ -170,3 +170,15 @@ AUTH_USER_MODEL = 'shopsphere.CustomUser'
 RAZORPAY_API_KEY = 'rzp_test_T7ub9uRXOT69Du'
 RAZORPAY_API_SECRET = 'r071X4HV5n7so70Qmstrg54v'
 
+# Cloudinary Configuration for Product Media Hosting
+# Create Cloudinary Credentials (required for hosting and managing product images/media)
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dpxvxlghh',
+    'API_KEY': '123456789012345',
+    'API_SECRET': 'abc-1234567890abcdefghijklmnopqrstuv',
+}
+
+# Un-comment the line below when deploying to production with Cloudinary
+# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+

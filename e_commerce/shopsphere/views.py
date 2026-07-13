@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
@@ -7,12 +7,12 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
-from .models import CustomUser, OTP, Category, Product, TeamMember, Gallery, ContactMessage, Order
+from .models import CustomUser, OTP, Category, Product, TeamMember, Gallery, ContactMessage, Order, Feedback, Cart, Wishlist, ContactPageConfiguration, Inventory
 from decimal import Decimal
 import uuid
 import razorpay
 import json
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 client = razorpay.Client(
     auth=(
@@ -72,6 +72,16 @@ def about_us(request):
     return render(request, 'about_us.html', {'team_members': team_members})
 
 def contact(request):
+    config = ContactPageConfiguration.objects.first()
+    if not config:
+        config = ContactPageConfiguration.objects.create(
+            email="support@shopsphere.com",
+            phone="+91 1234567890",
+            address="123 ShopSphere Street, India",
+            working_hours="Mon - Sat: 9:00 AM - 6:00 PM",
+            google_map_embed_url="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3503.743128170876!2d77.19472307528343!3d28.57947137569106!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390cfd263a9486c9%3A0x868b4f174c8276f7!2sSarojini%20Nagar%20Market%2C%20New%20Delhi%2C%20Delhi!5e0!3m2!1sen!2sin!4v1719500000000!5m2!1sen!2sin"
+        )
+
     if request.method == 'POST':
         first_name = request.POST.get('first_name', '').strip()
         last_name = request.POST.get('last_name', '').strip()
@@ -101,7 +111,7 @@ def contact(request):
             
         return redirect('contact')
 
-    return render(request, 'contact.html')
+    return render(request, 'contact.html', {'contact_config': config})
 
 def register(request):
     if request.method == 'POST':
@@ -429,12 +439,47 @@ def profile(request):
     return render(request, 'profile.html')
 
 def orders(request):
-    """Display user order history page"""
+    """Display user order history page with filters"""
     if not request.user.is_authenticated:
         messages.warning(request, 'Please log in to access your orders.')
         return redirect('login')
+        
     user_orders = Order.objects.filter(user=request.user).order_by('-created_at')
-    return render(request, 'orders.html', {'orders': user_orders})
+    
+    # 1. Search Bar for general queries
+    q = request.GET.get('q', '').strip()
+    if q:
+        user_orders = user_orders.filter(
+            Q(order_id__icontains=q) | 
+            Q(product__icontains=q) | 
+            Q(full_name__icontains=q)
+        )
+        
+    # 2. Product Name field/filter
+    product_name = request.GET.get('product_name', '').strip()
+    if product_name:
+        user_orders = user_orders.filter(product__icontains=product_name)
+        
+    # 3. Date Filter for sorting by timeframe
+    timeframe = request.GET.get('timeframe', '').strip()
+    if timeframe and timeframe != 'all':
+        now = timezone.now()
+        if timeframe == '30days':
+            limit_date = now - timedelta(days=30)
+            user_orders = user_orders.filter(created_at__gte=limit_date)
+        elif timeframe == '6months':
+            limit_date = now - timedelta(days=180)
+            user_orders = user_orders.filter(created_at__gte=limit_date)
+        elif timeframe == '1year':
+            limit_date = now - timedelta(days=365)
+            user_orders = user_orders.filter(created_at__gte=limit_date)
+
+    return render(request, 'orders.html', {
+        'orders': user_orders,
+        'search_query': q,
+        'product_name_query': product_name,
+        'selected_timeframe': timeframe
+    })
 
 
 def forgot_password(request):
@@ -577,4 +622,360 @@ def save_order(request):
             }, status=400)
 
     return JsonResponse({"success": False}, status=405)
+
+
+def inventory_view(request):
+    if not request.user.is_authenticated:
+        messages.warning(request, 'Please log in to access the inventory.')
+        return redirect('login')
+        
+    q = request.GET.get('q', '').strip()
+    if q:
+        products = Product.objects.filter(Q(name__icontains=q) | Q(sku__icontains=q))
+    else:
+        products = Product.objects.all()
+        
+    return render(request, 'inventory.html', {
+        'products': products,
+        'search_query': q
+    })
+
+@csrf_exempt
+def update_stock(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"success": False, "error": "Unauthorized"}, status=401)
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            product_id = data.get('product_id')
+            product = Product.objects.get(id=product_id)
+            if 'sku' in data:
+                sku_val = data.get('sku', '').strip()
+                product.sku = sku_val if sku_val else None
+                product.save()
+                return JsonResponse({"success": True, "sku": product.sku})
+            else:
+                new_stock = int(data.get('stock', 0))
+                if new_stock < 0:
+                    return JsonResponse({"success": False, "error": "Stock cannot be negative"}, status=400)
+                product.stock = new_stock
+                product.save()
+                return JsonResponse({"success": True, "stock": product.stock})
+        except Product.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Product not found"}, status=404)
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)}, status=400)
+    return JsonResponse({"success": False, "error": "Method not allowed"}, status=405)
+
+@csrf_exempt
+def toggle_availability(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"success": False, "error": "Unauthorized"}, status=401)
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            product_id = data.get('product_id')
+            product = Product.objects.get(id=product_id)
+            product.is_available = not product.is_available
+            product.save()
+            return JsonResponse({"success": True, "is_available": product.is_available})
+        except Product.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Product not found"}, status=404)
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)}, status=400)
+    return JsonResponse({"success": False, "error": "Method not allowed"}, status=405)
+
+
+def order_details_api(request, order_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({"success": False, "error": "Unauthorized"}, status=401)
+    try:
+        order = Order.objects.get(order_id=order_id, user=request.user)
+        return JsonResponse({
+            "success": True,
+            "order_id": order.order_id,
+            "created_at": order.created_at.strftime("%B %d, %Y %I:%M %p"),
+            "full_name": order.full_name,
+            "email": order.email,
+            "phone": order.phone,
+            "address": order.address,
+            "city": order.city,
+            "pincode": order.pincode,
+            "amount": str(order.amount),
+            "product": order.product,
+            "payment_method": order.get_payment_method_display(),
+            "status": order.status
+        })
+    except Order.DoesNotExist:
+        return JsonResponse({"success": False, "error": "Order not found"}, status=404)
+
+
+def download_invoice(request, order_id):
+    if not request.user.is_authenticated:
+        messages.warning(request, 'Please log in to download the invoice.')
+        return redirect('login')
+    try:
+        order = Order.objects.get(order_id=order_id, user=request.user)
+        html = render_to_string('invoice_template.html', {
+            'order': order,
+            'date': order.created_at.strftime("%B %d, %Y")
+        })
+        response = HttpResponse(html, content_type='text/html')
+        response['Content-Disposition'] = f'attachment; filename="invoice_{order.order_id}.html"'
+        return response
+    except Order.DoesNotExist:
+        messages.error(request, 'Order not found.')
+        return redirect('orders')
+
+
+@csrf_exempt
+def delete_order(request, order_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({"success": False, "error": "Unauthorized"}, status=401)
+    if request.method == 'POST':
+        try:
+            order = Order.objects.get(order_id=order_id, user=request.user)
+            order.delete()
+            return JsonResponse({"success": True, "message": "Order deleted successfully."})
+        except Order.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Order not found."}, status=404)
+    return JsonResponse({"success": False, "error": "Method not allowed."}, status=405)
+
+
+def submit_feedback(request):
+    if not request.user.is_authenticated:
+        messages.warning(request, 'Please log in to submit feedback.')
+        return redirect('login')
+    if request.method == 'POST':
+        product_id = request.POST.get('product_id')
+        message = request.POST.get('message', '').strip()
+        rating = int(request.POST.get('rating', 5))
+        
+        if not product_id or not message:
+            messages.error(request, 'Feedback message is required.')
+            referer = request.META.get('HTTP_REFERER')
+            return redirect(referer if referer else 'product')
+            
+        try:
+            product = Product.objects.get(id=product_id)
+            Feedback.objects.create(
+                user=request.user,
+                product=product,
+                message=message,
+                rating=rating
+            )
+            messages.success(request, f'Thank you! Your feedback for {product.name} has been submitted for review.')
+            return redirect('product_detail', slug=product.slug)
+        except Product.DoesNotExist:
+            messages.error(request, 'Product not found.')
+        except Exception as e:
+            messages.error(request, f'Error submitting feedback: {str(e)}')
+            
+    referer = request.META.get('HTTP_REFERER')
+    return redirect(referer if referer else 'product')
+
+
+def feedback_admin_view(request):
+    if not request.user.is_authenticated:
+        messages.warning(request, 'Please log in to access the feedback dashboard.')
+        return redirect('login')
+    feedbacks = Feedback.objects.all().select_related('user', 'product')
+    return render(request, 'feedback_admin.html', {'feedbacks': feedbacks})
+
+
+@csrf_exempt
+def approve_feedback(request, feedback_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({"success": False, "error": "Unauthorized"}, status=401)
+    if request.method == 'POST':
+        try:
+            fb = Feedback.objects.get(id=feedback_id)
+            fb.is_approved = True
+            fb.is_rejected = False
+            fb.save()
+            return JsonResponse({"success": True, "message": "Feedback approved successfully."})
+        except Feedback.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Feedback not found."}, status=404)
+    return JsonResponse({"success": False, "error": "Method not allowed."}, status=405)
+
+
+@csrf_exempt
+def reject_feedback(request, feedback_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({"success": False, "error": "Unauthorized"}, status=401)
+    if request.method == 'POST':
+        try:
+            fb = Feedback.objects.get(id=feedback_id)
+            fb.is_approved = False
+            fb.is_rejected = True
+            fb.save()
+            return JsonResponse({"success": True, "message": "Feedback rejected successfully."})
+        except Feedback.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Feedback not found."}, status=404)
+    return JsonResponse({"success": False, "error": "Method not allowed."}, status=405)
+
+
+def product_detail(request, slug):
+    product = get_object_or_404(Product, slug=slug)
+    feedbacks = product.feedbacks.filter(is_approved=True).select_related('user')
+    total_count = feedbacks.count()
+    
+    # Calculate star breakdown counts
+    rating_counts = {i: 0 for i in range(1, 6)}
+    for fb in feedbacks:
+        rating_counts[fb.rating] = rating_counts.get(fb.rating, 0) + 1
+        
+    rating_pct = {}
+    for i in range(1, 6):
+        if total_count > 0:
+            rating_pct[i] = int((rating_counts[i] / total_count) * 100)
+        else:
+            rating_pct[i] = 0
+
+    # Create pre-sorted star breakdown (5 to 1) for rendering
+    star_breakdown = []
+    for i in range(5, 0, -1):
+        star_breakdown.append({
+            'stars': i,
+            'pct': rating_pct[i],
+            'count': rating_counts[i]
+        })
+
+    # For empty star rendering
+    full_stars = int(product.average_rating)
+    half_star = 1 if (product.average_rating - full_stars) >= 0.5 else 0
+    empty_stars = 5 - full_stars - half_star
+    
+    context = {
+        'product': product,
+        'feedbacks': feedbacks,
+        'total_reviews': total_count,
+        'rating_pct': rating_pct,
+        'star_breakdown': star_breakdown,
+        'rating_counts': rating_counts,
+        'average_rating': product.average_rating,
+        'full_stars_range': range(full_stars),
+        'half_star': half_star,
+        'empty_stars_range': range(empty_stars),
+    }
+    return render(request, 'product_detail.html', context)
+
+
+def order_detail(request, order_id):
+    if not request.user.is_authenticated:
+        messages.warning(request, 'Please log in to view the order.')
+        return redirect('login')
+    order = get_object_or_404(Order, order_id=order_id, user=request.user)
+    matching_product = Product.objects.filter(name__icontains=order.product).first()
+    return render(request, 'order_detail.html', {
+        'order': order,
+        'product_obj': matching_product
+    })
+
+
+@csrf_exempt
+def sync_cart_api(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"success": False, "error": "User not authenticated"}, status=401)
+        
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            cart_items = data.get('cart', [])
+            
+            # Clear current user's cart in db to overwrite with new state
+            Cart.objects.filter(user=request.user).delete()
+            
+            # Count quantities of each product
+            product_counts = {}
+            for item in cart_items:
+                product_name = item.get('name')
+                if product_name:
+                    product_counts[product_name] = product_counts.get(product_name, 0) + 1
+            
+            # Create Cart records
+            for product_name, qty in product_counts.items():
+                product = Product.objects.filter(name=product_name).first()
+                if product:
+                    Cart.objects.create(
+                        user=request.user,
+                        product=product,
+                        quantity=qty
+                    )
+            
+            return JsonResponse({"success": True})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)}, status=400)
+            
+    return JsonResponse({"success": False, "error": "Method not allowed"}, status=405)
+
+
+def get_cart_api(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"success": False, "error": "User not authenticated"}, status=401)
+        
+    db_cart = Cart.objects.filter(user=request.user).select_related('product')
+    cart_list = []
+    for item in db_cart:
+        image_url = item.product.image.url if item.product.image else ''
+        price_str = f"₹{item.product.final_price}"
+        for _ in range(item.quantity):
+            cart_list.append({
+                "name": item.product.name,
+                "price": price_str,
+                "image": image_url
+            })
+            
+    return JsonResponse({"success": True, "cart": cart_list})
+
+
+@csrf_exempt
+def sync_wishlist_api(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"success": False, "error": "User not authenticated"}, status=401)
+        
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            wishlist_items = data.get('wishlist', [])
+            
+            # Clear current user's wishlist in db
+            Wishlist.objects.filter(user=request.user).delete()
+            
+            # Unique product names
+            product_names = set(item.get('name') for item in wishlist_items if item.get('name'))
+            
+            for name in product_names:
+                product = Product.objects.filter(name=name).first()
+                if product:
+                    Wishlist.objects.get_or_create(user=request.user, product=product)
+            
+            return JsonResponse({"success": True})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)}, status=400)
+            
+    return JsonResponse({"success": False, "error": "Method not allowed"}, status=405)
+
+
+def get_wishlist_api(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"success": False, "error": "User not authenticated"}, status=401)
+        
+    db_wishlist = Wishlist.objects.filter(user=request.user).select_related('product')
+    wishlist_list = []
+    for item in db_wishlist:
+        image_url = item.product.image.url if item.product.image else ''
+        price_str = f"₹{item.product.final_price}"
+        wishlist_list.append({
+            "name": item.product.name,
+            "price": price_str,
+            "image": image_url
+        })
+            
+    return JsonResponse({"success": True, "wishlist": wishlist_list})
+
+
+
+
+
 

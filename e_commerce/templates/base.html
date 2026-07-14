@@ -557,6 +557,22 @@
                                 <li>
                                     <hr class="dropdown-divider my-1">
                                 </li>
+                                <li class="dropdown-header text-uppercase font-monospace text-muted py-1 px-3" style="font-size: 0.7rem; letter-spacing: 0.5px;">Store Admin</li>
+                                <li>
+                                    <a class="dropdown-item py-2 d-flex align-items-center" href="{% url 'inventory' %}"
+                                        style="font-weight: 500; transition: all 0.2s ease;">
+                                        <i class="fas fa-boxes-stacked me-2 text-primary" style="width: 16px;"></i> Stock Inventory
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2 d-flex align-items-center" href="{% url 'feedback_admin' %}"
+                                        style="font-weight: 500; transition: all 0.2s ease;">
+                                        <i class="fas fa-comment-dots me-2 text-primary" style="width: 16px;"></i> Review Approvals
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider my-1">
+                                </li>
                                 <li>
                                     <a class="dropdown-item py-2 text-danger d-flex align-items-center"
                                         href="{% url 'logout' %}" style="font-weight: 500; transition: all 0.2s ease;">
@@ -589,7 +605,7 @@
     {% if messages %}
     <div class="container mt-3">
         {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
             {{ message }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
@@ -698,6 +714,84 @@
                     link.classList.add('active');
                 }
             });
+
+            {% if user.is_authenticated %}
+            // Cart and Wishlist Sync Logic for Authenticated Users
+            function syncCartToDb() {
+                const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+                fetch('{% url "sync_cart_api" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({ cart: cart })
+                });
+            }
+
+            function syncWishlistToDb() {
+                const wishlist = JSON.parse(localStorage.getItem('shopsphere_wishlist') || '[]');
+                fetch('{% url "sync_wishlist_api" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({ wishlist: wishlist })
+                });
+            }
+
+            // Hook into localStorage.setItem to capture changes automatically
+            const originalSetItem = localStorage.setItem;
+            localStorage.setItem = function(key, value) {
+                originalSetItem.apply(this, arguments);
+                if (key === 'cart') {
+                    syncCartToDb();
+                } else if (key === 'shopsphere_wishlist') {
+                    syncWishlistToDb();
+                }
+            };
+
+            // initial sync
+            const localCart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const localWishlist = JSON.parse(localStorage.getItem('shopsphere_wishlist') || '[]');
+
+            if (localCart.length === 0) {
+                // Pull Cart from DB if local is empty
+                fetch('{% url "get_cart_api" %}')
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success && data.cart && data.cart.length > 0) {
+                            localStorage.setItem('cart', JSON.stringify(data.cart));
+                            updateCounts();
+                            if (window.location.pathname === '{% url "cart" %}') {
+                                if (typeof displayCart === 'function') displayCart();
+                            }
+                        }
+                    });
+            } else {
+                // Push local Cart to DB if local has items
+                syncCartToDb();
+            }
+
+            if (localWishlist.length === 0) {
+                // Pull Wishlist from DB if local is empty
+                fetch('{% url "get_wishlist_api" %}')
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success && data.wishlist && data.wishlist.length > 0) {
+                            localStorage.setItem('shopsphere_wishlist', JSON.stringify(data.wishlist));
+                            updateCounts();
+                            if (window.location.pathname === '{% url "wishlist" %}') {
+                                if (typeof displayWishlist === 'function') displayWishlist();
+                            }
+                        }
+                    });
+            } else {
+                // Push local Wishlist to DB if local has items
+                syncWishlistToDb();
+            }
+            {% endif %}
         });
 
         // Listen for storage changes (when updated in other tabs)

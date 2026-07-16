@@ -1,0 +1,270 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Inventory Management - ShopSphere{% endblock %}
+
+{% block page_header_banner %}
+<div class="container-fluid page-header-section">
+    <div class="container">
+        <p class="page-header-subtitle">SHOPSPHERE - BACKEND</p>
+        <h1 class="page-header-title">Inventory Dashboard</h1>
+        <p class="page-header-description">Manage your product stocks, SKUs, and online visibility in real-time.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-5">
+        <div class="col-lg-12">
+            <!-- Search Control Card -->
+            <div class="card border-0 shadow-sm p-4 mb-4" style="background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px);">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                    <div>
+                        <h4 class="fw-bold mb-1 text-dark"><i class="fas fa-boxes-stacked me-2 text-primary"></i>Product Stock List</h4>
+                        <p class="text-muted small mb-0">Search and adjust quantities for your inventory items.</p>
+                    </div>
+                    <form action="{% url 'inventory' %}" method="get" class="d-flex gap-2 align-items-center">
+                        <div class="input-group" style="min-width: 320px;">
+                            <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted"></i></span>
+                            <input type="text" name="q" class="form-control border-start-0 bg-light" placeholder="Search by name or SKU (e.g. PT56)..." value="{{ search_query|default:'' }}">
+                            <button class="btn btn-primary" type="submit">Search</button>
+                        </div>
+                        {% if search_query %}
+                            <a href="{% url 'inventory' %}" class="btn btn-outline-secondary" title="Clear search"><i class="fas fa-times"></i></a>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+
+            <!-- Table Card -->
+            <div class="card border-0 shadow-sm">
+                <div class="table-responsive">
+                    <table class="table align-middle table-hover mb-0">
+                        <thead class="table-light">
+                            <tr class="text-uppercase text-secondary font-monospace" style="font-size: 0.85rem; letter-spacing: 0.5px;">
+                                <th class="ps-4">Image</th>
+                                <th>Product Details</th>
+                                <th>SKU Number</th>
+                                <th>Available Stock</th>
+                                <th>Availability Status</th>
+                                <th class="pe-4 text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in products %}
+                            <tr id="product-row-{{ product.id }}">
+                                <td class="ps-4">
+                                    <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; overflow: hidden; border: 1px solid #e2e8f0;">
+                                        {% if product.image %}
+                                            <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                                        {% else %}
+                                            <i class="fas fa-box-open text-muted" style="font-size: 1.5rem;"></i>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-dark">{{ product.name }}</div>
+                                    <div class="text-muted small">{{ product.category.name }}</div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border font-monospace py-2 px-3 rounded-3" id="sku-badge-{{ product.id }}" style="font-size: 0.9rem;">
+                                        {{ product.sku|default:"N/A" }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <!-- Stock interactive widget -->
+                                    <div class="d-flex align-items-center gap-2">
+                                        <button class="btn btn-sm btn-outline-secondary rounded-circle px-2 py-1 update-stock-btn" data-product-id="{{ product.id }}" data-delta="-1">
+                                            <i class="fas fa-minus" style="font-size: 0.75rem;"></i>
+                                        </button>
+                                        <input type="number" class="form-control text-center fw-bold stock-input font-monospace" id="stock-val-{{ product.id }}" value="{{ product.stock }}" style="width: 70px; padding: 4px;" data-product-id="{{ product.id }}">
+                                        <button class="btn btn-sm btn-outline-secondary rounded-circle px-2 py-1 update-stock-btn" data-product-id="{{ product.id }}" data-delta="1">
+                                            <i class="fas fa-plus" style="font-size: 0.75rem;"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success rounded-3 px-2 py-1 save-stock-btn d-none" id="save-btn-{{ product.id }}" data-product-id="{{ product.id }}" title="Save Stock">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input availability-switch" type="checkbox" role="switch" id="avail-switch-{{ product.id }}" data-product-id="{{ product.id }}" {% if product.is_available %}checked{% endif %}>
+                                        <label class="form-check-label small fw-semibold text-secondary" for="avail-switch-{{ product.id }}" id="avail-label-{{ product.id }}">
+                                            {% if product.is_available %}Visible{% else %}Hidden{% endif %}
+                                        </label>
+                                    </div>
+                                </td>
+                                <td class="pe-4 text-end">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <button class="btn btn-sm btn-outline-primary quick-edit-btn" data-product-id="{{ product.id }}" title="Edit Product Info">
+                                            <i class="fas fa-pencil"></i> Edit SKU
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center py-5 text-muted">
+                                    <i class="fas fa-search-minus fa-3x mb-3 text-muted"></i>
+                                    <h5>No inventory items found</h5>
+                                    <p class="text-muted small">Try searching using another product name or SKU.</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom switches coloring to match branding */
+    .form-check-input:checked {
+        background-color: var(--accent-magenta) !important;
+        border-color: var(--accent-magenta) !important;
+    }
+    
+    .stock-input::-webkit-outer-spin-button,
+    .stock-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    
+    .stock-input {
+        -moz-appearance: textfield;
+    }
+    .stock-input.is-valid {
+        border-color: #198754 !important;
+        background-color: rgba(25, 135, 84, 0.1) !important;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Handle delta button click
+        document.querySelectorAll('.update-stock-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const productId = this.getAttribute('data-product-id');
+                const delta = parseInt(this.getAttribute('data-delta'));
+                const input = document.getElementById(`stock-val-${productId}`);
+                let currentVal = parseInt(input.value) || 0;
+                
+                let newVal = currentVal + delta;
+                if (newVal < 0) newVal = 0;
+                input.value = newVal;
+                
+                // Trigger save
+                saveStockLevel(productId, newVal);
+            });
+        });
+
+        // Handle direct input change
+        document.querySelectorAll('.stock-input').forEach(input => {
+            input.addEventListener('change', function() {
+                const productId = this.getAttribute('data-product-id');
+                let val = parseInt(this.value) || 0;
+                if (val < 0) {
+                    val = 0;
+                    this.value = 0;
+                }
+                saveStockLevel(productId, val);
+            });
+        });
+
+        // Function to perform AJAX stock update
+        function saveStockLevel(productId, newStock) {
+            fetch("{% url 'inventory_update_stock' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({
+                    product_id: productId,
+                    stock: newStock
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // Flash the input in green to show success
+                    const input = document.getElementById(`stock-val-${productId}`);
+                    input.classList.add('is-valid');
+                    setTimeout(() => input.classList.remove('is-valid'), 1000);
+                } else {
+                    alert("Error updating stock: " + data.error);
+                }
+            })
+            .catch(err => {
+                console.error("Stock save failed", err);
+                alert("Network error. Please try again.");
+            });
+        }
+
+        // Handle Availability Toggles
+        document.querySelectorAll('.availability-switch').forEach(toggle => {
+            toggle.addEventListener('change', function() {
+                const productId = this.getAttribute('data-product-id');
+                const label = document.getElementById(`avail-label-${productId}`);
+                const isChecked = this.checked;
+                
+                fetch("{% url 'inventory_toggle_availability' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: JSON.stringify({
+                        product_id: productId
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        label.innerText = data.is_available ? "Visible" : "Hidden";
+                    } else {
+                        alert("Error updating visibility: " + data.error);
+                        this.checked = !isChecked; // revert
+                    }
+                })
+                .catch(err => {
+                    console.error("Visibility toggle failed", err);
+                    alert("Network error. Please try again.");
+                    this.checked = !isChecked; // revert
+                });
+            });
+        });
+
+        // Quick edit button opens prompt for simple SKU configuration
+        document.querySelectorAll('.quick-edit-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const productId = this.getAttribute('data-product-id');
+                const skuSpan = document.getElementById(`sku-badge-${productId}`);
+                const currentSku = skuSpan.innerText.trim();
+                
+                const newSku = prompt("Enter SKU Number for this product:", currentSku === "N/A" ? "" : currentSku);
+                if (newSku !== null) {
+                    fetch("{% url 'inventory_update_stock' %}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": "{{ csrf_token }}"
+                        },
+                        body: JSON.stringify({
+                            product_id: productId,
+                            sku: newSku
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        skuSpan.innerText = newSku ? newSku : "N/A";
+                    });
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

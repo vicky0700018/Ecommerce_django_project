@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order Status #{{ order.order_id }} - ShopSphere{% endblock %}
+
+{% block page_header_banner %}
+<!-- Banner matching screenshot with wave circles and branding -->
+<div class="container-fluid page-header-section text-center position-relative overflow-hidden" 
+     style="background: linear-gradient(135deg, #0a1128 0%, #1e3a8a 100%); padding: 80px 0; border-radius: 0 0 30px 30px;">
+    <!-- Circular decor overlays -->
+    <div class="position-absolute rounded-circle" style="width: 150px; height: 150px; border: 3px solid rgba(255,255,255,0.05); top: -20px; left: -40px;"></div>
+    <div class="position-absolute rounded-circle" style="width: 250px; height: 250px; border: 3px solid rgba(255,255,255,0.05); bottom: -100px; right: -50px;"></div>
+    
+    <div class="container">
+        <p class="text-uppercase font-monospace fw-bold mb-2 text-white-50" style="letter-spacing: 2px; font-size: 0.85rem;">SHOPSPHERE - ORDER STATUS</p>
+        <h1 class="display-4 fw-extrabold text-white mb-2">Order Status</h1>
+        <p class="lead text-white-50 mb-0">Thank you for your purchase. Here are your order details.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Back to Orders Header Row -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-dark mb-0">Order Details</h2>
+        <a href="{% url 'orders' %}" class="btn btn-outline-primary rounded-pill px-4" style="border-color: #fe8701 !important; color: #fe8701 !important; font-weight: 600;">
+            Go to My Orders
+        </a>
+    </div>
+
+    <!-- Main Order Details Card -->
+    <div class="card border-0 shadow-sm p-4 p-md-5 mb-5" style="border-radius: 16px;">
+        <!-- Top header: Order meta & Action buttons -->
+        <div class="row align-items-center g-3 border-bottom pb-4 mb-4">
+            <div class="col-md-6">
+                <h3 class="fw-extrabold text-dark mb-1 font-monospace">#{{ order.order_id }}</h3>
+                <p class="text-secondary small mb-0">Placed on {{ order.created_at|date:"d M Y, h:i A" }}</p>
+            </div>
+            <div class="col-md-6 d-flex flex-wrap gap-2 justify-content-md-end align-items-center">
+                <!-- Action Buttons -->
+                <button class="btn btn-outline-secondary btn-sm px-3 py-2 preview-invoice-btn" data-order-id="{{ order.order_id }}" style="font-weight: 600;">
+                    Preview
+                </button>
+                <a href="{% url 'download_invoice' order.order_id %}" class="btn btn-secondary btn-sm px-3 py-2 text-white" download style="font-weight: 600;">
+                    Download
+                </a>
+                <button class="btn btn-outline-danger btn-sm px-3 py-2 cancel-order-btn" data-order-id="{{ order.order_id }}" style="font-weight: 600;">
+                    Cancel
+                </button>
+                
+                <!-- Status Badge -->
+                <span class="badge bg-success py-2 px-3 rounded-pill text-white d-flex align-items-center gap-1 ms-md-2" style="font-size: 0.85rem;">
+                    <i class="fas fa-check-circle"></i> {{ order.status }}
+                </span>
+            </div>
+        </div>
+
+        <!-- Address and Contact Columns -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-6">
+                <div class="p-4 rounded-3 h-100" style="background-color: #f8fafc; border: 1px solid #f1f5f9;">
+                    <h6 class="text-secondary text-uppercase fw-bold font-monospace small mb-3" style="letter-spacing: 0.5px;">Delivery Address</h6>
+                    <p class="fw-bold text-dark mb-1">{{ order.full_name }}</p>
+                    <p class="text-secondary mb-0">{{ order.address }}</p>
+                    <p class="text-secondary mb-0">{{ order.city }} - {{ order.pincode }}</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="p-4 rounded-3 h-100" style="background-color: #f8fafc; border: 1px solid #f1f5f9;">
+                    <h6 class="text-secondary text-uppercase fw-bold font-monospace small mb-3" style="letter-spacing: 0.5px;">Contact</h6>
+                    <p class="text-secondary mb-1"><strong>Email:</strong> {{ order.email }}</p>
+                    <p class="text-secondary mb-0"><strong>Phone:</strong> {{ order.phone }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Table -->
+        <h5 class="fw-bold text-dark mb-3">Product</h5>
+        <div class="table-responsive border-bottom mb-4">
+            <table class="table align-middle">
+                <thead>
+                    <tr class="text-secondary font-monospace text-uppercase small" style="font-size: 0.8rem;">
+                        <th>Product Details</th>
+                        <th style="text-align: right;">Price</th>
+                        <th style="text-align: right;">Qty</th>
+                        <th style="text-align: right;">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-light rounded d-flex align-items-center justify-content-center" 
+                                     style="width: 70px; height: 70px; overflow: hidden; border: 1px solid #e2e8f0;">
+                                    {% if product_obj.image %}
+                                        <img src="{{ product_obj.image.url }}" alt="{{ order.product }}" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                                    {% else %}
+                                        <i class="fas fa-box-open text-muted" style="font-size: 1.8rem;"></i>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-dark mb-0">{{ order.product }}</div>
+                                    <small class="text-muted">{{ product_obj.category.name|default:"General Product" }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="text-align: right; font-weight: 600;" class="text-dark">₹{{ order.amount }}</td>
+                        <td style="text-align: right; font-weight: 600;" class="text-dark">1</td>
+                        <td style="text-align: right; font-weight: 700;" class="text-dark">₹{{ order.amount }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pricing Totals summary -->
+        <div class="row justify-content-end">
+            <div class="col-md-5 col-lg-4">
+                <table class="table table-sm table-borderless mb-0" style="font-size: 0.95rem;">
+                    <tr>
+                        <td class="text-secondary ps-0">Subtotal</td>
+                        <td style="text-align: right; font-weight: 600;" class="text-dark pe-0">₹{{ order.amount }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-secondary ps-0">Shipping</td>
+                        <td style="text-align: right; font-weight: 600;" class="text-success pe-0">Free</td>
+                    </tr>
+                    <tr>
+                        <td class="text-secondary ps-0">Tax (GST)</td>
+                        <td style="text-align: right; font-weight: 600;" class="text-dark pe-0">₹0.00</td>
+                    </tr>
+                    <tr class="border-top">
+                        <td class="fw-bold text-dark ps-0 pt-2" style="font-size: 1.15rem;">Total</td>
+                        <td style="text-align: right; font-weight: 800; color: #fe8701; font-size: 1.25rem;" class="pt-2 pe-0">
+                            ₹{{ order.amount }}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Invoice Preview Modal -->
+<div class="modal fade" id="invoicePreviewModalDetail" tabindex="-1" aria-labelledby="invoicePreviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
+            <div class="modal-header bg-dark text-white border-0 py-3">
+                <h5 class="modal-title fw-bold" id="invoicePreviewModalLabel"><i class="fas fa-file-invoice me-2"></i>Invoice Preview</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0" style="height: 600px;">
+                <iframe id="invoice-iframe" src="" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Preview Modal triggers
+        const invoicePreviewModal = new bootstrap.Modal(document.getElementById('invoicePreviewModalDetail'));
+        document.querySelectorAll('.preview-invoice-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const orderId = this.getAttribute('data-order-id');
+                document.getElementById('invoice-iframe').src = `/orders/${orderId}/invoice/`;
+                invoicePreviewModal.show();
+            });
+        });
+
+        // Cancel order handler
+        document.querySelectorAll('.cancel-order-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const orderId = this.getAttribute('data-order-id');
+                if (confirm(`Are you sure you want to cancel/delete order ${orderId}?`)) {
+                    fetch(`/orders/${orderId}/delete/`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": "{{ csrf_token }}"
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("Order cancelled successfully!");
+                            window.location.href = "{% url 'orders' %}";
+                        } else {
+                            alert("Error cancelling order: " + data.error);
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        alert("Network error. Please try again.");
+                    });
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

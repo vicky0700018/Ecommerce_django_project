@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice {{ order.order_id }} - ShopSphere</title>
+    <!-- Google Fonts - Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            padding: 40px;
+            color: #1e293b;
+            background-color: #ffffff;
+        }
+        .invoice-card {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 24px;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #0a1128 0%, #fc0466 50%, #fe8701 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0a1128;
+            text-align: right;
+        }
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        .info-block h3 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #475569;
+            margin: 0 0 12px 0;
+            letter-spacing: 0.5px;
+        }
+        .info-block p {
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 0 0 6px 0;
+        }
+        .order-meta {
+            text-align: right;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+        }
+        .table th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .table td {
+            padding: 16px;
+            font-size: 14px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .totals-block {
+            display: flex;
+            justify-content: flex-end;
+        }
+        .totals-table {
+            width: 300px;
+            border-collapse: collapse;
+        }
+        .totals-table td {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+        .totals-table tr.grand-total td {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fc0466;
+            border-top: 2px solid #e2e8f0;
+            padding-top: 16px;
+        }
+        .footer {
+            margin-top: 60px;
+            text-align: center;
+            font-size: 12px;
+            color: #94a3b8;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 20px;
+        }
+        .btn-print {
+            display: block;
+            width: fit-content;
+            margin: 20px auto 0 auto;
+            background-color: #0a1128;
+            color: white;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn-print:hover {
+            background-color: #fc0466;
+        }
+        @media print {
+            body {
+                padding: 0;
+            }
+            .invoice-card {
+                border: none;
+                box-shadow: none;
+                padding: 0;
+            }
+            .btn-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="invoice-card">
+    <div class="header">
+        <div class="logo">ShopSphere</div>
+        <div class="title">INVOICE</div>
+    </div>
+
+    <div class="details-grid">
+        <div class="info-block">
+            <h3>Bill To</h3>
+            <p><strong>{{ order.full_name }}</strong></p>
+            <p>{{ order.address }}</p>
+            <p>{{ order.city }} - {{ order.pincode }}</p>
+            <p>Phone: {{ order.phone }}</p>
+            <p>Email: {{ order.email }}</p>
+        </div>
+        <div class="info-block order-meta">
+            <h3>Invoice Info</h3>
+            <p><strong>Invoice ID:</strong> #INV-{{ order.order_id }}</p>
+            <p><strong>Order ID:</strong> {{ order.order_id }}</p>
+            <p><strong>Date:</strong> {{ date }}</p>
+            <p><strong>Status:</strong> {{ order.status }}</p>
+            <p><strong>Payment Method:</strong> {{ order.get_payment_method_display }}</p>
+        </div>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Item Description</th>
+                <th style="text-align: right;">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ order.product }}</td>
+                <td style="text-align: right; font-weight: 600;">₹{{ order.amount }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="totals-block">
+        <table class="totals-table">
+            <tr>
+                <td>Subtotal</td>
+                <td style="text-align: right;">₹{{ order.amount }}</td>
+            </tr>
+            <tr>
+                <td>GST (0%)</td>
+                <td style="text-align: right;">₹0.00</td>
+            </tr>
+            <tr class="grand-total">
+                <td>Total</td>
+                <td style="text-align: right;">₹{{ order.amount }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="footer">
+        <p>Thank you for shopping with ShopSphere!</p>
+        <p>For any queries, contact support at <strong>supportshopsphere@gmail.com</strong></p>
+    </div>
+</div>
+
+<button class="btn-print" onclick="window.print()"><i class="fas fa-print"></i> Print Invoice</button>
+
+</body>
+</html>

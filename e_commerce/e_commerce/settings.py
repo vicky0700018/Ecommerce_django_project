@@ -86,22 +86,39 @@ TEMPLATES = [
 WSGI_APPLICATION = 'e_commerce.wsgi.application'##Check Changes Project Name
 
 AUTH_USER_MODEL = 'shopsphere.CustomUser'
+import shutil
+
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+IS_VERCEL = os.environ.get('VERCEL') == '1' or 'VERCEL' in os.environ
 
-        # 'ENGINE': 'django.db.backends.postgresql',
-        # 'NAME': 'InventoryManagement',
-        # 'USER': 'postgres',
-        # 'PASSWORD': 'root',
-        # 'HOST': 'localhost',
-        # 'PORT': '5432',
+if IS_VERCEL:
+    tmp_db = Path('/tmp/db.sqlite3')
+    source_db = BASE_DIR / 'db.sqlite3'
+    if not source_db.exists():
+        source_db = BASE_DIR / 'e_commerce' / 'db.sqlite3'
+
+    if source_db.exists() and not tmp_db.exists():
+        try:
+            shutil.copy2(source_db, tmp_db)
+        except Exception as e:
+            print(f"Error copying DB to /tmp: {e}")
+    
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': tmp_db if tmp_db.exists() else source_db,
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
 
 
 # Password validation

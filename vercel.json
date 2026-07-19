@@ -4,16 +4,24 @@
     {
       "src": "e_commerce/e_commerce/wsgi.py",
       "use": "@vercel/python"
+    },
+    {
+      "src": "e_commerce/static/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "e_commerce/media/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/static/(.*)",
-      "dest": "/e_commerce/static/$1"
+      "dest": "e_commerce/static/$1"
     },
     {
       "src": "/media/(.*)",
-      "dest": "/e_commerce/media/$1"
+      "dest": "e_commerce/media/$1"
     },
     {
       "src": "/(.*)",

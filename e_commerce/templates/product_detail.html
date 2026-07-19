@@ -1,0 +1,424 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} - ShopSphere{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Breadcrumbs -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb" style="background: none; padding: 0;">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none text-secondary">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'product' %}" class="text-decoration-none text-secondary">Products</a></li>
+            <li class="breadcrumb-item active text-dark" aria-current="page">{{ product.name }}</li>
+        </ol>
+    </nav>
+
+    <!-- Product Details Section -->
+    <div class="row g-5 align-items-start">
+        <!-- Left Column: Product Image -->
+        <div class="col-lg-6">
+            <div class="position-relative bg-light rounded-4 d-flex align-items-center justify-content-center p-4" style="height: 500px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: var(--premium-shadow);">
+                <!-- Wishlist Heart Icon -->
+                <button class="btn position-absolute top-0 start-0 m-4 rounded-circle shadow-sm d-flex align-items-center justify-content-center wishlist-btn-detail" 
+                        data-product="{{ product.name }}" data-price="₹{{ product.final_price }}" data-image="{% if product.image %}{{ product.image.url }}{% endif %}"
+                        style="width: 45px; height: 45px; background: white; border: 1px solid #e2e8f0; color: #fe8701; z-index: 10;">
+                    <i class="far fa-heart fs-5"></i>
+                </button>
+                
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid" style="max-height: 100%; max-width: 100%; object-fit: contain; transition: transform 0.5s ease;">
+                {% else %}
+                    <i class="fas fa-box-open text-muted" style="font-size: 8rem;"></i>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Right Column: Product Content -->
+        <div class="col-lg-6">
+            <div class="d-flex flex-wrap gap-2 mb-3">
+                <!-- Category Badge -->
+                <span class="badge px-3 py-2 rounded-pill font-monospace" style="background-color: var(--primary-color); color: white; font-size: 0.8rem;">
+                    {{ product.category.name }}
+                </span>
+                
+                <!-- Stock Level Badge -->
+                {% if product.stock > 0 %}
+                    <span class="badge px-3 py-2 rounded-pill text-success border border-success d-flex align-items-center gap-1" style="background-color: rgba(25, 135, 84, 0.1); font-size: 0.85rem;">
+                        <i class="fas fa-check-circle"></i> In Stock ({{ product.stock }} available)
+                    </span>
+                {% else %}
+                    <span class="badge px-3 py-2 rounded-pill text-danger border border-danger d-flex align-items-center gap-1" style="background-color: rgba(220, 53, 69, 0.1); font-size: 0.85rem;">
+                        <i class="fas fa-times-circle"></i> Out of Stock
+                    </span>
+                {% endif %}
+            </div>
+
+            <!-- Product Title with SKU -->
+            <h1 class="display-6 fw-extrabold text-dark mb-2">
+                {{ product.name }} <span class="text-secondary font-monospace" style="font-size: 1.6rem;">{{ product.sku|default:"N/A" }}</span>
+            </h1>
+
+            <!-- Ratings Summary -->
+            <div class="mb-4 d-flex align-items-center gap-2">
+                <span class="text-warning fs-5">
+                    {% for i in full_stars_range %}
+                        <i class="fas fa-star"></i>
+                    {% endfor %}
+                    {% if half_star %}
+                        <i class="fas fa-star-half-alt"></i>
+                    {% endif %}
+                    {% for i in empty_stars_range %}
+                        <i class="far fa-star"></i>
+                    {% endfor %}
+                </span>
+                <span class="text-muted small fw-semibold">
+                    ({{ average_rating }} Rating / {{ total_reviews }} reviews)
+                </span>
+            </div>
+
+            <!-- Pricing Section -->
+            <div class="mb-4 d-flex align-items-center gap-3 flex-wrap">
+                <h2 class="mb-0 fw-bold" style="color: #fe8701; font-size: 2.5rem;">
+                    ₹{{ product.final_price }}
+                </h2>
+                {% if product.discount_price %}
+                    <h4 class="mb-0 text-decoration-line-through text-muted">
+                        ₹{{ product.price }}
+                    </h4>
+                    <!-- Calculated Discount Percentage Badge -->
+                    <span class="badge bg-danger px-3 py-2 rounded-pill text-uppercase font-monospace" style="font-size: 0.85rem;">
+                        Save {{ product.discount_percentage }}% OFF
+                    </span>
+                {% endif %}
+            </div>
+
+            <!-- Description -->
+            <p class="text-secondary mb-4 fs-6" style="line-height: 1.7;">
+                {{ product.description|default:"No description provided." }}
+            </p>
+
+            <hr class="my-4">
+
+            <!-- Quantity Selector -->
+            <div class="mb-4">
+                <span class="form-label d-block small fw-bold text-secondary text-uppercase mb-2" style="letter-spacing: 0.5px;">Quantity:</span>
+                <div class="d-flex align-items-center border border-2 rounded-3" style="width: 140px; overflow: hidden; height: 45px;">
+                    <button class="btn btn-light h-100 flex-grow-1 border-0 rounded-0" id="btn-qty-minus" style="font-size: 1.2rem; font-weight: 600;">-</button>
+                    <input type="text" class="form-control text-center bg-white border-0 h-100 fw-bold font-monospace" id="product-qty-val" value="1" readonly style="width: 50px;">
+                    <button class="btn btn-light h-100 flex-grow-1 border-0 rounded-0" id="btn-qty-plus" style="font-size: 1.2rem; font-weight: 600;">+</button>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex gap-3">
+                <button class="btn btn-outline-primary btn-lg flex-grow-1 py-3 d-flex align-items-center justify-content-center gap-2 add-to-cart-btn-detail" 
+                        data-product="{{ product.name }}" data-price="₹{{ product.final_price }}" data-image="{% if product.image %}{{ product.image.url }}{% endif %}"
+                        style="border-color: #fe8701 !important; color: #fe8701 !important; font-weight: 700;">
+                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                </button>
+                <button class="btn btn-lg flex-grow-1 py-3 text-white d-flex align-items-center justify-content-center gap-2 buy-now-btn-detail"
+                        style="background-color: #fe8701; font-weight: 700; border: none;">
+                    <i class="fas fa-bolt"></i> Buy Now
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Review & Star Breakdown Section -->
+    <div class="row mt-5 pt-5 border-top g-5">
+        <!-- Left Column: Customer review stats -->
+        <div class="col-lg-4">
+            <h3 class="fw-bold mb-3 text-dark">Customer reviews</h3>
+            <div class="d-flex align-items-center gap-3 mb-2">
+                <h1 class="display-4 fw-extrabold text-dark mb-0">{{ average_rating }}</h1>
+                <div>
+                    <div class="text-warning" style="font-size: 1.3rem;">
+                        {% for i in full_stars_range %}
+                            <i class="fas fa-star"></i>
+                        {% endfor %}
+                        {% if half_star %}
+                            <i class="fas fa-star-half-alt"></i>
+                        {% endif %}
+                        {% for i in empty_stars_range %}
+                            <i class="far fa-star"></i>
+                        {% endfor %}
+                    </div>
+                    <small class="text-muted fw-semibold">{{ total_reviews }} global ratings</small>
+                </div>
+            </div>
+
+            <!-- Stars Bar breakdown (5 star down to 1 star) -->
+            <div class="mt-4 mb-4">
+                {% for item in star_breakdown %}
+                    <div class="d-flex align-items-center mb-2" style="font-size: 0.9rem;">
+                        <span class="text-secondary" style="width: 50px;">{{ item.stars }} star</span>
+                        <div class="progress flex-grow-1 mx-2" style="height: 10px; border-radius: 5px; background-color: #f1f5f9;">
+                            <!-- Star percentage progress value -->
+                            <div class="progress-bar" role="progressbar" 
+                                 style="width: {{ item.pct }}%; background-color: #fe8701;" 
+                                 aria-valuenow="{{ item.pct }}" aria-valuemin="0" aria-valuemax="100">
+                            </div>
+                        </div>
+                        <span class="text-secondary text-end" style="width: 40px;">
+                            {{ item.pct }}%
+                        </span>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Write review button -->
+            <button class="btn btn-lg w-100 text-white py-3 write-review-trigger-btn" 
+                    style="background-color: #fe8701; border: none; font-weight: 700; border-radius: 8px;">
+                Write a product review
+            </button>
+        </div>
+
+        <!-- Right Column: Customer reviews list -->
+        <div class="col-lg-8">
+            <h4 class="fw-bold mb-4 text-dark">Reviews</h4>
+            <div class="d-flex flex-column gap-4">
+                {% for fb in feedbacks %}
+                <div class="card border-0 bg-light p-4 rounded-3 shadow-sm">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <!-- User icon initial circular tag -->
+                        <div class="d-flex align-items-center justify-content-center text-white fw-bold rounded-circle" 
+                             style="width: 45px; height: 45px; background-color: var(--primary-color); font-size: 1.2rem;">
+                            {{ fb.user.full_name|slice:":1"|upper }}
+                        </div>
+                        <div>
+                            <h6 class="fw-bold text-dark mb-0">{{ fb.user.full_name }}</h6>
+                            <small style="color: #fe8701; font-weight: 600;">
+                                Reviewed on {{ fb.created_at|date:"d M Y" }} | <i class="fas fa-check-circle text-success me-1"></i>Verified Purchase
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Stars rating -->
+                    <div class="text-warning mb-2" style="font-size: 0.95rem;">
+                        {% if fb.rating >= 5 %}
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        {% elif fb.rating == 4 %}
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                        {% elif fb.rating == 3 %}
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i>
+                        {% elif fb.rating == 2 %}
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i>
+                        {% else %}
+                            <i class="fas fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i>
+                        {% endif %}
+                    </div>
+
+                    <!-- Truncated headline + message body -->
+                    <h5 class="fw-bold text-dark mb-2">{{ fb.message|truncatewords:6 }}</h5>
+                    <p class="text-secondary mb-0" style="line-height: 1.6;">{{ fb.message }}</p>
+                </div>
+                {% empty %}
+                <div class="text-center py-5 text-muted">
+                    <i class="far fa-comments fa-3x mb-3 text-muted"></i>
+                    <h5>No customer reviews yet</h5>
+                    <p class="text-muted small">Be the first to review this product!</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Customer Feedback Submission Modal -->
+<div class="modal fade" id="submitFeedbackModalDetail" tabindex="-1" aria-labelledby="submitFeedbackModalLabel" aria-hidden="true" style="z-index: 1060;">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
+            <div class="modal-header bg-primary text-white border-0 py-3">
+                <h5 class="modal-title fw-bold" id="submitFeedbackModalLabel"><i class="fas fa-star me-2"></i>Product Review</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{% url 'submit_feedback' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-secondary">Product Name</label>
+                        <input type="text" class="form-control bg-light border-0" value="{{ product.name }}" readonly disabled style="font-weight: 600;">
+                    </div>
+                    
+                    <!-- Star Rating Interactive Selector -->
+                    <div class="mb-4 text-center">
+                        <label class="form-label d-block small fw-semibold text-secondary mb-2">Your Rating</label>
+                        <div class="star-rating-selector" style="font-size: 2.2rem; cursor: pointer;">
+                            <i class="far fa-star text-warning px-1 rating-star-detail" data-rating="1"></i>
+                            <i class="far fa-star text-warning px-1 rating-star-detail" data-rating="2"></i>
+                            <i class="far fa-star text-warning px-1 rating-star-detail" data-rating="3"></i>
+                            <i class="far fa-star text-warning px-1 rating-star-detail" data-rating="4"></i>
+                            <i class="far fa-star text-warning px-1 rating-star-detail" data-rating="5"></i>
+                        </div>
+                        <input type="hidden" name="rating" id="feedback-rating-val" value="5">
+                    </div>
+                    
+                    <div class="mb-0">
+                        <label class="form-label small fw-semibold text-secondary" for="feedback-msg">Customer Message</label>
+                        <textarea name="message" id="feedback-msg" class="form-control border bg-light" rows="4" placeholder="Write your review message here..." required></textarea>
+                    </div>
+                </div>
+                
+                <div class="modal-footer border-0 p-3 bg-light d-flex justify-content-between">
+                    <button type="button" class="btn btn-outline-secondary btn-sm px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm px-4" style="background-color: #fe8701; border: none;">Submit Review</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. Wishlist operations
+        function loadWishlist() {
+            const saved = localStorage.getItem('shopsphere_wishlist');
+            return saved ? JSON.parse(saved) : [];
+        }
+        function saveWishlist(w) {
+            localStorage.setItem('shopsphere_wishlist', JSON.stringify(w));
+        }
+        function isInWishlist(name) {
+            return loadWishlist().some(item => item.name === name);
+        }
+        
+        const wishBtn = document.querySelector('.wishlist-btn-detail');
+        if (isInWishlist("{{ product.name }}")) {
+            wishBtn.innerHTML = '<i class="fas fa-heart fs-5" style="color: #fe8701;"></i>';
+            wishBtn.classList.add('active');
+        }
+        
+        wishBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            this.classList.toggle('active');
+            const name = this.getAttribute('data-product');
+            const price = this.getAttribute('data-price');
+            const image = this.getAttribute('data-image') || '';
+            const wishlist = loadWishlist();
+            
+            if (this.classList.contains('active')) {
+                this.innerHTML = '<i class="fas fa-heart fs-5" style="color: #fe8701;"></i>';
+                if (!isInWishlist(name)) {
+                    wishlist.push({ name: name, price: price, image: image });
+                    saveWishlist(wishlist);
+                }
+                alert(name + ' added to wishlist!');
+            } else {
+                this.innerHTML = '<i class="far fa-heart fs-5" style="color: #fe8701;"></i>';
+                const updated = wishlist.filter(item => item.name !== name);
+                saveWishlist(updated);
+                alert(name + ' removed from wishlist!');
+            }
+        });
+
+        // 2. Quantity selector operations
+        const qtyVal = document.getElementById('product-qty-val');
+        document.getElementById('btn-qty-minus').addEventListener('click', () => {
+            let current = parseInt(qtyVal.value) || 1;
+            if (current > 1) {
+                qtyVal.value = current - 1;
+            }
+        });
+        document.getElementById('btn-qty-plus').addEventListener('click', () => {
+            let current = parseInt(qtyVal.value) || 1;
+            const maxStock = parseInt('{{ product.stock|default:99 }}', 10);
+            if (current < maxStock) {
+                qtyVal.value = current + 1;
+            }
+        });
+
+        // 3. Add to Cart
+        function loadCart() {
+            const saved = localStorage.getItem('cart');
+            return saved ? JSON.parse(saved) : [];
+        }
+        function saveCart(c) {
+            localStorage.setItem('cart', JSON.stringify(c));
+            if (typeof updateCounts === 'function') {
+                updateCounts();
+            }
+        }
+        document.querySelector('.add-to-cart-btn-detail').addEventListener('click', function(e) {
+            e.preventDefault();
+            const name = this.getAttribute('data-product');
+            const price = this.getAttribute('data-price');
+            const image = this.getAttribute('data-image') || '';
+            const qty = parseInt(qtyVal.value) || 1;
+            const cart = loadCart();
+            
+            for (let i = 0; i < qty; i++) {
+                cart.push({ name: name, price: price, image: image });
+            }
+            saveCart(cart);
+            alert(`${qty} x ${name} added to cart!`);
+        });
+
+        // 4. Buy Now triggers checkout
+        document.querySelector('.buy-now-btn-detail').addEventListener('click', function(e) {
+            e.preventDefault();
+            const name = "{{ product.name }}";
+            const price = "₹{{ product.final_price }}";
+            const image = "{% if product.image %}{{ product.image.url }}{% endif %}";
+            const qty = parseInt(qtyVal.value) || 1;
+            const cart = loadCart();
+            
+            for (let i = 0; i < qty; i++) {
+                cart.push({ name: name, price: price, image: image });
+            }
+            saveCart(cart);
+            window.location.href = "{% url 'checkout' %}";
+        });
+
+        // 5. Star Selector interactions in review modal
+        const detailStars = document.querySelectorAll('.star-rating-selector .rating-star-detail');
+        const detailRatingInput = document.getElementById('feedback-rating-val');
+        
+        function setDetailStars(rating) {
+            detailStars.forEach(star => {
+                const r = parseInt(star.getAttribute('data-rating'));
+                if (r <= rating) {
+                    star.classList.remove('far');
+                    star.classList.add('fas');
+                } else {
+                    star.classList.remove('fas');
+                    star.classList.add('far');
+                }
+            });
+        }
+        
+        detailStars.forEach(star => {
+            star.addEventListener('click', function() {
+                const rating = parseInt(this.getAttribute('data-rating'));
+                detailRatingInput.value = rating;
+                setDetailStars(rating);
+            });
+            star.addEventListener('mouseover', function() {
+                const rating = parseInt(this.getAttribute('data-rating'));
+                setDetailStars(rating);
+            });
+        });
+        
+        document.querySelector('.star-rating-selector').addEventListener('mouseleave', function() {
+            const currentRating = parseInt(detailRatingInput.value) || 5;
+            setDetailStars(currentRating);
+        });
+        
+        setDetailStars(5);
+
+        // 6. Modal Open Handling
+        const submitFeedbackModalDetail = new bootstrap.Modal(document.getElementById('submitFeedbackModalDetail'));
+        document.querySelector('.write-review-trigger-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            {% if not user.is_authenticated %}
+                alert("Please log in to submit a review.");
+                window.location.href = "{% url 'login' %}";
+                return;
+            {% endif %}
+            submitFeedbackModalDetail.show();
+        });
+    });
+</script>
+{% endblock %}

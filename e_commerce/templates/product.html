@@ -73,24 +73,36 @@
                 <!-- Product Card -->
                 <div class="col-md-6 col-lg-4">
                     <div class="product-card card h-100">
-                        <div class="product-image bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
+                        <a href="{% url 'product_detail' product.slug %}" class="product-image bg-light d-flex align-items-center justify-content-center" style="height: 250px; text-decoration: none;">
                             {% if product.image %}
                                 <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy">
                             {% else %}
                                 <i class="fas fa-box-open" style="font-size: 3rem; color: #ccc;"></i>
                             {% endif %}
-                        </div>
+                        </a>
                         <div class="card-body">
-                            <h6 class="card-title">{{ product.name }}</h6>
+                            <h6 class="card-title">
+                                <a href="{% url 'product_detail' product.slug %}" class="text-decoration-none text-dark" style="transition: color 0.3s ease;">{{ product.name }}</a>
+                            </h6>
                             <div class="mb-2">
-                                <span class="text-warning">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star-half-alt"></i>
-                                </span>
-                                <small class="text-muted ms-2">(125 reviews)</small>
+                                {% if product.average_rating > 0 %}
+                                    <span class="text-warning">
+                                        {% if product.average_rating >= 4.5 %}
+                                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                        {% elif product.average_rating >= 3.5 %}
+                                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                                        {% elif product.average_rating >= 2.5 %}
+                                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i>
+                                        {% elif product.average_rating >= 1.5 %}
+                                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i>
+                                        {% else %}
+                                            <i class="fas fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i>
+                                        {% endif %}
+                                    </span>
+                                    <small class="text-muted ms-2">({{ product.approved_feedbacks.count }} review{% if product.approved_feedbacks.count != 1 %}s{% endif %})</small>
+                                {% else %}
+                                    <span class="text-muted small">No reviews yet</span>
+                                {% endif %}
                             </div>
                             <p class="text-muted small">{{ product.description|truncatewords:15 }}</p>
                             <div class="d-flex justify-content-between align-items-center">
@@ -105,6 +117,9 @@
                                 <div class="d-flex gap-2">
                                     <button class="btn btn-sm btn-outline-danger wishlist-btn" type="button" data-product="{{ product.name }}" data-price="₹{{ product.final_price }}" data-image="{% if product.image %}{{ product.image.url }}{% endif %}">
                                         <i class="far fa-heart"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-info leave-feedback-btn" type="button" data-product-id="{{ product.id }}" data-product-name="{{ product.name }}" title="Leave Feedback">
+                                        <i class="far fa-comment"></i>
                                     </button>
                                     <button class="btn btn-sm btn-primary add-to-cart-btn" type="button" data-product="{{ product.name }}" data-price="₹{{ product.final_price }}" data-image="{% if product.image %}{{ product.image.url }}{% endif %}">
                                         <i class="fas fa-shopping-cart"></i> Add
@@ -271,6 +286,117 @@
             saveCart(cart);
             
             alert(productName + ' added to cart!');
+        });
+    });
+</script>
+
+<!-- Customer Feedback Submission Modal -->
+<div class="modal fade" id="submitFeedbackModal" tabindex="-1" aria-labelledby="submitFeedbackModalLabel" aria-hidden="true" style="z-index: 1060;">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
+            <div class="modal-header bg-primary text-white border-0 py-3">
+                <h5 class="modal-title fw-bold" id="submitFeedbackModalLabel"><i class="fas fa-star me-2"></i>Product Review</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{% url 'submit_feedback' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="product_id" id="feedback-product-id">
+                
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-secondary">Product Name</label>
+                        <input type="text" class="form-control bg-light border-0" id="feedback-product-name" readonly disabled style="font-weight: 600;">
+                    </div>
+                    
+                    <!-- Star Rating Interactive Selector -->
+                    <div class="mb-4 text-center">
+                        <label class="form-label d-block small fw-semibold text-secondary mb-2">Your Rating</label>
+                        <div class="star-rating-selector" style="font-size: 2.2rem; cursor: pointer;">
+                            <i class="far fa-star text-warning px-1 rating-star" data-rating="1"></i>
+                            <i class="far fa-star text-warning px-1 rating-star" data-rating="2"></i>
+                            <i class="far fa-star text-warning px-1 rating-star" data-rating="3"></i>
+                            <i class="far fa-star text-warning px-1 rating-star" data-rating="4"></i>
+                            <i class="far fa-star text-warning px-1 rating-star" data-rating="5"></i>
+                        </div>
+                        <input type="hidden" name="rating" id="feedback-rating-value" value="5">
+                    </div>
+                    
+                    <div class="mb-0">
+                        <label class="form-label small fw-semibold text-secondary" for="feedback-message">Customer Message</label>
+                        <textarea name="message" id="feedback-message" class="form-control border bg-light" rows="4" placeholder="Write your review message here..." required></textarea>
+                    </div>
+                </div>
+                
+                <div class="modal-footer border-0 p-3 bg-light d-flex justify-content-between">
+                    <button type="button" class="btn btn-outline-secondary btn-sm px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm px-4">Submit Review</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Star Selector Hover / Click Interactions
+        const stars = document.querySelectorAll('.star-rating-selector .rating-star');
+        const ratingInput = document.getElementById('feedback-rating-value');
+        
+        function setStars(rating) {
+            stars.forEach(star => {
+                const r = parseInt(star.getAttribute('data-rating'));
+                if (r <= rating) {
+                    star.classList.remove('far');
+                    star.classList.add('fas');
+                } else {
+                    star.classList.remove('fas');
+                    star.classList.add('far');
+                }
+            });
+        }
+        
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                const rating = parseInt(this.getAttribute('data-rating'));
+                ratingInput.value = rating;
+                setStars(rating);
+            });
+            
+            star.addEventListener('mouseover', function() {
+                const rating = parseInt(this.getAttribute('data-rating'));
+                setStars(rating);
+            });
+        });
+        
+        document.querySelector('.star-rating-selector').addEventListener('mouseleave', function() {
+            const currentRating = parseInt(ratingInput.value) || 5;
+            setStars(currentRating);
+        });
+        
+        // Modal Triggering Handler
+        const submitFeedbackModal = new bootstrap.Modal(document.getElementById('submitFeedbackModal'));
+        document.querySelectorAll('.leave-feedback-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                {% if not user.is_authenticated %}
+                    alert("Please log in to submit feedback.");
+                    window.location.href = "{% url 'login' %}";
+                    return;
+                {% endif %}
+                
+                const productId = this.getAttribute('data-product-id');
+                const productName = this.getAttribute('data-product-name');
+                
+                document.getElementById('feedback-product-id').value = productId;
+                document.getElementById('feedback-product-name').value = productName;
+                
+                // Reset form state
+                document.getElementById('feedback-message').value = '';
+                ratingInput.value = 5;
+                setStars(5);
+                
+                submitFeedbackModal.show();
+            });
         });
     });
 </script>

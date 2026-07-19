@@ -8,6 +8,14 @@
   ],
   "routes": [
     {
+      "src": "/static/(.*)",
+      "dest": "/e_commerce/static/$1"
+    },
+    {
+      "src": "/media/(.*)",
+      "dest": "/e_commerce/media/$1"
+    },
+    {
       "src": "/(.*)",
       "dest": "e_commerce/e_commerce/wsgi.py"
     }

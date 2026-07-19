@@ -348,12 +348,8 @@ def cart(request):
     return render(request, 'cart.html')
 def checkout(request):
     """Display checkout page"""
-    if not request.user.is_authenticated:
-        messages.warning(request, 'Please log in to proceed to checkout.')
-        return redirect('/login/?next=/checkout/')
-
     context = {
-        'RAZORPAY_API_KEY': settings.RAZORPAY_API_KEY,
+        'RAZORPAY_API_KEY': getattr(settings, 'RAZORPAY_API_KEY', ''),
     }
 
     return render(request, 'checkout.html', context)
@@ -593,9 +589,10 @@ def save_order(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
+            user_obj = request.user if (request.user and request.user.is_authenticated) else None
 
             order = Order.objects.create(
-                user=request.user,
+                user=user_obj,
                 order_id=data["order_id"],
                 payment_id=data.get("payment_id"),
                 full_name=data["full_name"],

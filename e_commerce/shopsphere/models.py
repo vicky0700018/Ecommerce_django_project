@@ -204,7 +204,7 @@ class Order(models.Model):
         ('Delivered', 'Delivered'),
     )
 
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
     order_id = models.CharField(max_length=100, unique=True)
     payment_id = models.CharField(max_length=100, blank=True, null=True)
 

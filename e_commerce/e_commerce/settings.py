@@ -178,10 +178,18 @@ DATE_INPUT_FORMATS = [
     '%Y-%m-%d',  # '2003-09-29'
 ]
 
-# CSRF Settings for development
+# CSRF & Session Settings
 CSRF_COOKIE_SECURE = False
 CSRF_COOKIE_HTTPONLY = False
 SESSION_COOKIE_SECURE = False
+
+# Session Engine Configuration for Serverless / Vercel persistence
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+SESSION_COOKIE_NAME = 'shopsphere_sessionid'
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_AGE = 1209600
+SESSION_SAVE_EVERY_REQUEST = True
+
 
 # Custom User Model
 AUTH_USER_MODEL = 'shopsphere.CustomUser'

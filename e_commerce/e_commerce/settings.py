@@ -14,32 +14,61 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 # First Changes
 import os 
 from pathlib import Path
+from django.core.exceptions import ImproperlyConfigured
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR.parent / '.env')
+
+IS_VERCEL = os.environ.get('VERCEL') == '1' or 'VERCEL' in os.environ
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-**nj1_v0qudh+93myc7=3@+s&l)dn(6a9esk10tz3v$rl#55zc'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False' if IS_VERCEL else 'True').strip().lower() in {
+    '1', 'true', 'yes', 'on',
+}
 
-ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:8000',
-    'http://127.0.0.1:8000',
-    'http://shopsphere.com:8000',
-    'http://shopsphere.com',
-    'https://shopsphere.com',
-    'https://*.ngrok-free.app',
-    'https://*.trycloudflare.com',
-    'https://*.github.dev',
-    'https://*.app.github.dev',
+if not SECRET_KEY:
+    if not DEBUG:
+        raise ImproperlyConfigured('Set DJANGO_SECRET_KEY in the environment.')
+    SECRET_KEY = 'django-insecure-local-development-only-change-me'
+
+def csv_env(name, defaults=()):
+    value = os.environ.get(name)
+    if value is None:
+        return list(defaults)
+    return [item.strip() for item in value.split(',') if item.strip()]
+
+
+vercel_hosts = [
+    os.environ[name]
+    for name in ('VERCEL_URL', 'VERCEL_PROJECT_PRODUCTION_URL')
+    if os.environ.get(name)
 ]
+ALLOWED_HOSTS = csv_env(
+    'DJANGO_ALLOWED_HOSTS',
+    ['localhost', '127.0.0.1'],
+)
+ALLOWED_HOSTS.extend(host for host in vercel_hosts if host not in ALLOWED_HOSTS)
+CSRF_TRUSTED_ORIGINS = csv_env(
+    'CSRF_TRUSTED_ORIGINS',
+    [
+        'http://localhost:8000',
+        'http://127.0.0.1:8000',
+    ],
+)
+CSRF_TRUSTED_ORIGINS.extend(
+    f'https://{host}'
+    for host in vercel_hosts
+    if f'https://{host}' not in CSRF_TRUSTED_ORIGINS
+)
 
 # Application definition
 
@@ -90,8 +119,6 @@ import shutil
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
-IS_VERCEL = os.environ.get('VERCEL') == '1' or 'VERCEL' in os.environ
 
 if IS_VERCEL:
     tmp_db = Path('/tmp/db.sqlite3')
@@ -166,10 +193,10 @@ MEDIA_ROOT = BASE_DIR / 'media'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Gmail SMTP backend enabled
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'supportshopsphere@gmail.com'
-EMAIL_HOST_PASSWORD = 'vefw tdis lewq lpso'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'vs2734514@gmail.com'
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
 
 # Allow DD/MM/YYYY format for dates
 DATE_INPUT_FORMATS = [
@@ -179,9 +206,9 @@ DATE_INPUT_FORMATS = [
 ]
 
 # CSRF & Session Settings
-CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_HTTPONLY = False
-SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = not DEBUG
 
 # Session Engine Configuration for Serverless / Vercel persistence
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
@@ -195,18 +222,16 @@ SESSION_SAVE_EVERY_REQUEST = True
 AUTH_USER_MODEL = 'shopsphere.CustomUser'
 
 # Razorpay API credentials
-RAZORPAY_API_KEY = 'rzp_test_T7ub9uRXOT69Du'
-RAZORPAY_API_SECRET = 'r071X4HV5n7so70Qmstrg54v'
+RAZORPAY_API_KEY = os.environ.get('RAZORPAY_API_KEY', '')
+RAZORPAY_API_SECRET = os.environ.get('RAZORPAY_API_SECRET', '')
 
 # Cloudinary Configuration for Product Media Hosting
 # Create Cloudinary Credentials (required for hosting and managing product images/media)
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'dpxvxlghh',
-    'API_KEY': '123456789012345',
-    'API_SECRET': 'abc-1234567890abcdefghijklmnopqrstuv',
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', ''),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY', ''),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', ''),
 }
 
 # Un-comment the line below when deploying to production with Cloudinary
 # DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-
